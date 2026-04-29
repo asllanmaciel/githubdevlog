@@ -44,6 +44,7 @@ return [
             ? env('MERCADO_PAGO_PRODUCTION_PUBLIC_KEY', env('MERCADO_PAGO_PUBLIC_KEY'))
             : env('MERCADO_PAGO_SANDBOX_PUBLIC_KEY', env('MERCADO_PAGO_PUBLIC_KEY')),
         'webhook_secret' => env('MERCADO_PAGO_WEBHOOK_SECRET'),
+        'webhook_tolerance_seconds' => env('MERCADO_PAGO_WEBHOOK_TOLERANCE_SECONDS', 900),
     ],
 
     'github_app' => [

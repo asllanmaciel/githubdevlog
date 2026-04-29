@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\BillingPlan;
 use App\Models\Workspace;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use MercadoPago\Client\Common\RequestOptions;
 use MercadoPago\Client\Payment\PaymentClient;
@@ -33,6 +34,107 @@ class MercadoPagoBillingService
             'configured' => $this->isConfigured(),
             'next_step' => 'Criar preferencia de pagamento e webhook de confirmacao.',
         ];
+    }
+
+    public function webhookSecretConfigured(): bool
+    {
+        return filled(config('services.mercado_pago.webhook_secret'));
+    }
+
+    public function validateWebhookSignature(Request $request): array
+    {
+        $secret = (string) config('services.mercado_pago.webhook_secret', '');
+
+        if ($secret === '') {
+            return [
+                'configured' => false,
+                'valid' => false,
+                'reason' => 'MERCADO_PAGO_WEBHOOK_SECRET nao configurado.',
+            ];
+        }
+
+        $xSignature = (string) $request->header('x-signature', '');
+        $xRequestId = (string) $request->header('x-request-id', '');
+
+        if ($xSignature === '') {
+            return [
+                'configured' => true,
+                'valid' => false,
+                'reason' => 'Header x-signature ausente.',
+            ];
+        }
+
+        $signatureParts = [];
+
+        foreach (explode(',', $xSignature) as $part) {
+            [$key, $value] = array_pad(explode('=', trim($part), 2), 2, null);
+
+            if ($key && $value) {
+                $signatureParts[trim($key)] = trim($value);
+            }
+        }
+
+        $ts = $signatureParts['ts'] ?? null;
+        $receivedHash = $signatureParts['v1'] ?? null;
+
+        if (! $ts || ! $receivedHash) {
+            return [
+                'configured' => true,
+                'valid' => false,
+                'reason' => 'Header x-signature sem ts ou v1.',
+            ];
+        }
+
+        $tolerance = (int) config('services.mercado_pago.webhook_tolerance_seconds', 900);
+        $timestamp = strlen($ts) > 10 ? ((int) floor(((int) $ts) / 1000)) : (int) $ts;
+
+        if ($tolerance > 0 && abs(time() - $timestamp) > $tolerance) {
+            return [
+                'configured' => true,
+                'valid' => false,
+                'reason' => 'Timestamp da assinatura fora da janela de tolerancia.',
+            ];
+        }
+
+        $dataId = (string) (
+            $request->query('data.id')
+            ?? $request->query('id')
+            ?? data_get($request->all(), 'data.id')
+            ?? ''
+        );
+
+        if ((string) ($request->query('type') ?? data_get($request->all(), 'type')) === 'order') {
+            $dataId = Str::lower($dataId);
+        }
+
+        $manifest = $this->mercadoPagoSignatureManifest($dataId, $xRequestId, $ts);
+        $expectedHash = hash_hmac('sha256', $manifest, $secret);
+
+        return [
+            'configured' => true,
+            'valid' => hash_equals($expectedHash, $receivedHash),
+            'reason' => hash_equals($expectedHash, $receivedHash) ? 'Assinatura Mercado Pago valida.' : 'Assinatura Mercado Pago invalida.',
+            'manifest' => $manifest,
+        ];
+    }
+
+    private function mercadoPagoSignatureManifest(string $dataId, string $xRequestId, string $ts): string
+    {
+        $parts = [];
+
+        if ($dataId !== '') {
+            $parts[] = 'id:'.$dataId;
+        }
+
+        if ($xRequestId !== '') {
+            $parts[] = 'request-id:'.$xRequestId;
+        }
+
+        if ($ts !== '') {
+            $parts[] = 'ts:'.$ts;
+        }
+
+        return implode(';', $parts).';';
     }
 
     public function createCheckoutPreference(Workspace $workspace, BillingPlan $plan, string $payerEmail): object

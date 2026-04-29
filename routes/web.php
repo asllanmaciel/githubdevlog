@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\BillingPlan;
+use App\Models\BillingEvent;
 use App\Models\GithubInstallation;
 use App\Models\Notification;
 use App\Models\RoadmapItem;
@@ -439,6 +440,21 @@ Route::get('/webhooks/mercado-pago', function () {
 })->name('webhooks.mercado-pago.health');
 
 Route::post('/webhooks/mercado-pago', function (Request $request, MercadoPagoBillingService $billing) {
+    $signatureValidation = $billing->validateWebhookSignature($request);
+
+    if (! $signatureValidation['configured']) {
+        return response()->json([
+            'error' => 'Webhook Mercado Pago sem secret configurado.',
+        ], 503);
+    }
+
+    if (! $signatureValidation['valid']) {
+        return response()->json([
+            'error' => 'Assinatura Mercado Pago invalida.',
+            'reason' => $signatureValidation['reason'],
+        ], 401);
+    }
+
     $payload = $request->all();
     $preferenceId = (string) (
         data_get($payload, 'data.id')
@@ -448,12 +464,45 @@ Route::post('/webhooks/mercado-pago', function (Request $request, MercadoPagoBil
     );
     $eventType = (string) ($request->query('type') ?? data_get($payload, 'type') ?? data_get($payload, 'topic') ?? 'mercado_pago');
     $status = (string) (data_get($payload, 'status') ?? data_get($payload, 'action') ?? 'received');
+    $providerEventId = implode(':', array_filter([
+        (string) $request->header('x-request-id'),
+        (string) (data_get($payload, 'id') ?? ''),
+        $eventType,
+        $preferenceId,
+    ])) ?: (string) Str::uuid();
+    $billingEvent = BillingEvent::firstOrCreate(
+        ['provider' => 'mercado_pago', 'provider_event_id' => $providerEventId],
+        [
+            'request_id' => $request->header('x-request-id'),
+            'event_type' => $eventType,
+            'action' => data_get($payload, 'action'),
+            'resource_id' => $preferenceId,
+            'status' => 'received',
+            'signature_valid' => true,
+            'payload' => WebhookSanitizer::clean($payload),
+        ],
+    );
+
+    if (! $billingEvent->wasRecentlyCreated && $billingEvent->processed_at) {
+        return response()->json([
+            'ok' => true,
+            'duplicate' => true,
+            'billing_event_id' => $billingEvent->id,
+        ]);
+    }
+
     $payment = null;
     $externalReference = null;
     $workspaceId = null;
     $billingPlanId = null;
 
     if ($preferenceId === '') {
+        $billingEvent->update([
+            'status' => 'ignored',
+            'error_message' => 'Evento Mercado Pago recebido sem referencia direta.',
+            'processed_at' => now(),
+        ]);
+
         return response()->json(['ok' => true, 'message' => 'Evento Mercado Pago recebido sem referencia direta.']);
     }
 
@@ -466,6 +515,12 @@ Route::post('/webhooks/mercado-pago', function (Request $request, MercadoPagoBil
             $workspaceId = $parsed['workspace_id'];
             $billingPlanId = $parsed['billing_plan_id'];
         } catch (\Throwable $exception) {
+            $billingEvent->update([
+                'status' => 'pending_lookup',
+                'error_message' => app()->isLocal() ? $exception->getMessage() : 'Pagamento ainda nao pode ser consultado.',
+                'processed_at' => now(),
+            ]);
+
             return response()->json([
                 'ok' => true,
                 'message' => 'Evento recebido, mas o pagamento ainda nao pode ser consultado.',
@@ -495,7 +550,17 @@ Route::post('/webhooks/mercado-pago', function (Request $request, MercadoPagoBil
                 'current_period_ends_at' => now()->addMonth(),
             ]);
         } else {
-            return response()->json(['ok' => true, 'message' => 'Referencia Mercado Pago ainda nao associada a assinatura.']);
+            $billingEvent->update([
+                'status' => 'unmatched',
+                'error_message' => 'Referencia Mercado Pago ainda nao associada a assinatura.',
+                'processed_at' => now(),
+            ]);
+
+            return response()->json([
+                'ok' => true,
+                'message' => 'Referencia Mercado Pago ainda nao associada a assinatura.',
+                'billing_event_id' => $billingEvent->id,
+            ]);
         }
     }
 
@@ -505,6 +570,16 @@ Route::post('/webhooks/mercado-pago', function (Request $request, MercadoPagoBil
         'provider_reference' => $payment?->id ?? $subscription->provider_reference ?? $preferenceId,
         'status' => $approved ? 'active' : 'pending',
         'current_period_ends_at' => $approved ? now()->addMonth() : $subscription->current_period_ends_at,
+    ]);
+
+    $billingEvent->update([
+        'workspace_id' => $subscription->workspace_id,
+        'workspace_subscription_id' => $subscription->id,
+        'billing_plan_id' => $billingPlanId ?: $subscription->billing_plan_id,
+        'resource_id' => $payment?->id ?? $preferenceId,
+        'external_reference' => $externalReference,
+        'status' => $approved ? 'processed_active' : 'processed_pending',
+        'processed_at' => now(),
     ]);
 
     Notification::create([
@@ -518,6 +593,7 @@ Route::post('/webhooks/mercado-pago', function (Request $request, MercadoPagoBil
         'ok' => true,
         'status' => $subscription->status,
         'workspace_id' => $subscription->workspace_id,
+        'billing_event_id' => $billingEvent->id,
     ]);
 })->name('webhooks.mercado-pago');
 
