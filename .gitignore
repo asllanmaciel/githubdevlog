@@ -1,0 +1,7 @@
+/database/devlog.sqlite
+/.env
+/node_modules/
+/vendor/
+/.idea/
+/.vscode/
+/.DS_Store
