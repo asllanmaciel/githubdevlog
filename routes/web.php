@@ -12,6 +12,7 @@ use App\Models\WebhookEventTask;
 use App\Models\Workspace;
 use App\Models\WorkspaceSubscription;
 use App\Services\MercadoPagoBillingService;
+use App\Support\SystemHealth;
 use App\Support\WebhookSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -37,7 +38,11 @@ $workspaceLimitReached = function (Workspace $workspace) use ($workspacePlan, $w
 };
 
 Route::get('/', fn () => view('landing'))->name('home');
-Route::get('/health', fn () => response()->json(['ok' => true, 'app' => config('app.name')]))->name('health');
+Route::get('/health', function () {
+    $report = SystemHealth::report();
+
+    return response()->json($report, $report['ok'] ? 200 : 503);
+})->name('health');
 Route::get('/docs/usuarios', fn () => view('docs.users'))->name('docs.users');
 Route::get('/docs/admin', fn () => redirect('/admin/docs'))->name('docs.admin');
 Route::get('/github', fn () => view('github'))->name('github');
