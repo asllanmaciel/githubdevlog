@@ -429,6 +429,15 @@ Route::post('/webhooks/github-app', function (Request $request) use ($workspaceP
     return response()->json(['ok' => true, 'id' => $event->id]);
 })->name('webhooks.github-app');
 
+Route::get('/webhooks/mercado-pago', function () {
+    return response()->json([
+        'ok' => true,
+        'provider' => 'mercado_pago',
+        'method' => 'GET',
+        'message' => 'Endpoint ativo. Configure o Mercado Pago para enviar notificacoes via POST.',
+    ]);
+})->name('webhooks.mercado-pago.health');
+
 Route::post('/webhooks/mercado-pago', function (Request $request) {
     $payload = $request->all();
     $preferenceId = (string) (
