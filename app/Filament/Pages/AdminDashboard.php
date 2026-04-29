@@ -10,9 +10,9 @@ class AdminDashboard extends Page
 {
     protected static string $routePath = '/';
 
-    protected static ?string $title = 'Visão geral';
+    protected static ?string $title = 'Visao geral';
 
-    protected static ?string $navigationLabel = 'Visão geral';
+    protected static ?string $navigationLabel = 'Visao geral';
 
     protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedChartBarSquare;
 
