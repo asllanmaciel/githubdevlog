@@ -27,6 +27,9 @@
     $subscriptionStatus = $subscription?->status ?? 'trialing';
     $healthStatus = $totalEvents === 0 ? 'Aguardando evento' : ($invalidEvents > 0 ? 'Atenção' : 'Saudável');
     $healthClass = $invalidEvents > 0 ? 'status-warn' : 'status-ok';
+    $usageWarning = $usagePercent >= 100
+        ? 'Limite mensal atingido. Novos webhooks serão recusados até upgrade ou renovação.'
+        : ($usagePercent >= 80 ? 'Uso mensal próximo do limite. Considere upgrade antes de perder eventos importantes.' : null);
 @endphp
 
 @if (! $workspace)
@@ -108,6 +111,19 @@
         </div>
       </div>
     </section>
+
+    @if ($usageWarning)
+      <section class="cardx mb-3" style="border-color: {{ $usagePercent >= 100 ? 'rgba(255,107,107,.5)' : 'rgba(255,209,102,.5)' }}; background: linear-gradient(135deg, rgba(255,209,102,.08), rgba(80,184,255,.05));">
+        <div class="d-flex justify-content-between gap-3 flex-wrap align-items-center">
+          <div>
+            <div class="kicker">Uso e cobrança</div>
+            <h2 class="h4 mt-2 mb-1">{{ $usagePercent >= 100 ? 'Limite do plano atingido' : 'Atenção ao consumo mensal' }}</h2>
+            <p class="muted mb-0">{{ $usageWarning }}</p>
+          </div>
+          <a class="btnx primary" href="{{ route('support') }}">Falar com suporte</a>
+        </div>
+      </section>
+    @endif
 
     <section class="dashboard-grid">
       <aside id="setup" class="config-card">
@@ -213,8 +229,29 @@
           </article>
         @empty
           <div class="cardx">
-            <h2 class="h4">Nenhum webhook recebido ainda.</h2>
-            <p class="muted mb-0">Configure o Payload URL no GitHub ou use o teste manual para validar o fluxo do workspace.</p>
+            <div class="kicker">Primeiro uso</div>
+            <h2 class="h3 mt-2">Conecte seu primeiro repositório GitHub</h2>
+            <p class="muted">Este workspace ainda não recebeu eventos. Siga o fluxo abaixo para validar tudo em poucos minutos.</p>
+            <div class="row g-2 mt-2">
+              <div class="col-md-4">
+                <div class="summary-cell h-100">
+                  <div class="summary-label">1. Copie o endpoint</div>
+                  <div class="summary-value">Use o Payload URL e o Secret exibidos na coluna de configuração.</div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="summary-cell h-100">
+                  <div class="summary-label">2. Configure no GitHub</div>
+                  <div class="summary-value">Em Settings → Webhooks, escolha JSON e cole o Secret do workspace.</div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="summary-cell h-100">
+                  <div class="summary-label">3. Envie um ping</div>
+                  <div class="summary-value">O evento aparecerá aqui com assinatura, payload sanitizado e histórico.</div>
+                </div>
+              </div>
+            </div>
           </div>
         @endforelse
       </section>
