@@ -104,6 +104,25 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
         return view('dashboard', compact('workspace', 'events', 'notifications', 'githubInstallation'));
     })->name('dashboard');
 
+    Route::post('/notifications/{notification}/read', function (Notification $notification) {
+        $workspace = Auth::user()->workspaces()->firstOrFail();
+        abort_unless($notification->workspace_id === $workspace->id, 403);
+
+        $notification->update(['read_at' => now()]);
+
+        return redirect()->route('dashboard')->with('status', 'Notificacao marcada como lida.');
+    })->name('notifications.read');
+
+    Route::post('/notifications/read-all', function () {
+        $workspace = Auth::user()->workspaces()->firstOrFail();
+
+        Notification::where('workspace_id', $workspace->id)
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
+
+        return redirect()->route('dashboard')->with('status', 'Notificacoes marcadas como lidas.');
+    })->name('notifications.read-all');
+
     Route::post('/workspace/secret/rotate', function () {
         $workspace = Auth::user()->workspaces()->firstOrFail();
         $workspace->update(['webhook_secret' => 'dlog_'.Str::random(48)]);

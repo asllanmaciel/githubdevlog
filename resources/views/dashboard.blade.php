@@ -42,6 +42,7 @@
     $usageWarning = $usagePercent >= 100
         ? 'Limite mensal atingido. Novos webhooks serao recusados ate upgrade ou renovacao.'
         : ($usagePercent >= 80 ? 'Uso mensal proximo do limite. Considere upgrade antes de perder eventos importantes.' : null);
+    $unreadNotifications = $notifications->whereNull('read_at')->count();
 @endphp
 
 @if (! $workspace)
@@ -99,6 +100,51 @@
       <div class="metric"><div class="metric-label">Repositorios vistos</div><div class="metric-value">{{ $repos }}</div><div class="muted mt-2">Origem mais recente: {{ $latestRepo }}</div></div>
       <div class="metric"><div class="metric-label">Push recebidos</div><div class="metric-value">{{ $pushes }}</div><div class="muted mt-2">Sender recente: {{ $latestSender }}</div></div>
       <div class="metric"><div class="metric-label">Notas e tarefas</div><div class="metric-value">{{ $notesCount + $openTasks }}</div><div class="muted mt-2">{{ $openTasks }} tarefa(s) aberta(s)</div></div>
+    </section>
+
+    <section class="cardx mb-3">
+      <div class="d-flex justify-content-between gap-3 flex-wrap align-items-start">
+        <div>
+          <div class="kicker">Notificacoes do workspace</div>
+          <h2 class="h4 mt-2 mb-1">{{ $unreadNotifications }} alerta(s) nao lido(s)</h2>
+          <p class="muted mb-0">Acompanhe eventos importantes de billing, GitHub App, limite de uso e webhooks recebidos.</p>
+        </div>
+        @if ($unreadNotifications > 0)
+          <form method="POST" action="{{ route('notifications.read-all') }}">
+            @csrf
+            <button class="btnx" type="submit">Marcar todas como lidas</button>
+          </form>
+        @endif
+      </div>
+
+      <div class="row g-2 mt-2">
+        @forelse ($notifications as $notification)
+          <div class="col-md-6">
+            <div class="summary-cell h-100" style="{{ $notification->read_at ? 'opacity:.72' : 'border-color:rgba(80,184,255,.55)' }}">
+              <div class="d-flex justify-content-between gap-2 align-items-start">
+                <div>
+                  <div class="summary-label">{{ $notification->type }} · {{ $notification->created_at?->format('d/m/Y H:i') }}</div>
+                  <div class="summary-value">{{ $notification->title }}</div>
+                </div>
+                <span class="pill">{{ $notification->read_at ? 'Lida' : 'Nova' }}</span>
+              </div>
+              @if ($notification->body)
+                <div class="muted mt-2">{{ $notification->body }}</div>
+              @endif
+              @if (! $notification->read_at)
+                <form method="POST" action="{{ route('notifications.read', $notification) }}" class="mt-2">
+                  @csrf
+                  <button class="btnx w-100" type="submit">Marcar como lida</button>
+                </form>
+              @endif
+            </div>
+          </div>
+        @empty
+          <div class="col-12">
+            <div class="summary-cell">Nenhuma notificacao recente. Quando algo importante acontecer, aparece aqui.</div>
+          </div>
+        @endforelse
+      </div>
     </section>
 
     <section class="mini-board">
