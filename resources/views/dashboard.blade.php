@@ -112,6 +112,7 @@
           <div class="kicker">Equipe do workspace</div>
           <h2 class="h4 mt-2 mb-1">Acesso privado, compartilhado com controle</h2>
           <p class="muted mb-0">Convide devs do time para acompanhar webhooks, abrir tarefas e investigar entregas sem compartilhar senha ou secret fora do workspace.</p>
+          <div class="muted mt-2">Owner/admin gerenciam equipe, billing, secrets e GitHub App. Developer investiga eventos. Viewer acompanha em leitura.</div>
         </div>
         <span class="pill">Seu papel: {{ $workspaceRole ?? 'membro' }}</span>
       </div>
@@ -159,6 +160,21 @@
           </div>
         </div>
       </div>
+      <details class="payload mt-3">
+        <summary>Ver matriz de permissoes</summary>
+        <div class="row g-2 mt-2">
+          @foreach ($permissionMatrix as $role => $matrix)
+            <div class="col-md-3">
+              <div class="summary-cell h-100">
+                <div class="summary-label">{{ $matrix['label'] }}</div>
+                @foreach ($permissionLabels as $permission => $label)
+                  <div class="muted">{{ $matrix['permissions'][$permission] ?? false ? '✓' : '–' }} {{ $label }}</div>
+                @endforeach
+              </div>
+            </div>
+          @endforeach
+        </div>
+      </details>
       @if ($invites->where('status', 'pending')->count() > 0)
         <div class="row g-2 mt-2">
           @foreach ($invites->where('status', 'pending') as $invite)
@@ -359,7 +375,11 @@
           <div class="summary-cell mb-3">
             <div class="summary-label">GitHub App</div>
             <div class="summary-value">{{ $githubInstallation ? 'Instalacao '.$githubInstallation->installation_id.' vinculada' : 'Nenhuma instalacao vinculada ainda' }}</div>
-            <a class="btnx primary w-100 mt-2" href="{{ route('github.install') }}">Conectar GitHub App</a>
+            @if ($canManageGitHub)
+              <a class="btnx primary w-100 mt-2" href="{{ route('github.install') }}">Conectar GitHub App</a>
+            @else
+              <div class="muted mt-2">Seu papel atual nao permite conectar GitHub App.</div>
+            @endif
           </div>
           <label>Payload URL</label>
           <div class="endpoint-box mb-3">{{ $endpoint }}</div>
@@ -367,20 +387,28 @@
           <pre>application/json</pre>
           <label>Secret</label>
           <pre>{{ $workspace->webhook_secret }}</pre>
-          <form method="POST" action="{{ route('workspace.secret.rotate') }}">
-            @csrf
-            <button class="btnx w-100" type="submit">Rotacionar secret</button>
-          </form>
+          @if ($canManageSecrets)
+            <form method="POST" action="{{ route('workspace.secret.rotate') }}">
+              @csrf
+              <button class="btnx w-100" type="submit">Rotacionar secret</button>
+            </form>
+          @else
+            <div class="muted">Somente owner/admin pode rotacionar o secret.</div>
+          @endif
         </div>
 
         <div class="cardx">
           <div class="kicker">Teste manual</div>
           <h2 class="h5 mt-2">Salvar evento no workspace</h2>
-          <form method="POST" action="{{ route('dashboard.test-event') }}">
-            @csrf
-            <textarea name="payload" rows="8">{ "event": "push", "repository": { "full_name": "demo/repo" }, "pusher": { "name": "dev" } }</textarea>
-            <button class="btnx success w-100 mt-2" type="submit">Salvar evento de teste</button>
-          </form>
+          @if ($canCreateTestEvents)
+            <form method="POST" action="{{ route('dashboard.test-event') }}">
+              @csrf
+              <textarea name="payload" rows="8">{ "event": "push", "repository": { "full_name": "demo/repo" }, "pusher": { "name": "dev" } }</textarea>
+              <button class="btnx success w-100 mt-2" type="submit">Salvar evento de teste</button>
+            </form>
+          @else
+            <div class="muted">Seu papel atual permite acompanhar eventos, mas nao criar eventos de teste.</div>
+          @endif
         </div>
       </aside>
 

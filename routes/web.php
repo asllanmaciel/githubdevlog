@@ -121,9 +121,16 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
         $members = $workspace ? $workspace->members()->with('user')->get() : collect();
         $invites = $workspace ? $workspace->invites()->latest()->limit(10)->get() : collect();
         $canManageWorkspace = $workspace ? WorkspaceAccess::canManage(Auth::user(), $workspace) : false;
+        $canManageBilling = $workspace ? WorkspaceAccess::can(Auth::user(), $workspace, 'manage_billing') : false;
+        $canManageSecrets = $workspace ? WorkspaceAccess::can(Auth::user(), $workspace, 'manage_secrets') : false;
+        $canManageGitHub = $workspace ? WorkspaceAccess::can(Auth::user(), $workspace, 'manage_github_app') : false;
+        $canCreateTestEvents = $workspace ? WorkspaceAccess::can(Auth::user(), $workspace, 'create_test_events') : false;
+        $canAnnotateEvents = $workspace ? WorkspaceAccess::can(Auth::user(), $workspace, 'annotate_events') : false;
         $workspaceRole = $workspace ? WorkspaceAccess::currentRole(Auth::user(), $workspace) : null;
+        $permissionMatrix = WorkspaceAccess::roleMatrix();
+        $permissionLabels = WorkspaceAccess::labels();
 
-        return view('dashboard', compact('workspace', 'events', 'notifications', 'githubInstallation', 'members', 'invites', 'canManageWorkspace', 'workspaceRole'));
+        return view('dashboard', compact('workspace', 'events', 'notifications', 'githubInstallation', 'members', 'invites', 'canManageWorkspace', 'canManageBilling', 'canManageSecrets', 'canManageGitHub', 'canCreateTestEvents', 'canAnnotateEvents', 'workspaceRole', 'permissionMatrix', 'permissionLabels'));
     })->name('dashboard');
 
 
@@ -162,7 +169,7 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
     })->name('notifications.read-all');
     Route::post('/workspace/members/invite', function (Request $request) {
         $workspace = Auth::user()->workspaces()->firstOrFail();
-        abort_unless(WorkspaceAccess::canManage(Auth::user(), $workspace), 403);
+        abort_unless(WorkspaceAccess::can(Auth::user(), $workspace, 'manage_members'), 403);
 
         $data = $request->validate([
             'email' => ['required', 'email', 'max:180'],
@@ -193,7 +200,7 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
     Route::post('/workspace/members/{member}/remove', function (WorkspaceMember $member) {
         $workspace = Auth::user()->workspaces()->firstOrFail();
         abort_unless($member->workspace_id === $workspace->id, 403);
-        abort_unless(WorkspaceAccess::canManage(Auth::user(), $workspace), 403);
+        abort_unless(WorkspaceAccess::can(Auth::user(), $workspace, 'manage_members'), 403);
         abort_if($member->role === 'owner', 422, 'Owner nao pode ser removido por esta acao.');
 
         $removedUserId = $member->user_id;
@@ -206,7 +213,7 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
     Route::post('/workspace/invites/{invite}/cancel', function (WorkspaceInvite $invite) {
         $workspace = Auth::user()->workspaces()->firstOrFail();
         abort_unless($invite->workspace_id === $workspace->id, 403);
-        abort_unless(WorkspaceAccess::canManage(Auth::user(), $workspace), 403);
+        abort_unless(WorkspaceAccess::can(Auth::user(), $workspace, 'manage_members'), 403);
 
         $invite->update(['status' => 'canceled']);
         AuditTrail::record('workspace.invite.canceled', $invite, $workspace, ['email' => $invite->email]);

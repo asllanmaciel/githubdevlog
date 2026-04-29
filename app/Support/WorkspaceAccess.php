@@ -20,16 +20,50 @@ class WorkspaceAccess
         ];
     }
 
-    public static function canManage(User $user, Workspace $workspace): bool
+    public static function permissions(): array
+    {
+        return [
+            'manage_workspace' => ['owner', 'admin'],
+            'manage_members' => ['owner', 'admin'],
+            'manage_billing' => ['owner', 'admin'],
+            'manage_secrets' => ['owner', 'admin'],
+            'manage_github_app' => ['owner', 'admin'],
+            'create_test_events' => ['owner', 'admin', 'developer'],
+            'annotate_events' => ['owner', 'admin', 'developer'],
+            'open_support' => ['owner', 'admin', 'developer', 'viewer'],
+            'view_events' => ['owner', 'admin', 'developer', 'viewer'],
+        ];
+    }
+
+    public static function labels(): array
+    {
+        return [
+            'manage_workspace' => 'Gerenciar workspace',
+            'manage_members' => 'Convidar/remover membros',
+            'manage_billing' => 'Gerenciar planos e assinatura',
+            'manage_secrets' => 'Rotacionar secrets',
+            'manage_github_app' => 'Conectar GitHub App',
+            'create_test_events' => 'Criar eventos de teste',
+            'annotate_events' => 'Criar notas e tarefas',
+            'open_support' => 'Abrir suporte',
+            'view_events' => 'Ver eventos',
+        ];
+    }
+
+    public static function can(User $user, Workspace $workspace, string $permission): bool
     {
         if ($user->is_super_admin) {
             return true;
         }
 
-        return WorkspaceMember::where('workspace_id', $workspace->id)
-            ->where('user_id', $user->id)
-            ->whereIn('role', ['owner', 'admin'])
-            ->exists();
+        $role = self::currentRole($user, $workspace);
+
+        return $role !== null && in_array($role, self::permissions()[$permission] ?? [], true);
+    }
+
+    public static function canManage(User $user, Workspace $workspace): bool
+    {
+        return self::can($user, $workspace, 'manage_workspace');
     }
 
     public static function currentRole(User $user, Workspace $workspace): ?string
@@ -37,6 +71,20 @@ class WorkspaceAccess
         return WorkspaceMember::where('workspace_id', $workspace->id)
             ->where('user_id', $user->id)
             ->value('role');
+    }
+
+    public static function roleMatrix(): array
+    {
+        $permissions = self::permissions();
+
+        return collect(self::roles())->mapWithKeys(function (string $label, string $role) use ($permissions) {
+            return [$role => [
+                'label' => $label,
+                'permissions' => collect($permissions)
+                    ->map(fn (array $roles, string $permission) => in_array($role, $roles, true))
+                    ->all(),
+            ]];
+        })->all();
     }
 
     public static function invite(Workspace $workspace, User $inviter, string $email, string $role): array
