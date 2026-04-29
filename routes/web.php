@@ -125,13 +125,17 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
             'webhook_secret_rotated_at' => now(),
         ]);
 
-        SecretRotation::create([
+        $rotation = SecretRotation::create([
             'workspace_id' => $workspace->id,
             'user_id' => Auth::id(),
             'secret_type' => 'workspace_webhook_secret',
             'rotated_by' => 'user_dashboard',
             'metadata' => ['workspace' => $workspace->name],
             'rotated_at' => now(),
+        ]);
+
+        AuditTrail::record('workspace.secret.rotated', $rotation, $workspace, [
+            'secret_type' => 'workspace_webhook_secret',
         ]);
 
         return redirect()->route('dashboard')->with('status', 'Secret rotacionado. Atualize o webhook no GitHub.');
@@ -148,11 +152,13 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
 
         if (! is_array($payload)) return back()->withErrors(['payload' => 'Payload JSON invalido.']);
 
-        $workspace->webhookEvents()->create([
+        $event = $workspace->webhookEvents()->create([
             'source' => 'manual-test', 'event_name' => $payload['event'] ?? 'push', 'action' => $payload['action'] ?? null,
             'delivery_id' => null, 'signature_valid' => true, 'validation_method' => 'authenticated-session',
             'headers' => ['x-devlog-test' => 'true'], 'payload' => WebhookSanitizer::clean($payload), 'received_at' => now(),
         ]);
+
+        AuditTrail::record('webhook.test_event.created', $event, $workspace, ['event_name' => $event->event_name]);
 
         return redirect()->route('dashboard')->with('status', 'Evento de teste salvo no workspace.');
     })->name('dashboard.test-event');
@@ -201,6 +207,8 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
             'type' => 'billing',
         ]);
 
+        AuditTrail::record('billing.checkout.started', $plan, $workspace, ['plan' => $plan->slug, 'preference_id' => $preference->id ?? null]);
+
         return redirect()->away($checkoutUrl);
     })->name('billing.checkout');
 
@@ -221,7 +229,7 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
 
         if (! filled($setupUrl) || str_contains($setupUrl, 'your-github-app-slug')) {
             return redirect()->route('dashboard')->withErrors([
-                'github' => 'Configure GITHUB_APP_SETUP_URL com a URL oficial de instalação do GitHub App.',
+                'github' => 'Configure GITHUB_APP_SETUP_URL com a URL oficial de instalaÃƒÂ§ÃƒÂ£o do GitHub App.',
             ]);
         }
 
@@ -243,13 +251,13 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
 
         if ($sessionWorkspaceId !== $workspace->id || $sessionState === '' || ! hash_equals($sessionState, $state)) {
             return redirect()->route('dashboard')->withErrors([
-                'github' => 'Não foi possível validar o retorno da instalação GitHub. Tente iniciar a instalação novamente.',
+                'github' => 'NÃƒÂ£o foi possÃƒÂ­vel validar o retorno da instalaÃƒÂ§ÃƒÂ£o GitHub. Tente iniciar a instalaÃƒÂ§ÃƒÂ£o novamente.',
             ]);
         }
 
         if ($installationId === '') {
             return redirect()->route('dashboard')->withErrors([
-                'github' => 'O GitHub não retornou installation_id. Confirme se a instalação foi concluída.',
+                'github' => 'O GitHub nÃƒÂ£o retornou installation_id. Confirme se a instalaÃƒÂ§ÃƒÂ£o foi concluÃƒÂ­da.',
             ]);
         }
 
@@ -269,7 +277,7 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
         Notification::create([
             'workspace_id' => $workspace->id,
             'title' => 'GitHub App instalado',
-            'body' => 'A instalação '.$installationId.' foi vinculada ao workspace.',
+            'body' => 'A instalaÃƒÂ§ÃƒÂ£o '.$installationId.' foi vinculada ao workspace.',
             'type' => 'github',
         ]);
 
@@ -280,7 +288,8 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
         $workspace = Auth::user()->workspaces()->firstOrFail();
         abort_unless($event->workspace_id === $workspace->id, 403);
         $data = $request->validate(['body' => ['required', 'string', 'max:2000']]);
-        WebhookEventNote::create(['webhook_event_id' => $event->id, 'user_id' => Auth::id(), 'body' => $data['body']]);
+        $note = WebhookEventNote::create(['webhook_event_id' => $event->id, 'user_id' => Auth::id(), 'body' => $data['body']]);
+        AuditTrail::record('webhook.note.created', $event, $workspace, ['note_id' => $note->id]);
 
         return redirect()->route('dashboard')->with('status', 'Nota adicionada ao evento.');
     })->name('events.notes.store');
@@ -289,7 +298,8 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
         $workspace = Auth::user()->workspaces()->firstOrFail();
         abort_unless($event->workspace_id === $workspace->id, 403);
         $data = $request->validate(['title' => ['required', 'string', 'max:180']]);
-        WebhookEventTask::create(['webhook_event_id' => $event->id, 'title' => $data['title'], 'status' => 'open']);
+        $task = WebhookEventTask::create(['webhook_event_id' => $event->id, 'title' => $data['title'], 'status' => 'open']);
+        AuditTrail::record('webhook.task.created', $event, $workspace, ['task_id' => $task->id]);
 
         return redirect()->route('dashboard')->with('status', 'Tarefa criada a partir do webhook.');
     })->name('events.tasks.store');
@@ -315,7 +325,8 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
     Route::post('/support', function (Request $request) {
         $workspace = Auth::user()->workspaces()->first();
         $data = $request->validate(['subject' => ['required', 'string', 'max:160'], 'message' => ['required', 'string', 'max:4000']]);
-        SupportTicket::create([...$data, 'workspace_id' => $workspace?->id, 'user_id' => Auth::id(), 'priority' => 'normal']);
+        $ticket = SupportTicket::create([...$data, 'workspace_id' => $workspace?->id, 'user_id' => Auth::id(), 'priority' => 'normal']);
+        AuditTrail::record('support.ticket.created', $ticket, $workspace, ['subject' => $ticket->subject]);
 
         return redirect()->route('support')->with('status', 'Chamado aberto. Vamos acompanhar pelo painel admin.');
     })->name('support.store');

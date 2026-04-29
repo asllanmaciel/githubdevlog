@@ -28,6 +28,7 @@ class DevlogExportWorkspaceData extends Command
         }
 
         $path = WorkspaceDataExport::store($workspace, $this->option('output'));
+        AuditTrail::record('workspace.data.exported', $workspace, $workspace, ['file' => $path], null, null, 'system');
         $payload = ['ok' => true, 'workspace_id' => $workspace->id, 'file' => $path];
 
         if ($this->option('json')) {

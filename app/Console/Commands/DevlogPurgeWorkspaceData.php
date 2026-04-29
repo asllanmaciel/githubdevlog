@@ -28,6 +28,7 @@ class DevlogPurgeWorkspaceData extends Command
         }
 
         $dryRun = (bool) $this->option('dry-run') || ! (bool) $this->option('force');
+        AuditTrail::record($dryRun ? 'workspace.data.purge_simulated' : 'workspace.data.purge_requested', $workspace, $workspace, ['force' => ! $dryRun], null, null, 'system');
         $result = WorkspaceDataPurge::purge($workspace, $dryRun);
 
         if ($this->option('json')) {
