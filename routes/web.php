@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\BillingPlan;
+use App\Models\GithubInstallation;
 use App\Models\Notification;
 use App\Models\RoadmapItem;
 use App\Models\SupportTicket;
@@ -75,7 +76,7 @@ Route::middleware('guest')->group(function () {
         $credentials = $request->validate(['email' => ['required', 'email'], 'password' => ['required', 'string']]);
 
         if (! Auth::attempt(['email' => strtolower($credentials['email']), 'password' => $credentials['password']], true)) {
-            return back()->withErrors(['email' => 'Email ou senha inválidos.'])->onlyInput('email');
+            return back()->withErrors(['email' => 'Email ou senha invalidos.'])->onlyInput('email');
         }
 
         $request->session()->regenerate();
@@ -110,12 +111,12 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
         $workspace = Auth::user()->workspaces()->firstOrFail();
 
         if ($workspaceLimitReached($workspace)) {
-            return back()->withErrors(['payload' => 'Limite mensal de eventos atingido para este workspace. Faça upgrade do plano ou aguarde a próxima janela mensal.']);
+            return back()->withErrors(['payload' => 'Limite mensal de eventos atingido para este workspace. Faca upgrade do plano ou aguarde a proxima janela mensal.']);
         }
 
         $payload = json_decode($request->input('payload', '{}'), true);
 
-        if (! is_array($payload)) return back()->withErrors(['payload' => 'Payload JSON inválido.']);
+        if (! is_array($payload)) return back()->withErrors(['payload' => 'Payload JSON invalido.']);
 
         $workspace->webhookEvents()->create([
             'source' => 'manual-test', 'event_name' => $payload['event'] ?? 'push', 'action' => $payload['action'] ?? null,
@@ -125,6 +126,67 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
 
         return redirect()->route('dashboard')->with('status', 'Evento de teste salvo no workspace.');
     })->name('dashboard.test-event');
+
+    Route::get('/github/install', function (Request $request) {
+        $workspace = Auth::user()->workspaces()->firstOrFail();
+        $setupUrl = config('services.github_app.setup_url');
+
+        if (! filled($setupUrl) || str_contains($setupUrl, 'your-github-app-slug')) {
+            return redirect()->route('dashboard')->withErrors([
+                'github' => 'Configure GITHUB_APP_SETUP_URL com a URL oficial de instalação do GitHub App.',
+            ]);
+        }
+
+        $state = Str::random(48);
+        $request->session()->put('github_app_install_state', $state);
+        $request->session()->put('github_app_install_workspace_id', $workspace->id);
+
+        return redirect()->away($setupUrl.(str_contains($setupUrl, '?') ? '&' : '?').http_build_query([
+            'state' => $state,
+        ]));
+    })->name('github.install');
+
+    Route::get('/github/callback', function (Request $request) {
+        $workspace = Auth::user()->workspaces()->firstOrFail();
+        $sessionWorkspaceId = (int) $request->session()->pull('github_app_install_workspace_id');
+        $sessionState = (string) $request->session()->pull('github_app_install_state');
+        $state = (string) $request->query('state', '');
+        $installationId = (string) $request->query('installation_id', '');
+
+        if ($sessionWorkspaceId !== $workspace->id || $sessionState === '' || ! hash_equals($sessionState, $state)) {
+            return redirect()->route('dashboard')->withErrors([
+                'github' => 'Não foi possível validar o retorno da instalação GitHub. Tente iniciar a instalação novamente.',
+            ]);
+        }
+
+        if ($installationId === '') {
+            return redirect()->route('dashboard')->withErrors([
+                'github' => 'O GitHub não retornou installation_id. Confirme se a instalação foi concluída.',
+            ]);
+        }
+
+        GithubInstallation::updateOrCreate(
+            ['workspace_id' => $workspace->id, 'installation_id' => $installationId],
+            [
+                'account_login' => $request->query('account_login'),
+                'account_type' => $request->query('account_type'),
+                'permissions' => [],
+                'events' => [],
+                'installed_at' => now(),
+            ],
+        );
+
+        $workspace->update(['github_app_installation_id' => $installationId]);
+
+        Notification::create([
+            'workspace_id' => $workspace->id,
+            'title' => 'GitHub App instalado',
+            'body' => 'A instalação '.$installationId.' foi vinculada ao workspace.',
+            'type' => 'github',
+        ]);
+
+        return redirect()->route('dashboard')->with('status', 'GitHub App instalado e vinculado ao workspace.');
+    })->name('github.callback');
 
     Route::post('/events/{event}/notes', function (WebhookEvent $event, Request $request) {
         $workspace = Auth::user()->workspaces()->firstOrFail();
@@ -186,7 +248,7 @@ Route::post('/webhooks/github/{workspaceUuid}', function (Request $request, stri
     $expected = 'sha256='.hash_hmac('sha256', $rawBody, $workspace->webhook_secret);
     $validSignature = $signature !== '' && hash_equals($expected, $signature);
 
-    if (! $validSignature) return response()->json(['error' => 'Assinatura GitHub inválida.'], 401);
+    if (! $validSignature) return response()->json(['error' => 'Assinatura GitHub invalida.'], 401);
 
     if ($workspaceLimitReached($workspace)) {
         $plan = $workspacePlan($workspace);
@@ -196,7 +258,7 @@ Route::post('/webhooks/github/{workspaceUuid}', function (Request $request, stri
         Notification::create([
             'workspace_id' => $workspace->id,
             'title' => 'Limite mensal de webhooks atingido',
-            'body' => 'O workspace atingiu '.$usage.'/'.$limit.' eventos no plano '.($plan?->name ?? 'Free').'. Novos eventos serão recusados até upgrade ou renovação mensal.',
+            'body' => 'O workspace atingiu '.$usage.'/'.$limit.' eventos no plano '.($plan?->name ?? 'Free').'. Novos eventos serao recusados ate upgrade ou renovacao mensal.',
             'type' => 'billing',
         ]);
 

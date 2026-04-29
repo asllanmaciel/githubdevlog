@@ -34,26 +34,26 @@
   <div class="devlog-admin-home">
     <section class="home-hero">
       <div class="float-card">
-        <div class="kicker">Admin / Operação</div>
+        <div class="kicker">Admin / Opera��o</div>
         <h1 class="title">Centro de controle do DevLog AI.</h1>
-        <p class="lead">Acompanhe saúde do SaaS, uso, roadmap, suporte e preparação para lançamento em uma visão executiva.</p>
+        <p class="lead">Acompanhe sa�de do SaaS, uso, roadmap, suporte e prepara��o para lan�amento em uma vis�o executiva.</p>
         <div class="quick">
           <a class="primary" href="{{ url('/admin/roadmap') }}">Roadmap visual</a>
           <a href="{{ url('/admin/docs') }}">Docs admin</a>
-          <a href="{{ url('/admin/github-readiness') }}">Prontidão GitHub</a>
+          <a href="{{ url('/admin/github-readiness') }}">Prontid�o GitHub</a>
           <a href="{{ url('/admin/support-tickets') }}">Suporte</a>
         </div>
       </div>
       <div class="float-card">
-        <div class="kicker">Lançamento</div>
+        <div class="kicker">Lan�amento</div>
         <div class="metric-value">{{ $roadmapPercent }}%</div>
-        <div class="metric-label">{{ $roadmapDone }} de {{ $roadmap->count() }} itens concluídos no roadmap</div>
+        <div class="metric-label">{{ $roadmapDone }} de {{ $roadmap->count() }} itens conclu�dos no roadmap</div>
         <div class="bar" style="margin-top:18px"><span style="width:{{ $roadmapPercent }}%"></span></div>
       </div>
     </section>
 
     <section class="metric-grid">
-      <div class="metric"><div class="metric-value">{{ $usersCount }}</div><div class="metric-label">usuários</div></div>
+      <div class="metric"><div class="metric-value">{{ $usersCount }}</div><div class="metric-label">usu�rios</div></div>
       <div class="metric"><div class="metric-value">{{ $workspacesCount }}</div><div class="metric-label">workspaces</div></div>
       <div class="metric"><div class="metric-value">{{ $eventsCount }}</div><div class="metric-label">webhooks recebidos</div></div>
       <div class="metric"><div class="metric-value">{{ $ticketsOpen }}</div><div class="metric-label">chamados abertos</div></div>
@@ -76,10 +76,10 @@
       <aside class="float-card">
         <div class="kicker">Sinais operacionais</div>
         <div class="list">
-          <div class="rowx"><strong>{{ $validEvents }}</strong><br>eventos com assinatura válida</div>
+          <div class="rowx"><strong>{{ $validEvents }}</strong><br>eventos com assinatura v�lida</div>
           <div class="rowx"><strong>{{ $plansCount }}</strong><br>planos comerciais cadastrados</div>
           @forelse($recentTickets as $ticket)
-            <div class="rowx"><strong>{{ $ticket->subject }}</strong><br>{{ $ticket->status }} · {{ $ticket->priority }}</div>
+            <div class="rowx"><strong>{{ $ticket->subject }}</strong><br>{{ $ticket->status }} � {{ $ticket->priority }}</div>
           @empty
             <div class="rowx">Nenhum ticket recente.</div>
           @endforelse
