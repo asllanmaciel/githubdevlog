@@ -22,6 +22,7 @@ use App\Support\SystemHealth;
 use App\Support\SupportSla;
 use App\Support\WebhookSanitizer;
 use App\Support\WorkspaceAccess;
+use App\Support\WorkspaceInviteDelivery;
 use App\Support\WorkspaceUsage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -124,6 +125,22 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
         return view('dashboard', compact('workspace', 'events', 'notifications', 'githubInstallation', 'members', 'invites', 'canManageWorkspace', 'workspaceRole'));
     })->name('dashboard');
 
+
+    Route::post('/invites/{token}/accept', function (string $token) {
+        $invite = WorkspaceInvite::where('token', $token)->with('workspace')->firstOrFail();
+        abort_unless($invite->isAcceptable(), 422, 'Convite indisponivel.');
+        abort_unless(strtolower(Auth::user()->email) === strtolower($invite->email), 403);
+
+        WorkspaceMember::updateOrCreate(
+            ['workspace_id' => $invite->workspace_id, 'user_id' => Auth::id()],
+            ['role' => $invite->role],
+        );
+        $invite->update(['status' => 'accepted', 'accepted_at' => now()]);
+        AuditTrail::record('workspace.invite.accepted', $invite, $invite->workspace, ['email' => $invite->email, 'role' => $invite->role]);
+
+        return redirect()->route('dashboard')->with('status', 'Convite aceito. Workspace vinculado ao seu usuario.');
+    })->name('workspace.invites.accept');
+
     Route::post('/notifications/{notification}/read', function (Notification $notification) {
         $workspace = Auth::user()->workspaces()->firstOrFail();
         abort_unless($notification->workspace_id === $workspace->id, 403);
@@ -152,15 +169,24 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
         ]);
 
         $result = WorkspaceAccess::invite($workspace, Auth::user(), $data['email'], $data['role']);
+        $delivery = null;
+
+        if (($result['status'] ?? null) === 'invite_pending' && isset($result['invite'])) {
+            $delivery = WorkspaceInviteDelivery::send($result['invite']);
+        }
+
         AuditTrail::record('workspace.member.invited', $workspace, $workspace, [
             'email' => strtolower($data['email']),
             'role' => $data['role'],
             'status' => $result['status'],
+            'invite_sent' => $delivery['sent'] ?? null,
         ]);
 
         return redirect()->route('dashboard')->with('status', $result['status'] === 'member_added'
             ? 'Membro adicionado ao workspace.'
-            : 'Convite pendente criado. O usuario sera vinculado quando criar conta com este email.');
+            : (($delivery['sent'] ?? false)
+                ? 'Convite enviado por email e mantido pendente ate o aceite.'
+                : 'Convite pendente criado. Envio de email indisponivel; use o link do convite no painel.'));
     })->name('workspace.members.invite');
 
     Route::post('/workspace/members/{member}/remove', function (WorkspaceMember $member) {

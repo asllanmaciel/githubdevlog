@@ -15,6 +15,8 @@ class WorkspaceInvite extends Model
         'status',
         'accepted_at',
         'expires_at',
+        'sent_at',
+        'delivery_error',
     ];
 
     protected function casts(): array
@@ -22,6 +24,7 @@ class WorkspaceInvite extends Model
         return [
             'accepted_at' => 'datetime',
             'expires_at' => 'datetime',
+            'sent_at' => 'datetime',
         ];
     }
 
@@ -33,5 +36,11 @@ class WorkspaceInvite extends Model
     public function inviter()
     {
         return $this->belongsTo(User::class, 'invited_by');
+    }
+
+    public function isAcceptable(): bool
+    {
+        return $this->status === 'pending'
+            && (! $this->expires_at || $this->expires_at->isFuture());
     }
 }
