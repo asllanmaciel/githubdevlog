@@ -43,6 +43,10 @@ class WorkspaceSubscriptionsTable
                     ->label('Renova em')
                     ->dateTime('d/m/Y H:i')
                     ->sortable(),
+                TextColumn::make('canceled_at')
+                    ->label('Cancelada em')
+                    ->dateTime('d/m/Y H:i')
+                    ->sortable(),
                 TextColumn::make('updated_at')
                     ->label('Atualizada em')
                     ->dateTime('d/m/Y H:i')
@@ -78,7 +82,7 @@ class WorkspaceSubscriptionsTable
                     ->label('Cancelar')
                     ->color('danger')
                     ->requiresConfirmation()
-                    ->action(fn ($record) => $record->update(['status' => 'canceled'])),
+                    ->action(fn ($record) => $record->update(['status' => 'canceled', 'canceled_at' => now(), 'cancel_reason' => 'Cancelado pelo admin'])),
                 EditAction::make(),
             ]);
     }

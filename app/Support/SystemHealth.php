@@ -19,6 +19,7 @@ class SystemHealth
             'billing' => self::billing(),
             'github_webhooks' => self::githubWebhooks(),
             'environment' => self::environment(),
+            'communication' => self::communication(),
         ];
 
         $ok = collect($checks)->every(fn ($check) => $check['ok']);

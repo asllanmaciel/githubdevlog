@@ -20,6 +20,7 @@ use App\Services\MercadoPagoBillingService;
 use App\Support\AuditTrail;
 use App\Support\SystemHealth;
 use App\Support\SupportSla;
+use App\Support\SubscriptionLifecycle;
 use App\Support\WebhookSanitizer;
 use App\Support\WorkspaceAccess;
 use App\Support\WorkspaceInviteDelivery;
@@ -306,6 +307,22 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
 
         return redirect()->away($checkoutUrl);
     })->name('billing.checkout');
+
+
+    Route::post('/billing/subscription/cancel', function (Request $request) {
+        $workspace = Auth::user()->workspaces()->firstOrFail();
+        $data = $request->validate([
+            'reason' => ['nullable', 'string', 'max:240'],
+        ]);
+
+        $subscription = SubscriptionLifecycle::cancel($workspace, Auth::user(), $data['reason'] ?? null);
+
+        if (! $subscription) {
+            return redirect()->route('dashboard')->withErrors(['billing' => 'Nenhuma assinatura encontrada para cancelar.']);
+        }
+
+        return redirect()->route('dashboard')->with('status', 'Assinatura cancelada no painel. Se houver recorrencia externa ativa, revise tambem o Mercado Pago.');
+    })->name('billing.subscription.cancel');
 
     Route::get('/billing/return', function (Request $request) {
         $status = (string) $request->query('status', 'pending');
