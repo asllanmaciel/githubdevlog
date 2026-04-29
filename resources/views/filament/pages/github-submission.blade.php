@@ -14,6 +14,7 @@
     ['group' => 'Legal', 'title' => 'Termos publicados', 'done' => Route::has('terms'), 'detail' => url('/terms')],
     ['group' => 'Produto', 'title' => 'Centro de demo', 'done' => true, 'detail' => url('/admin/demo-center')],
     ['group' => 'Produto', 'title' => 'Gate strict de lancamento', 'done' => true, 'detail' => url('/admin/launch-gate')],
+    ['group' => 'Produto', 'title' => 'Assets de submissao', 'done' => true, 'detail' => url('/admin/submission-assets')],
     ['group' => 'Produto', 'title' => 'Seed demo operacional', 'done' => file_exists(app_path('Console/Commands/DevlogSeedDemo.php')), 'detail' => 'php artisan devlog:seed-demo'],
     ['group' => 'Tecnico', 'title' => 'Readiness acima de 70%', 'done' => $launch['percent'] >= 70, 'detail' => $launch['percent'].'%'],
     ['group' => 'Tecnico', 'title' => 'Seguranca acima de 75%', 'done' => $security['percent'] >= 75, 'detail' => $security['percent'].'%'],
@@ -132,6 +133,7 @@
       <aside class="card">
         <div class="kicker">Comandos antes de gravar demo</div>
         <pre class="cmd">php artisan devlog:seed-demo
+php artisan devlog:seed-submission-assets
 php artisan devlog:preflight --strict
 php artisan optimize:clear</pre>
         <div class="kicker" style="margin-top:18px">URLs para conferir</div>
@@ -139,6 +141,7 @@ php artisan optimize:clear</pre>
 {{ url('/dashboard') }}
 {{ url('/admin/github-readiness') }}
 {{ url('/admin/github-submission') }}
+{{ url('/admin/submission-assets') }}
 {{ url('/admin/launch-gate') }}</pre>
       </aside>
     </section>

@@ -88,3 +88,19 @@ Comecar com o menor escopo possivel:
 - Capturar screenshots recomendados.
 - Mercado Pago sandbox/producao demonstravel.
 - Politica de privacidade e termos publicados.
+## Controle no admin
+
+Para criar o checklist gerenciavel de screenshots e videos:
+
+```bash
+php artisan devlog:seed-submission-assets
+```
+
+Depois acompanhe em:
+
+```text
+/admin/submission-assets
+/admin/launch-tests
+```
+
+Use o campo `evidence` do QA de lancamento para colar links, caminhos locais ou referencias de Drive/Figma/Notion.
