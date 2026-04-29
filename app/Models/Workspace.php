@@ -9,7 +9,12 @@ class Workspace extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['uuid', 'name', 'slug', 'webhook_secret', 'github_app_installation_id'];
+    protected $fillable = ['uuid', 'name', 'slug', 'webhook_secret', 'webhook_secret_rotated_at', 'github_app_installation_id'];
+
+    protected function casts(): array
+    {
+        return ['webhook_secret_rotated_at' => 'datetime'];
+    }
 
     public function members()
     {
@@ -39,5 +44,10 @@ class Workspace extends Model
     public function githubInstallations()
     {
         return $this->hasMany(GithubInstallation::class);
+    }
+
+    public function secretRotations()
+    {
+        return $this->hasMany(SecretRotation::class);
     }
 }

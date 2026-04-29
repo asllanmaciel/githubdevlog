@@ -5,6 +5,7 @@ use App\Models\BillingEvent;
 use App\Models\GithubInstallation;
 use App\Models\Notification;
 use App\Models\RoadmapItem;
+use App\Models\SecretRotation;
 use App\Models\SupportTicket;
 use App\Models\WebhookEvent;
 use App\Models\WebhookEventNote;
@@ -130,7 +131,19 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
 
     Route::post('/workspace/secret/rotate', function () {
         $workspace = Auth::user()->workspaces()->firstOrFail();
-        $workspace->update(['webhook_secret' => 'dlog_'.Str::random(48)]);
+        $workspace->update([
+            'webhook_secret' => 'dlog_'.Str::random(48),
+            'webhook_secret_rotated_at' => now(),
+        ]);
+
+        SecretRotation::create([
+            'workspace_id' => $workspace->id,
+            'user_id' => Auth::id(),
+            'secret_type' => 'workspace_webhook_secret',
+            'rotated_by' => 'user_dashboard',
+            'metadata' => ['workspace' => $workspace->name],
+            'rotated_at' => now(),
+        ]);
 
         return redirect()->route('dashboard')->with('status', 'Secret rotacionado. Atualize o webhook no GitHub.');
     })->name('workspace.secret.rotate');
