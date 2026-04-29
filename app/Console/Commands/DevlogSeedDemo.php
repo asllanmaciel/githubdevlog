@@ -54,6 +54,7 @@ class DevlogSeedDemo extends Command
                 'currency' => 'BRL',
                 'event_retention_days' => 90,
                 'monthly_event_limit' => 25000,
+                'overage_price_cents' => 2,
                 'features' => [
                     'Workspace privado',
                     'Historico de webhooks GitHub',

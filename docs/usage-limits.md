@@ -137,3 +137,22 @@ Acompanhe no admin:
 ```
 
 Esses snapshots servem para suporte, auditoria, relatorios financeiros e futura cobranca por excedente.
+
+## Preview de excedentes
+
+Planos podem definir `overage_price_cents`, o preco por evento excedente.
+
+O admin pode acompanhar a estimativa em:
+
+```text
+/admin/overage-billing
+```
+
+Essa tela usa os snapshots mensais para calcular:
+
+- workspaces com excedente;
+- eventos acima do limite;
+- preco por evento excedente;
+- receita estimada por periodo.
+
+Por enquanto, a tela e um preview financeiro: ela nao dispara cobranca automatica. O proximo passo e gerar cobranca Mercado Pago a partir dos itens marcados como cobraveis.

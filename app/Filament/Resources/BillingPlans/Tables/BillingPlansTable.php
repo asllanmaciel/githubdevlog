@@ -30,6 +30,10 @@ class BillingPlansTable
                 TextColumn::make('monthly_event_limit')
                     ->numeric()
                     ->sortable(),
+                TextColumn::make('overage_price_cents')
+                    ->label('Excedente')
+                    ->money('BRL', divideBy: 100)
+                    ->sortable(),
                 IconColumn::make('active')
                     ->boolean(),
                 TextColumn::make('created_at')

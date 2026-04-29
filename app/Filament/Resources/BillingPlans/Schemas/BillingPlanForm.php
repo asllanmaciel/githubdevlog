@@ -31,6 +31,11 @@ class BillingPlanForm
                     ->required()
                     ->numeric()
                     ->default(1000),
+                TextInput::make('overage_price_cents')
+                    ->label('Preco por excedente (centavos)')
+                    ->required()
+                    ->numeric()
+                    ->default(0),
                 TextInput::make('features'),
                 Toggle::make('active')
                     ->required(),
