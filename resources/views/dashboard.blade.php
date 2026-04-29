@@ -1,4 +1,4 @@
-<x-layout title="Dashboard | GitHub DevLog AI">
+﻿<x-layout title="Dashboard | GitHub DevLog AI">
 @php
     use App\Models\BillingPlan;
     use App\Support\WorkspaceUsage;
@@ -137,7 +137,7 @@
             <div class="summary-cell h-100" style="{{ $notification->read_at ? 'opacity:.72' : 'border-color:rgba(80,184,255,.55)' }}">
               <div class="d-flex justify-content-between gap-2 align-items-start">
                 <div>
-                  <div class="summary-label">{{ $notification->type }} · {{ $notification->created_at?->format('d/m/Y H:i') }}</div>
+                  <div class="summary-label">{{ $notification->type }} Â· {{ $notification->created_at?->format('d/m/Y H:i') }}</div>
                   <div class="summary-value">{{ $notification->title }}</div>
                 </div>
                 <span class="pill">{{ $notification->read_at ? 'Lida' : 'Nova' }}</span>
@@ -316,69 +316,7 @@
         </div>
 
         @forelse ($events as $event)
-          @php
-            $repo = data_get($event->payload, 'repository.full_name', 'Repositorio nao informado');
-            $sender = data_get($event->payload, 'sender.login', data_get($event->payload, 'pusher.name', 'GitHub'));
-            $branch = str_replace('refs/heads/', '', (string) data_get($event->payload, 'ref', '')) ?: 'n/a';
-            $commitCount = is_array(data_get($event->payload, 'commits')) ? count(data_get($event->payload, 'commits')) : 0;
-            $files = collect(data_get($event->payload, 'head_commit.modified', []))->merge(data_get($event->payload, 'head_commit.added', []))->merge(data_get($event->payload, 'head_commit.removed', []))->take(8);
-          @endphp
-          <article class="event-card">
-            <div class="event-top">
-              <div class="event-type">
-                <div class="event-icon">{{ strtoupper(substr($event->event_name, 0, 2)) }}</div>
-                <div>
-                  <div class="event-title">{{ $event->event_name }}</div>
-                  <div class="event-subtitle">{{ $event->source }} - {{ $event->validation_method }} - {{ $event->received_at?->format('d/m/Y H:i:s') }}</div>
-                </div>
-              </div>
-              <div class="text-end">
-                <span class="pill {{ $event->signature_valid ? 'status-ok' : 'status-warn' }}">{{ $event->signature_valid ? 'Assinatura valida' : 'Assinatura invalida' }}</span>
-                @if ($event->delivery_id)
-                  <div class="muted mt-1">delivery: {{ $event->delivery_id }}</div>
-                @endif
-              </div>
-            </div>
-
-            <div class="event-summary">
-              <div class="summary-cell"><div class="summary-label">Repositorio</div><div class="summary-value">{{ $repo }}</div></div>
-              <div class="summary-cell"><div class="summary-label">Sender</div><div class="summary-value">{{ $sender }}</div></div>
-              <div class="summary-cell"><div class="summary-label">Branch / commits</div><div class="summary-value">{{ $branch }} - {{ $commitCount }} commit(s)</div></div>
-            </div>
-
-            @if ($files->isNotEmpty())
-              <div class="summary-label">Arquivos tocados</div>
-              <div class="file-list">
-                @foreach ($files as $file)
-                  <span class="file-chip">{{ $file }}</span>
-                @endforeach
-              </div>
-            @endif
-
-            <div class="row g-2 mt-3">
-              <div class="col-md-6">
-                <form method="POST" action="{{ route('events.notes.store', $event) }}">
-                  @csrf
-                  <label>Nota interna</label>
-                  <textarea name="body" rows="3" placeholder="Ex.: investigar payload antes de liberar automacao"></textarea>
-                  <button class="btnx w-100 mt-2" type="submit">Adicionar nota</button>
-                </form>
-              </div>
-              <div class="col-md-6">
-                <form method="POST" action="{{ route('events.tasks.store', $event) }}">
-                  @csrf
-                  <label>Criar tarefa</label>
-                  <input name="title" placeholder="Ex.: validar assinatura no ambiente de producao">
-                  <button class="btnx w-100 mt-2" type="submit">Criar tarefa</button>
-                </form>
-              </div>
-            </div>
-
-            <details class="payload">
-              <summary>Ver payload sanitizado</summary>
-              <pre>{{ json_encode($event->payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) }}</pre>
-            </details>
-          </article>
+          <x-webhook-event-card :event="$event" />
         @empty
           <div class="cardx">
             <div class="kicker">Primeiro uso</div>
@@ -410,4 +348,20 @@
     </section>
   </main>
 @endif
+<script>
+  document.querySelectorAll('.filter-chip').forEach((button) => {
+    button.addEventListener('click', () => {
+      const filter = button.dataset.filter;
+      document.querySelectorAll('.filter-chip').forEach((item) => item.classList.remove('active'));
+      button.classList.add('active');
+      document.querySelectorAll('.event-card').forEach((card) => {
+        const show = filter === 'all'
+          || (filter === 'valid' && card.dataset.signature === 'valid')
+          || (filter === 'pending' && card.dataset.signature === 'pending')
+          || (filter.startsWith('type:') && card.dataset.eventType === filter.slice(5));
+        card.style.display = show ? '' : 'none';
+      });
+    });
+  });
+</script>
 </x-layout>

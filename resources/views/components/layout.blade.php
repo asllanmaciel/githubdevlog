@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
@@ -159,6 +159,28 @@
       .event-summary { grid-template-columns:1fr; }
       .control-strip { grid-template-columns:1fr; }
     }
+      .event-control-panel { position:relative; overflow:hidden; }
+    .event-filters { display:flex; gap:8px; flex-wrap:wrap; margin-top:18px; }
+    .filter-chip { border:1px solid var(--line); background:#0c141d; color:var(--muted); border-radius:999px; padding:8px 12px; font-weight:850; }
+    .filter-chip.active, .filter-chip:hover { color:#071018; background:var(--green); border-color:var(--green); }
+    .event-card { border-left:4px solid var(--blue); }
+    .event-topline { display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-bottom:14px; }
+    .event-name { font-size:20px; letter-spacing:-.02em; }
+    .pill.success { background:rgba(105,227,154,.14); color:var(--green); border-color:rgba(105,227,154,.38); }
+    .pill.warning { background:rgba(255,209,102,.12); color:var(--yellow); border-color:rgba(255,209,102,.38); }
+    .pill.soft { background:rgba(80,184,255,.1); color:#a8d7ff; }
+    .event-insights { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:10px; margin:14px 0; }
+    .insight { border:1px solid var(--line); border-radius:8px; background:#0b121a; padding:12px; }
+    .insight span { display:block; color:var(--muted); font-size:12px; margin-bottom:4px; }
+    .insight strong { font-size:16px; }
+    .event-diagnostic { border:1px solid rgba(80,184,255,.28); background:rgba(80,184,255,.08); border-radius:8px; padding:12px; display:flex; gap:10px; flex-wrap:wrap; }
+    .event-diagnostic span { color:var(--muted); }
+    .file-strip { display:flex; gap:8px; flex-wrap:wrap; margin:12px 0; }
+    .file-strip code { border:1px solid var(--line); border-radius:999px; background:#081018; padding:6px 9px; color:#b7e4ff; }
+    .event-actions-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px; }
+    .mini-panel { border:1px solid var(--line); border-radius:8px; background:#0b121a; padding:12px; }
+    .mini-panel p { color:var(--muted); margin:8px 0; }
+    @media (max-width: 900px) { .event-insights, .event-actions-grid { grid-template-columns:1fr; } }
   </style>
 </head>
 <body>
@@ -171,7 +193,7 @@
       <nav class="nav" aria-label="Menu principal">
         <a class="btnx" href="{{ route('home') }}#produto">Produto</a>
         <a class="btnx" href="{{ route('home') }}#uso">Como usar</a>
-        <a class="btnx" href="{{ route('home') }}#Segurança</a>
+        <a class="btnx" href="{{ route('home') }}#SeguranÃ§a</a>
         @auth
           @if(Auth::user()->is_super_admin)
             <a class="btnx primary" href="{{ url('/admin') }}">Admin</a>
@@ -203,4 +225,5 @@
   </div>
 </body>
 </html>
+
 
