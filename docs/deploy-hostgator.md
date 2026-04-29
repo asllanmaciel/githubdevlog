@@ -168,3 +168,12 @@ O modo `--strict` reprova quando existir qualquer bloqueador obrigatorio, mesmo 
 - Manter pacote anterior publicado.
 - Se falhar, restaurar arquivos anteriores e backup do banco.
 - Rodar `php artisan optimize:clear`.
+## 11. Demo e staging
+
+Para montar um cenario de apresentacao em ambiente local ou staging, rode:
+
+```bash
+php artisan devlog:seed-demo
+```
+
+Use `php artisan devlog:seed-demo --fresh` apenas quando quiser recriar a demo do zero. Evite rodar o modo fresh em producao com usuarios reais.
