@@ -102,3 +102,38 @@ Tipos de notificacao criados:
 - `usage_limit_reached`
 
 As notificacoes sao deduplicadas por workspace, tipo e mes, evitando spam para o usuario.
+## Snapshots mensais
+
+O sistema gera historico mensal de uso por workspace em `workspace_usage_snapshots`.
+
+Comando manual:
+
+```bash
+php artisan devlog:snapshot-usage
+```
+
+Para capturar um periodo especifico:
+
+```bash
+php artisan devlog:snapshot-usage --period=2026-04
+```
+
+Para automacao:
+
+```bash
+php artisan devlog:snapshot-usage --json
+```
+
+O scheduler executa diariamente as 23:50:
+
+```php
+Schedule::command('devlog:snapshot-usage')->dailyAt('23:50');
+```
+
+Acompanhe no admin:
+
+```text
+/admin/workspace-usage-snapshots
+```
+
+Esses snapshots servem para suporte, auditoria, relatorios financeiros e futura cobranca por excedente.

@@ -9,3 +9,5 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('devlog:check-usage-limits')->hourly();
+
+Schedule::command('devlog:snapshot-usage')->dailyAt('23:50');

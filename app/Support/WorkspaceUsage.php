@@ -5,6 +5,7 @@ namespace App\Support;
 use App\Models\BillingPlan;
 use App\Models\Notification;
 use App\Models\Workspace;
+use App\Models\WorkspaceUsageSnapshot;
 
 class WorkspaceUsage
 {
@@ -78,6 +79,36 @@ class WorkspaceUsage
             ],
             [
                 'body' => 'O workspace atingiu '.$report['usage'].'/'.$report['limit'].' eventos no plano '.($plan?->name ?? 'Free').'. Novos eventos serao recusados ate upgrade ou renovacao mensal.',
+            ]
+        );
+    }
+
+    public static function snapshot(Workspace $workspace, ?string $period = null): WorkspaceUsageSnapshot
+    {
+        $periodDate = $period
+            ? now()->createFromFormat('Y-m', $period)->startOfMonth()
+            : now()->startOfMonth();
+        $periodKey = $periodDate->format('Y-m');
+        $periodStart = $periodDate->copy()->startOfMonth();
+        $periodEnd = $periodDate->copy()->endOfMonth();
+        $plan = self::plan($workspace);
+        $limit = self::limit($workspace);
+        $eventsCount = $workspace->webhookEvents()
+            ->whereBetween('received_at', [$periodStart, $periodEnd])
+            ->count();
+        $usagePercent = min(100, (int) round(($eventsCount / max($limit, 1)) * 100));
+
+        return WorkspaceUsageSnapshot::updateOrCreate(
+            ['workspace_id' => $workspace->id, 'period' => $periodKey],
+            [
+                'billing_plan_id' => $plan?->id,
+                'events_count' => $eventsCount,
+                'monthly_limit' => $limit,
+                'usage_percent' => $usagePercent,
+                'overage_count' => max($eventsCount - $limit, 0),
+                'period_started_at' => $periodStart,
+                'period_ended_at' => $periodEnd,
+                'captured_at' => now(),
             ]
         );
     }

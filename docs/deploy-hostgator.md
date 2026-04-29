@@ -184,3 +184,10 @@ php artisan devlog:check-usage-limits
 ```
 
 Esse comando cria alertas preventivos de uso em 80%, 95% e 100% do limite mensal do plano.
+O scheduler tambem gera snapshots mensais de uso:
+
+```bash
+php artisan devlog:snapshot-usage
+```
+
+Esses snapshots alimentam auditoria financeira e historico de consumo por workspace.
