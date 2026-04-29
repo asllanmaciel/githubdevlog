@@ -1,13 +1,15 @@
 @php
   use App\Support\LaunchReadiness;
+  use App\Support\ProductionEnvironment;
   use App\Support\SecurityPosture;
   use App\Support\SystemHealth;
 
   $health = SystemHealth::report();
   $security = SecurityPosture::report();
   $launch = LaunchReadiness::report();
+  $production = ProductionEnvironment::report();
   $blockers = $launch['blockers'];
-  $strictReady = $health['ok'] && $security['percent'] >= 75 && $launch['percent'] >= 70 && $blockers->isEmpty();
+  $strictReady = $health['ok'] && $security['percent'] >= 75 && $launch['percent'] >= 70 && $blockers->isEmpty() && $production['ready'];
 @endphp
 
 <x-filament-panels::page>
@@ -16,7 +18,7 @@
     .hero,.card{border:1px solid var(--line);border-radius:18px;background:rgba(16,23,32,.88);padding:20px;box-shadow:0 22px 60px rgba(0,0,0,.18)}
     .hero{margin-bottom:16px;position:relative;overflow:hidden}.hero:before{content:"";position:absolute;inset:-80px auto auto 55%;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(80,184,255,.22),transparent 64%)}
     .kicker{color:var(--blue);font-size:12px;text-transform:uppercase;letter-spacing:.14em;font-weight:950;margin-bottom:10px}.title{font-size:clamp(34px,5vw,62px);line-height:.94;letter-spacing:-.06em;font-weight:950;margin:0;color:var(--ink);position:relative}.lead{color:var(--muted);font-size:16px;line-height:1.65;margin:14px 0 0;max-width:820px;position:relative}
-    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px}.two{display:grid;grid-template-columns:1fr 420px;gap:16px}.metric{font-size:42px;font-weight:950;letter-spacing:-.05em}.muted{color:var(--muted);font-size:13px}.ok{color:var(--green)}.bad{color:var(--danger)}.warn{color:var(--yellow)}
+    .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px}.two{display:grid;grid-template-columns:1fr 420px;gap:16px}.metric{font-size:42px;font-weight:950;letter-spacing:-.05em}.muted{color:var(--muted);font-size:13px}.ok{color:var(--green)}.bad{color:var(--danger)}.warn{color:var(--yellow)}
     .status{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:8px 12px;font-weight:900}.status.ready{background:rgba(105,227,154,.1);border-color:rgba(105,227,154,.45);color:var(--green)}.status.blocked{background:rgba(255,107,107,.1);border-color:rgba(255,107,107,.45);color:var(--danger)}
     .blocker,.check{border:1px solid var(--line);border-radius:14px;background:#0b1118;padding:14px;margin-bottom:10px}.blocker{border-color:rgba(255,107,107,.35)}.blocker strong,.check strong{display:block;margin-bottom:4px}.cmd{border:1px solid var(--line);border-radius:14px;background:#050a10;color:#b7e4ff;padding:14px;white-space:pre-wrap;overflow:auto}.group{margin-bottom:18px}.group h3{font-size:18px;font-weight:950;margin:0 0 10px}.check.done{border-color:rgba(105,227,154,.35);background:rgba(105,227,154,.06)}
     @media(max-width:1100px){.grid,.two{grid-template-columns:1fr}}
@@ -36,6 +38,7 @@
       <div class="card"><div class="kicker">Saude</div><div class="metric {{ $health['ok'] ? 'ok' : 'bad' }}">{{ $health['ok'] ? 'OK' : '!' }}</div><div class="muted">Banco, cache, rotas e storage.</div></div>
       <div class="card"><div class="kicker">Seguranca</div><div class="metric {{ $security['percent'] >= 75 ? 'ok' : 'warn' }}">{{ $security['percent'] }}%</div><div class="muted">Minimo recomendado para deploy: 75%.</div></div>
       <div class="card"><div class="kicker">Readiness</div><div class="metric {{ $launch['percent'] >= 70 ? 'ok' : 'warn' }}">{{ $launch['percent'] }}%</div><div class="muted">{{ $blockers->count() }} bloqueador(es) obrigatorio(s).</div></div>
+      <div class="card"><div class="kicker">Producao</div><div class="metric {{ $production['ready'] ? 'ok' : 'warn' }}">{{ $production['percent'] }}%</div><div class="muted">{{ $production['required_pending']->count() }} pendencia(s) obrigatoria(s).</div></div>
     </section>
 
     <section class="two">
@@ -45,6 +48,13 @@
           <div class="blocker"><strong>{{ $blocker['title'] }}</strong><span class="muted">{{ $blocker['detail'] }}</span></div>
         @empty
           <div class="check done"><strong>Nenhum bloqueador ativo</strong><span class="muted">O projeto pode avancar para validacao final de release.</span></div>
+        @endforelse
+
+        <div class="kicker" style="margin-top:18px">Pendencias de producao</div>
+        @forelse ($production['required_pending'] as $pending)
+          <div class="blocker"><strong>{{ $pending['title'] }}</strong><span class="muted">{{ $pending['detail'] }}</span></div>
+        @empty
+          <div class="check done"><strong>Ambiente de producao sem pendencias obrigatorias</strong><span class="muted">As configuracoes criticas estao prontas para release.</span></div>
         @endforelse
 
         <div class="kicker" style="margin-top:18px">Checklist por area</div>

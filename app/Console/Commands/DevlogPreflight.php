@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Support\LaunchReadiness;
+use App\Support\ProductionEnvironment;
 use App\Support\SecurityPosture;
 use App\Support\SystemHealth;
 use Illuminate\Console\Command;
@@ -22,16 +23,18 @@ class DevlogPreflight extends Command
         $health = SystemHealth::report();
         $security = SecurityPosture::report();
         $launch = LaunchReadiness::report();
+        $production = ProductionEnvironment::report();
 
         $minSecurity = (int) $this->option('min-security');
         $minLaunch = (int) $this->option('min-launch');
         $strict = (bool) $this->option('strict');
         $hasBlockers = $launch['blockers']->isNotEmpty();
+        $hasProductionPending = ! $production['ready'];
 
         $ok = $health['ok']
             && $security['percent'] >= $minSecurity
             && $launch['percent'] >= $minLaunch
-            && (! $strict || ! $hasBlockers);
+            && (! $strict || (! $hasBlockers && ! $hasProductionPending));
 
         $payload = [
             'ok' => $ok,
@@ -39,13 +42,16 @@ class DevlogPreflight extends Command
             'min_security' => $minSecurity,
             'min_launch' => $minLaunch,
             'has_blockers' => $hasBlockers,
+            'has_production_pending' => $hasProductionPending,
             'health_ok' => $health['ok'],
             'security_percent' => $security['percent'],
             'launch_percent' => $launch['percent'],
+            'production_percent' => $production['percent'],
             'checked_at' => now()->toIso8601String(),
             'health' => $health['checks'],
             'security' => $security['checks']->values(),
             'launch_blockers' => $launch['blockers']->values(),
+            'production_pending' => $production['required_pending']->values(),
         ];
 
         if ($this->option('json')) {
@@ -59,6 +65,7 @@ class DevlogPreflight extends Command
         $this->line('Health: '.($health['ok'] ? 'OK' : 'ATENCAO'));
         $this->line('Seguranca: '.$security['percent'].'% (minimo '.$minSecurity.'%)');
         $this->line('Lancamento: '.$launch['percent'].'% (minimo '.$minLaunch.'%)');
+        $this->line('Ambiente producao: '.$production['percent'].'%');
         $this->newLine();
 
         $this->line('Checks de saude:');
@@ -71,6 +78,14 @@ class DevlogPreflight extends Command
             $this->warn('Bloqueadores de lancamento:');
             foreach ($launch['blockers'] as $blocker) {
                 $this->line(' - '.$blocker['title'].' ('.$blocker['detail'].')');
+            }
+        }
+
+        if ($production['required_pending']->isNotEmpty()) {
+            $this->newLine();
+            $this->warn('Pendencias obrigatorias de producao:');
+            foreach ($production['required_pending'] as $pending) {
+                $this->line(' - '.$pending['title'].' ('.$pending['detail'].')');
             }
         }
 
