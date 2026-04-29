@@ -40,4 +40,16 @@ return [
         'public_key' => env('MERCADO_PAGO_PUBLIC_KEY'),
         'webhook_secret' => env('MERCADO_PAGO_WEBHOOK_SECRET'),
     ],
+
+    'github_app' => [
+        'name' => env('GITHUB_APP_NAME', 'GitHub DevLog AI'),
+        'app_id' => env('GITHUB_APP_ID'),
+        'client_id' => env('GITHUB_APP_CLIENT_ID'),
+        'client_secret' => env('GITHUB_APP_CLIENT_SECRET'),
+        'webhook_secret' => env('GITHUB_APP_WEBHOOK_SECRET'),
+        'private_key_path' => env('GITHUB_APP_PRIVATE_KEY_PATH'),
+        'callback_url' => env('GITHUB_APP_CALLBACK_URL'),
+        'setup_url' => env('GITHUB_APP_SETUP_URL'),
+        'webhook_url' => env('GITHUB_APP_WEBHOOK_URL'),
+    ],
 ];

@@ -40,6 +40,7 @@
         <div class="quick">
           <a class="primary" href="{{ url('/admin/roadmap') }}">Roadmap visual</a>
           <a href="{{ url('/admin/docs') }}">Docs admin</a>
+          <a href="{{ url('/admin/github-readiness') }}">Prontidão GitHub</a>
           <a href="{{ url('/admin/support-tickets') }}">Suporte</a>
         </div>
       </div>
