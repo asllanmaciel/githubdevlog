@@ -144,3 +144,7 @@ Substituir pelas URLs finais de producao:
 - Webhook real validado.
 - Mercado Pago em producao ou sandbox demonstravel.
 
+
+## Evidencias e screenshots
+
+Ver tambem: docs/github-submission-evidence.md.
