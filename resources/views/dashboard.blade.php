@@ -3,6 +3,8 @@
     use App\Models\BillingPlan;
 
     $endpoint = $workspace ? url('/webhooks/github/'.$workspace->uuid) : null;
+    $availablePlans = BillingPlan::where('active', true)->orderBy('price_cents')->get();
+    $mercadoPagoStatus = app(\App\Services\MercadoPagoBillingService::class)->checkoutStatus();
     $totalEvents = $events->count();
     $validEvents = $events->where('signature_valid', true)->count();
     $invalidEvents = $events->where('signature_valid', false)->count();
@@ -124,6 +126,36 @@
         </div>
       </section>
     @endif
+
+    <section class="cardx mb-3">
+      <div class="d-flex justify-content-between gap-3 flex-wrap align-items-start">
+        <div>
+          <div class="kicker">Planos e billing</div>
+          <h2 class="h4 mt-2 mb-1">Upgrade via Mercado Pago</h2>
+          <p class="muted mb-0">Ambiente: {{ $mercadoPagoStatus['environment'] }} - SDK: {{ $mercadoPagoStatus['sdk'] }} - Configurado: {{ $mercadoPagoStatus['configured'] ? 'sim' : 'nao' }}</p>
+        </div>
+        <span class="pill">Plano atual: {{ $planName }}</span>
+      </div>
+      <div class="row g-2 mt-2">
+        @foreach ($availablePlans as $availablePlan)
+          <div class="col-md-4">
+            <div class="summary-cell h-100">
+              <div class="summary-label">{{ $availablePlan->name }}</div>
+              <div class="summary-value">R$ {{ number_format($availablePlan->price_cents / 100, 2, ',', '.') }}/mes</div>
+              <div class="muted mt-1">{{ number_format($availablePlan->monthly_event_limit, 0, ',', '.') }} eventos/mes - retencao {{ $availablePlan->event_retention_days }} dias</div>
+              @if ($availablePlan->price_cents > 0)
+                <form method="POST" action="{{ route('billing.checkout', $availablePlan) }}" class="mt-2">
+                  @csrf
+                  <button class="btnx primary w-100" type="submit">Assinar plano</button>
+                </form>
+              @else
+                <span class="pill mt-2">Plano gratuito</span>
+              @endif
+            </div>
+          </div>
+        @endforeach
+      </div>
+    </section>
 
     <section class="dashboard-grid">
       <aside id="setup" class="config-card">

@@ -9,6 +9,8 @@ use App\Models\WebhookEvent;
 use App\Models\WebhookEventNote;
 use App\Models\WebhookEventTask;
 use App\Models\Workspace;
+use App\Models\WorkspaceSubscription;
+use App\Services\MercadoPagoBillingService;
 use App\Support\WebhookSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -126,6 +128,64 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
 
         return redirect()->route('dashboard')->with('status', 'Evento de teste salvo no workspace.');
     })->name('dashboard.test-event');
+
+    Route::post('/billing/checkout/{plan}', function (BillingPlan $plan, MercadoPagoBillingService $billing) {
+        $workspace = Auth::user()->workspaces()->firstOrFail();
+
+        if (! $plan->active || $plan->price_cents <= 0) {
+            return redirect()->route('dashboard')->withErrors([
+                'billing' => 'Plano indisponivel para checkout.',
+            ]);
+        }
+
+        try {
+            $preference = $billing->createCheckoutPreference($workspace, $plan, Auth::user()->email);
+            $checkoutUrl = $billing->checkoutUrl($preference);
+        } catch (\Throwable $exception) {
+            return redirect()->route('dashboard')->withErrors([
+                'billing' => $exception->getMessage(),
+            ]);
+        }
+
+        if (! $checkoutUrl) {
+            return redirect()->route('dashboard')->withErrors([
+                'billing' => 'Mercado Pago nao retornou URL de checkout.',
+            ]);
+        }
+
+        WorkspaceSubscription::updateOrCreate(
+            ['workspace_id' => $workspace->id],
+            [
+                'billing_plan_id' => $plan->id,
+                'provider' => 'mercado_pago',
+                'provider_reference' => $preference->id ?? null,
+                'status' => 'pending',
+                'trial_ends_at' => null,
+                'current_period_ends_at' => now()->addMonth(),
+            ],
+        );
+
+        Notification::create([
+            'workspace_id' => $workspace->id,
+            'user_id' => Auth::id(),
+            'title' => 'Checkout Mercado Pago iniciado',
+            'body' => 'Preferencia '.($preference->id ?? 'sem-id').' criada para o plano '.$plan->name.'.',
+            'type' => 'billing',
+        ]);
+
+        return redirect()->away($checkoutUrl);
+    })->name('billing.checkout');
+
+    Route::get('/billing/return', function (Request $request) {
+        $status = (string) $request->query('status', 'pending');
+
+        return redirect()->route('dashboard')->with(
+            'status',
+            $status === 'success'
+                ? 'Pagamento recebido pelo Mercado Pago. A assinatura sera confirmada pelo webhook.'
+                : 'Retorno Mercado Pago: '.$status.'. Vamos aguardar a confirmacao do webhook.'
+        );
+    })->name('billing.return');
 
     Route::get('/github/install', function (Request $request) {
         $workspace = Auth::user()->workspaces()->firstOrFail();
@@ -368,4 +428,43 @@ Route::post('/webhooks/github-app', function (Request $request) use ($workspaceP
 
     return response()->json(['ok' => true, 'id' => $event->id]);
 })->name('webhooks.github-app');
+
+Route::post('/webhooks/mercado-pago', function (Request $request) {
+    $payload = $request->all();
+    $preferenceId = (string) (
+        data_get($payload, 'data.id')
+        ?? data_get($payload, 'id')
+        ?? data_get($payload, 'preference_id')
+        ?? ''
+    );
+    $eventType = (string) ($request->query('type') ?? data_get($payload, 'type') ?? data_get($payload, 'topic') ?? 'mercado_pago');
+    $status = (string) (data_get($payload, 'status') ?? data_get($payload, 'action') ?? 'received');
+
+    if ($preferenceId === '') {
+        return response()->json(['ok' => true, 'message' => 'Evento Mercado Pago recebido sem referencia direta.']);
+    }
+
+    $subscription = WorkspaceSubscription::where('provider', 'mercado_pago')
+        ->where('provider_reference', $preferenceId)
+        ->first();
+
+    if (! $subscription) {
+        return response()->json(['ok' => true, 'message' => 'Referencia Mercado Pago ainda nao associada a assinatura.']);
+    }
+
+    $approved = str_contains($status, 'approved') || str_contains($status, 'paid') || str_contains($status, 'created');
+    $subscription->update([
+        'status' => $approved ? 'active' : 'pending',
+        'current_period_ends_at' => $approved ? now()->addMonth() : $subscription->current_period_ends_at,
+    ]);
+
+    Notification::create([
+        'workspace_id' => $subscription->workspace_id,
+        'title' => 'Webhook Mercado Pago recebido',
+        'body' => 'Evento '.$eventType.' para referencia '.$preferenceId.' com status '.$status.'.',
+        'type' => 'billing',
+    ]);
+
+    return response()->json(['ok' => true]);
+})->name('webhooks.mercado-pago');
 

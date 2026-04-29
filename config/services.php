@@ -36,8 +36,13 @@ return [
     ],
 
     'mercado_pago' => [
-        'access_token' => env('MERCADO_PAGO_ACCESS_TOKEN'),
-        'public_key' => env('MERCADO_PAGO_PUBLIC_KEY'),
+        'environment' => env('MERCADO_PAGO_ENVIRONMENT', 'sandbox'),
+        'access_token' => env('MERCADO_PAGO_ENVIRONMENT', 'sandbox') === 'production'
+            ? env('MERCADO_PAGO_PRODUCTION_ACCESS_TOKEN', env('MERCADO_PAGO_ACCESS_TOKEN'))
+            : env('MERCADO_PAGO_SANDBOX_ACCESS_TOKEN', env('MERCADO_PAGO_ACCESS_TOKEN')),
+        'public_key' => env('MERCADO_PAGO_ENVIRONMENT', 'sandbox') === 'production'
+            ? env('MERCADO_PAGO_PRODUCTION_PUBLIC_KEY', env('MERCADO_PAGO_PUBLIC_KEY'))
+            : env('MERCADO_PAGO_SANDBOX_PUBLIC_KEY', env('MERCADO_PAGO_PUBLIC_KEY')),
         'webhook_secret' => env('MERCADO_PAGO_WEBHOOK_SECRET'),
     ],
 
