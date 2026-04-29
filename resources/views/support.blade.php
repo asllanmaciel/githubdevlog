@@ -1,19 +1,34 @@
-<x-layout title="Suporte - GitHub DevLog AI">
+﻿<x-layout title="Suporte - GitHub DevLog AI">
   <section class="dashboard-hero">
     <div class="cardx">
       <div class="kicker">Suporte</div>
       <h1 class="dashboard-title">Abra um chamado com contexto tecnico suficiente para resolver rapido.</h1>
-      <p class="lead mt-3 mb-0">Informe repositorio, evento, delivery id, horario aproximado e o que voce esperava ver. Isso ajuda o suporte a diagnosticar webhook, assinatura, billing ou GitHub App sem pedir tudo de novo.</p>
+      <p class="lead mt-3 mb-0">Informe repositorio, evento, delivery id, horario aproximado e o que voce esperava ver. O chamado entra com SLA por prioridade para o time responder sem perder contexto.</p>
       <div class="control-strip mt-4">
-        <div class="control-card"><div class="control-label">Webhook nao chegou</div><div class="control-value">URL, evento e horario</div></div>
-        <div class="control-card"><div class="control-label">Assinatura invalida</div><div class="control-value">Secret e delivery id</div></div>
-        <div class="control-card"><div class="control-label">Billing</div><div class="control-value">Plano e referencia MP</div></div>
+        <div class="control-card"><div class="control-label">Normal</div><div class="control-value">1a resposta em ate 12h</div></div>
+        <div class="control-card"><div class="control-label">Alta</div><div class="control-value">1a resposta em ate 6h</div></div>
+        <div class="control-card"><div class="control-label">Urgente</div><div class="control-value">1a resposta em ate 2h</div></div>
       </div>
     </div>
     <form class="cardx" method="POST" action="{{ route('support.store') }}">
       @csrf
       <label>Assunto</label>
       <input name="subject" required placeholder="Ex: webhook push nao aparece no painel">
+      <label class="mt-3">Categoria</label>
+      <select name="category" required>
+        <option value="technical">Webhooks e integracoes</option>
+        <option value="github_app">GitHub App</option>
+        <option value="billing">Billing e planos</option>
+        <option value="account">Conta e acesso</option>
+        <option value="security">Seguranca</option>
+      </select>
+      <label class="mt-3">Prioridade</label>
+      <select name="priority" required>
+        <option value="normal">Normal</option>
+        <option value="high">Alta</option>
+        <option value="urgent">Urgente</option>
+        <option value="low">Baixa</option>
+      </select>
       <label class="mt-3">Mensagem</label>
       <textarea name="message" rows="10" required placeholder="Descreva: repositorio, evento, delivery id, horario, URL configurada, resposta do GitHub/Mercado Pago e o resultado esperado."></textarea>
       <button class="btnx primary w-100 mt-3" type="submit">Abrir chamado</button>

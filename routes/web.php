@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 use App\Models\BillingPlan;
 use App\Models\BillingEvent;
@@ -15,7 +15,9 @@ use App\Models\WebhookEventTask;
 use App\Models\Workspace;
 use App\Models\WorkspaceSubscription;
 use App\Services\MercadoPagoBillingService;
+use App\Support\AuditTrail;
 use App\Support\SystemHealth;
+use App\Support\SupportSla;
 use App\Support\WebhookSanitizer;
 use App\Support\WorkspaceUsage;
 use Illuminate\Http\Request;
@@ -230,7 +232,7 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
 
         if (! filled($setupUrl) || str_contains($setupUrl, 'your-github-app-slug')) {
             return redirect()->route('dashboard')->withErrors([
-                'github' => 'Configure GITHUB_APP_SETUP_URL com a URL oficial de instalaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o do GitHub App.',
+                'github' => 'Configure GITHUB_APP_SETUP_URL com a URL oficial de instalaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o do GitHub App.',
             ]);
         }
 
@@ -252,13 +254,13 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
 
         if ($sessionWorkspaceId !== $workspace->id || $sessionState === '' || ! hash_equals($sessionState, $state)) {
             return redirect()->route('dashboard')->withErrors([
-                'github' => 'NÃƒÆ’Ã‚Â£o foi possÃƒÆ’Ã‚Â­vel validar o retorno da instalaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o GitHub. Tente iniciar a instalaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o novamente.',
+                'github' => 'NÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o foi possÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­vel validar o retorno da instalaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o GitHub. Tente iniciar a instalaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o novamente.',
             ]);
         }
 
         if ($installationId === '') {
             return redirect()->route('dashboard')->withErrors([
-                'github' => 'O GitHub nÃƒÆ’Ã‚Â£o retornou installation_id. Confirme se a instalaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o foi concluÃƒÆ’Ã‚Â­da.',
+                'github' => 'O GitHub nÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o retornou installation_id. Confirme se a instalaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o foi concluÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­da.',
             ]);
         }
 
@@ -278,7 +280,7 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
         Notification::create([
             'workspace_id' => $workspace->id,
             'title' => 'GitHub App instalado',
-            'body' => 'A instalaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o '.$installationId.' foi vinculada ao workspace.',
+            'body' => 'A instalaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o '.$installationId.' foi vinculada ao workspace.',
             'type' => 'github',
         ]);
 
@@ -325,11 +327,27 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
 
     Route::post('/support', function (Request $request) {
         $workspace = Auth::user()->workspaces()->first();
-        $data = $request->validate(['subject' => ['required', 'string', 'max:160'], 'message' => ['required', 'string', 'max:4000']]);
-        $ticket = SupportTicket::create([...$data, 'workspace_id' => $workspace?->id, 'user_id' => Auth::id(), 'priority' => 'normal']);
-        AuditTrail::record('support.ticket.created', $ticket, $workspace, ['subject' => $ticket->subject]);
+        $data = $request->validate([
+            'subject' => ['required', 'string', 'max:160'],
+            'category' => ['required', 'string', 'in:technical,billing,github_app,account,security'],
+            'priority' => ['required', 'string', 'in:low,normal,high,urgent'],
+            'message' => ['required', 'string', 'max:4000'],
+        ]);
+        $sla = SupportSla::apply($data['priority']);
+        $ticket = SupportTicket::create([
+            ...$data,
+            ...$sla,
+            'workspace_id' => $workspace?->id,
+            'user_id' => Auth::id(),
+            'status' => 'open',
+        ]);
+        AuditTrail::record('support.ticket.created', $ticket, $workspace, [
+            'subject' => $ticket->subject,
+            'category' => $ticket->category,
+            'priority' => $ticket->priority,
+        ]);
 
-        return redirect()->route('support')->with('status', 'Chamado aberto. Vamos acompanhar pelo painel admin.');
+        return redirect()->route('support')->with('status', 'Chamado aberto com SLA de primeira resposta. Vamos acompanhar pelo painel admin.');
     })->name('support.store');
 
     Route::get('/admin-roadmap', function () {
@@ -696,4 +714,5 @@ Route::post('/webhooks/mercado-pago', function (Request $request, MercadoPagoBil
         'billing_event_id' => $billingEvent->id,
     ]);
 })->name('webhooks.mercado-pago');
+
 
