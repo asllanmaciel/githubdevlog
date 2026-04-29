@@ -50,6 +50,7 @@
         <p class="lead">Acompanhe saude do SaaS, uso, cobranca, roadmap, suporte e preparo para lancamento em uma visao executiva.</p>
         <div class="quick">
           <a class="primary" href="{{ url('/admin/roadmap') }}">Roadmap visual</a>
+          <a href="{{ url('/admin/launch-center') }}">Centro de lancamento</a>
           <a href="{{ url('/admin/docs') }}">Docs admin</a>
           <a href="{{ url('/admin/github-readiness') }}">Prontidao GitHub</a>
           <a href="{{ url('/admin/support-tickets') }}">Suporte</a>
