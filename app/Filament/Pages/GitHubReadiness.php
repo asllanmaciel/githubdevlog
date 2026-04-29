@@ -11,11 +11,11 @@ class GitHubReadiness extends Page
 {
     protected static string $routePath = '/github-readiness';
 
-    protected static ?string $title = 'Prontidão GitHub';
+    protected static ?string $title = 'Prontidao GitHub';
 
-    protected static ?string $navigationLabel = 'Prontidão GitHub';
+    protected static ?string $navigationLabel = 'Prontidao GitHub';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Lançamento';
+    protected static string | UnitEnum | null $navigationGroup = 'Lancamento';
 
     protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedRocketLaunch;
 

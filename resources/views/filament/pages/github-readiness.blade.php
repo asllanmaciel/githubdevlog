@@ -1,4 +1,4 @@
-@php
+﻿@php
   $githubConfig = config('services.github_app');
   $appUrl = config('app.url');
   $hasHttps = str_starts_with((string) $appUrl, 'https://');
@@ -10,6 +10,7 @@
   $workspacesCount = \App\Models\Workspace::count();
   $plansCount = \App\Models\BillingPlan::where('active', true)->count();
   $installationsCount = \App\Models\GithubInstallation::count();
+  $setup = \App\Support\GitHubAppSetup::report();
   $supportReady = class_exists(\App\Models\SupportTicket::class);
 
   $checks = collect([
@@ -37,7 +38,7 @@
 
 <x-filament-panels::page>
   <style>
-    .gh-ready{--ink:#f3f7fb;--muted:#9aa9b5;--line:#273544;--blue:#50b8ff;--green:#69e39a;color:var(--ink)}.gh-hero{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;margin-bottom:16px}.gh-card{border:1px solid var(--line);border-radius:18px;background:rgba(16,23,32,.88);padding:20px;box-shadow:0 22px 60px rgba(0,0,0,.18);position:relative;overflow:hidden}.gh-card:after{content:"";position:absolute;right:-50px;top:-50px;width:150px;height:150px;border-radius:50%;background:rgba(80,184,255,.12)}.gh-card>*{position:relative}.kicker{color:var(--blue);font-size:12px;text-transform:uppercase;letter-spacing:.14em;font-weight:950;margin-bottom:10px}.title{font-size:clamp(32px,4.8vw,62px);line-height:.96;letter-spacing:-.06em;font-weight:950;margin:0;color:var(--ink)}.lead{color:var(--muted);font-size:16px;line-height:1.65;margin:14px 0 0}.orb{width:128px;height:128px;border-radius:36px;display:grid;place-items:center;background:radial-gradient(circle at 35% 25%,rgba(105,227,154,.28),rgba(80,184,255,.13) 42%,rgba(8,16,25,.94) 72%);border:1px solid rgba(105,227,154,.3);font-size:32px;font-weight:950}.progress{height:10px;border-radius:999px;background:#0b1118;border:1px solid var(--line);overflow:hidden}.progress span{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--green));border-radius:999px}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}.metric{border:1px solid var(--line);border-radius:16px;background:#0b1118;padding:16px}.value{font-size:32px;font-weight:950;letter-spacing:-.04em}.label{color:var(--muted);font-size:13px}.grid{display:grid;grid-template-columns:1fr 360px;gap:16px;align-items:start}.check-list{display:grid;gap:10px}.check{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;border:1px solid var(--line);border-radius:14px;background:#0b1118;padding:12px}.check.done{border-color:rgba(105,227,154,.38);background:rgba(105,227,154,.07)}.badge{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;border:1px solid var(--line);font-weight:950;color:var(--muted)}.check.done .badge{background:var(--green);border-color:var(--green);color:#071018}.pill{border:1px solid var(--line);border-radius:999px;padding:5px 9px;color:var(--muted);font-size:12px}.actions{display:grid;gap:10px}.action{border:1px solid var(--line);border-radius:12px;background:#0b1118;padding:12px;text-decoration:none;color:var(--ink);font-weight:850}.action.primary{background:var(--blue);border-color:var(--blue);color:#071018}@media(max-width:1100px){.gh-hero,.grid{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}}@media(max-width:720px){.check{grid-template-columns:auto 1fr}.check .pill{grid-column:1/-1}.metrics{grid-template-columns:1fr}}
+    .gh-ready{--ink:#f3f7fb;--muted:#9aa9b5;--line:#273544;--blue:#50b8ff;--green:#69e39a;color:var(--ink)}.gh-hero{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;margin-bottom:16px}.gh-card{border:1px solid var(--line);border-radius:18px;background:rgba(16,23,32,.88);padding:20px;box-shadow:0 22px 60px rgba(0,0,0,.18);position:relative;overflow:hidden}.gh-card:after{content:"";position:absolute;right:-50px;top:-50px;width:150px;height:150px;border-radius:50%;background:rgba(80,184,255,.12)}.gh-card>*{position:relative}.kicker{color:var(--blue);font-size:12px;text-transform:uppercase;letter-spacing:.14em;font-weight:950;margin-bottom:10px}.title{font-size:clamp(32px,4.8vw,62px);line-height:.96;letter-spacing:-.06em;font-weight:950;margin:0;color:var(--ink)}.lead{color:var(--muted);font-size:16px;line-height:1.65;margin:14px 0 0}.orb{width:128px;height:128px;border-radius:36px;display:grid;place-items:center;background:radial-gradient(circle at 35% 25%,rgba(105,227,154,.28),rgba(80,184,255,.13) 42%,rgba(8,16,25,.94) 72%);border:1px solid rgba(105,227,154,.3);font-size:32px;font-weight:950}.progress{height:10px;border-radius:999px;background:#0b1118;border:1px solid var(--line);overflow:hidden}.progress span{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--green));border-radius:999px}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}.metric{border:1px solid var(--line);border-radius:16px;background:#0b1118;padding:16px}.value{font-size:32px;font-weight:950;letter-spacing:-.04em}.label{color:var(--muted);font-size:13px}.grid{display:grid;grid-template-columns:1fr 360px;gap:16px;align-items:start}.check-list{display:grid;gap:10px}.check{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;border:1px solid var(--line);border-radius:14px;background:#0b1118;padding:12px}.check.done{border-color:rgba(105,227,154,.38);background:rgba(105,227,154,.07)}.badge{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;border:1px solid var(--line);font-weight:950;color:var(--muted)}.check.done .badge{background:var(--green);border-color:var(--green);color:#071018}.pill{border:1px solid var(--line);border-radius:999px;padding:5px 9px;color:var(--muted);font-size:12px}.setup-list{display:grid;gap:10px;margin:14px 0}.setup-item{border:1px solid var(--line);border-radius:12px;background:#0b1118;padding:12px}.setup-item.done{border-color:rgba(105,227,154,.38);background:rgba(105,227,154,.07)}.setup-item code{display:block;margin-top:6px;word-break:break-all;color:#b7e4ff}.copy-grid{display:grid;gap:10px;margin:14px 0}.copy-row{border:1px solid var(--line);border-radius:12px;background:#0b1118;padding:12px}.copy-row strong{display:block}.copy-row code{display:block;margin-top:6px;word-break:break-all;color:#b7e4ff}.actions{display:grid;gap:10px}.action{border:1px solid var(--line);border-radius:12px;background:#0b1118;padding:12px;text-decoration:none;color:var(--ink);font-weight:850}.action.primary{background:var(--blue);border-color:var(--blue);color:#071018}@media(max-width:1100px){.gh-hero,.grid{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}}@media(max-width:720px){.check{grid-template-columns:auto 1fr}.check .pill{grid-column:1/-1}.metrics{grid-template-columns:1fr}}
   </style>
 
   <div class="gh-ready">
@@ -86,7 +87,39 @@
       </div>
 
       <aside class="gh-card">
-        <div class="kicker">Proximas acoes</div>
+        <div class="kicker">Setup GitHub App</div>
+        <div class="setup-list">
+          @foreach ($setup['steps'] as $step)
+            <div class="setup-item {{ $step['done'] ? 'done' : '' }}">
+              <strong>{{ $step['done'] ? 'OK' : 'Pendente' }} · {{ $step['title'] }}</strong>
+              <div class="label">{{ $step['detail'] }}</div>
+            </div>
+          @endforeach
+        </div>
+
+        <div class="kicker" style="margin-top:18px">Valores para colar no GitHub</div>
+        <div class="copy-grid">
+          @foreach ($setup['urls'] as $url)
+            <div class="copy-row">
+              <strong>{{ $url['label'] }}</strong>
+              <code>{{ $url['value'] }}</code>
+              <div class="label">{{ $url['description'] }}</div>
+            </div>
+          @endforeach
+        </div>
+
+        <div class="kicker" style="margin-top:18px">Variaveis .env</div>
+        <div class="setup-list">
+          @foreach ($setup['env'] as $env)
+            <div class="setup-item {{ $env['done'] ? 'done' : '' }}">
+              <strong>{{ $env['done'] ? 'OK' : 'Pendente' }} · {{ $env['key'] }}</strong>
+              <code>{{ $env['value'] }}</code>
+              <div class="label">{{ $env['description'] }}</div>
+            </div>
+          @endforeach
+        </div>
+
+        <div class="kicker" style="margin-top:18px">Proximas acoes</div>
         <div class="actions">
           <a class="action primary" href="{{ route('github.install') }}">Testar instalacao GitHub App</a>
           <a class="action" href="{{ url('/github') }}" target="_blank">Revisar pagina publica GitHub</a>
@@ -97,3 +130,4 @@
     </section>
   </div>
 </x-filament-panels::page>
+
