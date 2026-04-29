@@ -6,6 +6,7 @@ use App\Models\BillingPlan;
 use App\Models\Workspace;
 use Illuminate\Support\Str;
 use MercadoPago\Client\Common\RequestOptions;
+use MercadoPago\Client\Payment\PaymentClient;
 use MercadoPago\Client\Preference\PreferenceClient;
 use MercadoPago\MercadoPagoConfig;
 
@@ -83,5 +84,40 @@ class MercadoPagoBillingService
         }
 
         return $preference->sandbox_init_point ?? $preference->init_point ?? null;
+    }
+
+    public function getPayment(int|string $paymentId): object
+    {
+        if (! $this->isConfigured()) {
+            throw new \RuntimeException('Mercado Pago nao configurado. Preencha as credenciais no .env.');
+        }
+
+        MercadoPagoConfig::setAccessToken((string) config('services.mercado_pago.access_token'));
+        MercadoPagoConfig::setRuntimeEnviroment(MercadoPagoConfig::SERVER);
+
+        return (new PaymentClient())->get((int) $paymentId);
+    }
+
+    public function parseExternalReference(?string $externalReference): array
+    {
+        $result = ['workspace_id' => null, 'billing_plan_id' => null];
+
+        if (! $externalReference) {
+            return $result;
+        }
+
+        foreach (explode(';', $externalReference) as $pair) {
+            [$key, $value] = array_pad(explode(':', $pair, 2), 2, null);
+
+            if ($key === 'workspace') {
+                $result['workspace_id'] = (int) $value;
+            }
+
+            if ($key === 'plan') {
+                $result['billing_plan_id'] = (int) $value;
+            }
+        }
+
+        return $result;
     }
 }

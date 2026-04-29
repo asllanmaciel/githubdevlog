@@ -438,7 +438,7 @@ Route::get('/webhooks/mercado-pago', function () {
     ]);
 })->name('webhooks.mercado-pago.health');
 
-Route::post('/webhooks/mercado-pago', function (Request $request) {
+Route::post('/webhooks/mercado-pago', function (Request $request, MercadoPagoBillingService $billing) {
     $payload = $request->all();
     $preferenceId = (string) (
         data_get($payload, 'data.id')
@@ -448,21 +448,61 @@ Route::post('/webhooks/mercado-pago', function (Request $request) {
     );
     $eventType = (string) ($request->query('type') ?? data_get($payload, 'type') ?? data_get($payload, 'topic') ?? 'mercado_pago');
     $status = (string) (data_get($payload, 'status') ?? data_get($payload, 'action') ?? 'received');
+    $payment = null;
+    $externalReference = null;
+    $workspaceId = null;
+    $billingPlanId = null;
 
     if ($preferenceId === '') {
         return response()->json(['ok' => true, 'message' => 'Evento Mercado Pago recebido sem referencia direta.']);
     }
 
-    $subscription = WorkspaceSubscription::where('provider', 'mercado_pago')
+    if (str_contains($eventType, 'payment') && ctype_digit($preferenceId) && $billing->isConfigured()) {
+        try {
+            $payment = $billing->getPayment($preferenceId);
+            $status = (string) ($payment->status ?? $status);
+            $externalReference = $payment->external_reference ?? null;
+            $parsed = $billing->parseExternalReference($externalReference);
+            $workspaceId = $parsed['workspace_id'];
+            $billingPlanId = $parsed['billing_plan_id'];
+        } catch (\Throwable $exception) {
+            return response()->json([
+                'ok' => true,
+                'message' => 'Evento recebido, mas o pagamento ainda nao pode ser consultado.',
+                'detail' => app()->isLocal() ? $exception->getMessage() : null,
+            ]);
+        }
+    }
+
+    $subscription = null;
+
+    if ($workspaceId) {
+        $subscription = WorkspaceSubscription::where('workspace_id', $workspaceId)->first();
+    }
+
+    $subscription ??= WorkspaceSubscription::where('provider', 'mercado_pago')
         ->where('provider_reference', $preferenceId)
         ->first();
 
     if (! $subscription) {
-        return response()->json(['ok' => true, 'message' => 'Referencia Mercado Pago ainda nao associada a assinatura.']);
+        if ($workspaceId && $billingPlanId) {
+            $subscription = WorkspaceSubscription::create([
+                'workspace_id' => $workspaceId,
+                'billing_plan_id' => $billingPlanId,
+                'provider' => 'mercado_pago',
+                'provider_reference' => $payment?->id ?? $preferenceId,
+                'status' => 'pending',
+                'current_period_ends_at' => now()->addMonth(),
+            ]);
+        } else {
+            return response()->json(['ok' => true, 'message' => 'Referencia Mercado Pago ainda nao associada a assinatura.']);
+        }
     }
 
-    $approved = str_contains($status, 'approved') || str_contains($status, 'paid') || str_contains($status, 'created');
+    $approved = str_contains($status, 'approved') || str_contains($status, 'paid');
     $subscription->update([
+        'billing_plan_id' => $billingPlanId ?: $subscription->billing_plan_id,
+        'provider_reference' => $payment?->id ?? $subscription->provider_reference ?? $preferenceId,
         'status' => $approved ? 'active' : 'pending',
         'current_period_ends_at' => $approved ? now()->addMonth() : $subscription->current_period_ends_at,
     ]);
@@ -474,6 +514,10 @@ Route::post('/webhooks/mercado-pago', function (Request $request) {
         'type' => 'billing',
     ]);
 
-    return response()->json(['ok' => true]);
+    return response()->json([
+        'ok' => true,
+        'status' => $subscription->status,
+        'workspace_id' => $subscription->workspace_id,
+    ]);
 })->name('webhooks.mercado-pago');
 
