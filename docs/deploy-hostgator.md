@@ -138,10 +138,12 @@ Para webhooks manuais de repositorio:
 https://seudominio.com/webhooks/github/{workspace_uuid}
 ```
 
-## 9. Teste de fumaça
+## 9. Teste de fumaca
 
 Depois do deploy:
 
+- Rodar `php artisan devlog:preflight` para diagnostico.
+- Rodar `php artisan devlog:preflight --strict` antes de liberar o dominio para usuarios.
 - Abrir `/health`.
 - Criar login.
 - Acessar `/dashboard`.
@@ -151,10 +153,18 @@ Depois do deploy:
 - Verificar `/admin/launch-center`.
 - Confirmar que `APP_DEBUG=false`.
 
+Para automacao, use:
+
+```bash
+php artisan devlog:preflight --json
+php artisan devlog:preflight --strict --json
+```
+
+O modo `--strict` reprova quando existir qualquer bloqueador obrigatorio, mesmo que a pontuacao geral esteja acima do minimo. Use esse modo para deploy oficial, submissao ao GitHub Developer Program e validacao antes de campanhas.
+
 ## 10. Rollback
 
 - Manter backup do banco antes de migrations.
 - Manter pacote anterior publicado.
 - Se falhar, restaurar arquivos anteriores e backup do banco.
 - Rodar `php artisan optimize:clear`.
-

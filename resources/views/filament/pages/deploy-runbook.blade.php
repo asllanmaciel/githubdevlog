@@ -35,7 +35,8 @@
           <div class="step"><strong>2. Configurar .env</strong><span class="muted">APP_ENV=production, APP_DEBUG=false, APP_URL final, MySQL, Mercado Pago producao e GitHub App oficial.</span></div>
           <div class="step"><strong>3. Build e upload</strong><span class="muted">Rodar composer install --no-dev, npm run build e enviar arquivos sem .git, node_modules ou .env local.</span></div>
           <div class="step"><strong>4. Pos-deploy</strong><span class="muted">Executar migrations, storage:link, optimize/cache e configurar cron/queue quando disponivel.</span></div>
-          <div class="step"><strong>5. Smoke test</strong><span class="muted">Testar /health, login, dashboard, webhook GitHub, webhook Mercado Pago e Centro de Lancamento.</span></div>
+          <div class="step"><strong>5. Preflight</strong><span class="muted">Rodar <code>php artisan devlog:preflight</code> para diagnostico e <code>php artisan devlog:preflight --strict</code> antes de lancar oficialmente.</span></div>
+          <div class="step"><strong>6. Smoke test</strong><span class="muted">Testar /health, login, dashboard, webhook GitHub, webhook Mercado Pago e Centro de Lancamento.</span></div>
         </div>
       </div>
 
