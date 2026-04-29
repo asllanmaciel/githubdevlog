@@ -16,28 +16,15 @@ use App\Models\WorkspaceSubscription;
 use App\Services\MercadoPagoBillingService;
 use App\Support\SystemHealth;
 use App\Support\WebhookSanitizer;
+use App\Support\WorkspaceUsage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 
-$workspacePlan = function (Workspace $workspace): ?BillingPlan {
-    return $workspace->subscription()->with('plan')->first()?->plan
-        ?? BillingPlan::where('slug', 'free')->first();
-};
-
-$workspaceUsage = function (Workspace $workspace): int {
-    return $workspace->webhookEvents()
-        ->whereBetween('received_at', [now()->startOfMonth(), now()->endOfMonth()])
-        ->count();
-};
-
-$workspaceLimitReached = function (Workspace $workspace) use ($workspacePlan, $workspaceUsage): bool {
-    $plan = $workspacePlan($workspace);
-    $limit = max((int) ($plan?->monthly_event_limit ?? 1000), 1);
-
-    return $workspaceUsage($workspace) >= $limit;
-};
+$workspacePlan = fn (Workspace $workspace): ?BillingPlan => WorkspaceUsage::plan($workspace);
+$workspaceUsage = fn (Workspace $workspace): int => WorkspaceUsage::usageThisMonth($workspace);
+$workspaceLimitReached = fn (Workspace $workspace): bool => WorkspaceUsage::limitReached($workspace);
 
 Route::get('/', fn () => view('landing'))->name('home');
 Route::get('/health', function () {
@@ -371,12 +358,7 @@ Route::post('/webhooks/github/{workspaceUuid}', function (Request $request, stri
         $limit = max((int) ($plan?->monthly_event_limit ?? 1000), 1);
         $usage = $workspaceUsage($workspace);
 
-        Notification::create([
-            'workspace_id' => $workspace->id,
-            'title' => 'Limite mensal de webhooks atingido',
-            'body' => 'O workspace atingiu '.$usage.'/'.$limit.' eventos no plano '.($plan?->name ?? 'Free').'. Novos eventos serao recusados ate upgrade ou renovacao mensal.',
-            'type' => 'billing',
-        ]);
+        WorkspaceUsage::notifyLimitReached($workspace);
 
         return response()->json([
             'error' => 'Limite mensal de eventos atingido.',
@@ -443,12 +425,7 @@ Route::post('/webhooks/github-app', function (Request $request) use ($workspaceP
         $limit = max((int) ($plan?->monthly_event_limit ?? 1000), 1);
         $usage = $workspaceUsage($workspace);
 
-        Notification::create([
-            'workspace_id' => $workspace->id,
-            'title' => 'Limite mensal de webhooks atingido',
-            'body' => 'O workspace atingiu '.$usage.'/'.$limit.' eventos no plano '.($plan?->name ?? 'Free').'. Novos eventos serao recusados ate upgrade ou renovacao mensal.',
-            'type' => 'billing',
-        ]);
+        WorkspaceUsage::notifyLimitReached($workspace);
 
         return response()->json([
             'error' => 'Limite mensal de eventos atingido.',
