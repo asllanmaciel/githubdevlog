@@ -22,6 +22,7 @@
     ['area' => 'SaaS', 'title' => 'Planos e limites mensais configurados', 'done' => $plansCount > 0, 'detail' => $plansCount.' plano(s) ativo(s)'],
     ['area' => 'Suporte', 'title' => 'Canal de suporte dentro do produto', 'done' => $supportReady, 'detail' => 'Tickets no admin'],
     ['area' => 'GitHub App', 'title' => 'Rota de instalacao do GitHub App', 'done' => Route::has('github.install') && Route::has('github.callback'), 'detail' => url('/github/install')],
+    ['area' => 'GitHub App', 'title' => 'Webhook oficial do GitHub App', 'done' => Route::has('webhooks.github-app'), 'detail' => url('/webhooks/github-app')],
     ['area' => 'GitHub App', 'title' => 'Instalacao vinculada a workspace', 'done' => $installationsCount > 0, 'detail' => $installationsCount.' instalacao(oes)'],
     ['area' => 'GitHub App', 'title' => 'App ID configurado', 'done' => filled($githubConfig['app_id'] ?? null), 'detail' => $githubConfig['app_id'] ?: 'Definir GITHUB_APP_ID'],
     ['area' => 'GitHub App', 'title' => 'Client ID e Secret configurados', 'done' => filled($githubConfig['client_id'] ?? null) && filled($githubConfig['client_secret'] ?? null), 'detail' => 'OAuth do GitHub App'],

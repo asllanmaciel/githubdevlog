@@ -288,3 +288,84 @@ Route::post('/webhooks/github/{workspaceUuid}', function (Request $request, stri
     return response()->json(['ok' => true, 'id' => $event->id]);
 })->name('webhooks.github');
 
+Route::post('/webhooks/github-app', function (Request $request) use ($workspacePlan, $workspaceUsage, $workspaceLimitReached) {
+    $rawBody = $request->getContent();
+    $secret = (string) config('services.github_app.webhook_secret');
+
+    if ($secret === '') {
+        return response()->json(['error' => 'GitHub App webhook secret nao configurado.'], 503);
+    }
+
+    $signature = (string) $request->header('X-Hub-Signature-256', '');
+    $expected = 'sha256='.hash_hmac('sha256', $rawBody, $secret);
+
+    if ($signature === '' || ! hash_equals($expected, $signature)) {
+        return response()->json(['error' => 'Assinatura GitHub App invalida.'], 401);
+    }
+
+    $payload = json_decode($rawBody, true) ?: [];
+    $installationId = (string) data_get($payload, 'installation.id', '');
+
+    if ($installationId === '') {
+        return response()->json(['error' => 'Payload sem installation.id.'], 422);
+    }
+
+    $installation = GithubInstallation::where('installation_id', $installationId)->first();
+
+    if (! $installation) {
+        return response()->json(['error' => 'Instalacao GitHub App nao vinculada a workspace.'], 404);
+    }
+
+    $workspace = $installation->workspace;
+
+    if (! $workspace) {
+        return response()->json(['error' => 'Workspace da instalacao nao encontrado.'], 404);
+    }
+
+    if ($workspaceLimitReached($workspace)) {
+        $plan = $workspacePlan($workspace);
+        $limit = max((int) ($plan?->monthly_event_limit ?? 1000), 1);
+        $usage = $workspaceUsage($workspace);
+
+        Notification::create([
+            'workspace_id' => $workspace->id,
+            'title' => 'Limite mensal de webhooks atingido',
+            'body' => 'O workspace atingiu '.$usage.'/'.$limit.' eventos no plano '.($plan?->name ?? 'Free').'. Novos eventos serao recusados ate upgrade ou renovacao mensal.',
+            'type' => 'billing',
+        ]);
+
+        return response()->json([
+            'error' => 'Limite mensal de eventos atingido.',
+            'usage' => $usage,
+            'limit' => $limit,
+        ], 429);
+    }
+
+    $event = $workspace->webhookEvents()->create([
+        'source' => 'github-app',
+        'event_name' => (string) $request->header('X-GitHub-Event', 'github_app'),
+        'action' => $payload['action'] ?? null,
+        'delivery_id' => $request->header('X-GitHub-Delivery'),
+        'signature_valid' => true,
+        'validation_method' => 'github-app-x-hub-signature-256',
+        'headers' => WebhookSanitizer::clean(collect($request->headers->all())->map(fn ($value) => $value[0] ?? null)->all()),
+        'payload' => WebhookSanitizer::clean($payload),
+        'received_at' => now(),
+    ]);
+
+    $installation->update([
+        'account_login' => data_get($payload, 'installation.account.login', $installation->account_login),
+        'account_type' => data_get($payload, 'installation.account.type', $installation->account_type),
+        'events' => array_values(array_unique(array_filter([...(array) $installation->events, $event->event_name]))),
+    ]);
+
+    Notification::create([
+        'workspace_id' => $workspace->id,
+        'title' => 'Novo evento GitHub App '.$event->event_name,
+        'body' => data_get($payload, 'repository.full_name', data_get($payload, 'organization.login', 'GitHub App')).' enviou um evento validado.',
+        'type' => 'webhook',
+    ]);
+
+    return response()->json(['ok' => true, 'id' => $event->id]);
+})->name('webhooks.github-app');
+
