@@ -1,6 +1,7 @@
 <x-layout title="Dashboard | GitHub DevLog AI">
 @php
     use App\Models\BillingPlan;
+    use App\Support\WorkspaceUsage;
 
     $endpoint = $workspace ? url('/webhooks/github/'.$workspace->uuid) : null;
     $availablePlans = BillingPlan::where('active', true)->orderBy('price_cents')->get();
@@ -20,10 +21,11 @@
     $openTasks = \App\Models\WebhookEventTask::whereIn('webhook_event_id', $eventIds)->where('status', 'open')->count();
     $notesCount = \App\Models\WebhookEventNote::whereIn('webhook_event_id', $eventIds)->count();
     $subscription = $workspace?->subscription()->with('plan')->first();
-    $plan = $subscription?->plan ?? BillingPlan::where('slug', 'free')->first();
-    $monthlyEvents = $workspace ? $workspace->webhookEvents()->whereBetween('received_at', [now()->startOfMonth(), now()->endOfMonth()])->count() : 0;
-    $monthlyLimit = max((int) ($plan?->monthly_event_limit ?? 1000), 1);
-    $usagePercent = min(100, round(($monthlyEvents / $monthlyLimit) * 100));
+    $usageReport = $workspace ? WorkspaceUsage::report($workspace) : null;
+    $plan = $usageReport['plan'] ?? BillingPlan::where('slug', 'free')->first();
+    $monthlyEvents = $usageReport['usage'] ?? 0;
+    $monthlyLimit = $usageReport['limit'] ?? 1000;
+    $usagePercent = $usageReport['percent'] ?? 0;
     $retentionDays = (int) ($plan?->event_retention_days ?? 30);
     $planName = $plan?->name ?? 'Free';
     $subscriptionStatus = $subscription?->status ?? 'trialing';
@@ -41,7 +43,9 @@
     $healthClass = $invalidEvents > 0 ? 'status-warn' : 'status-ok';
     $usageWarning = $usagePercent >= 100
         ? 'Limite mensal atingido. Novos webhooks serao recusados ate upgrade ou renovacao.'
-        : ($usagePercent >= 80 ? 'Uso mensal proximo do limite. Considere upgrade antes de perder eventos importantes.' : null);
+        : ($usagePercent >= 95
+            ? 'Uso mensal em nivel critico. Faca upgrade antes de perder eventos importantes.'
+            : ($usagePercent >= 80 ? 'Uso mensal proximo do limite. Considere upgrade antes de perder eventos importantes.' : null));
     $unreadNotifications = $notifications->whereNull('read_at')->count();
 @endphp
 

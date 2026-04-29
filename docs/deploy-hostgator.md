@@ -111,7 +111,7 @@ Se usar jobs:
 php artisan queue:work --tries=3
 ```
 
-Se houver cron disponivel, configure:
+Se houver cron disponivel, configure para rodar scheduler, alertas de uso e futuras automacoes:
 
 ```bash
 * * * * * cd /caminho/do/projeto && php artisan schedule:run >> /dev/null 2>&1
@@ -177,3 +177,10 @@ php artisan devlog:seed-demo
 ```
 
 Use `php artisan devlog:seed-demo --fresh` apenas quando quiser recriar a demo do zero. Evite rodar o modo fresh em producao com usuarios reais.
+O scheduler executa, entre outras rotinas:
+
+```bash
+php artisan devlog:check-usage-limits
+```
+
+Esse comando cria alertas preventivos de uso em 80%, 95% e 100% do limite mensal do plano.

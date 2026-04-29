@@ -64,8 +64,41 @@ A tela mostra:
 
 Para evoluir o SaaS, podemos adicionar:
 
-- alertas em 80% e 95%;
+- alertas em 80% e 95% implementados via `devlog:check-usage-limits`;
 - upgrade sugerido no dashboard;
 - registro historico mensal de uso;
 - cobranca por excedente;
 - jobs agendados para sumarizar consumo.
+## Alertas preventivos
+
+O comando abaixo verifica todos os workspaces e cria notificacoes preventivas quando o uso chega a 80%, 95% ou 100% do limite mensal:
+
+```bash
+php artisan devlog:check-usage-limits
+```
+
+Para automacao:
+
+```bash
+php artisan devlog:check-usage-limits --json
+```
+
+O agendamento padrao roda de hora em hora via `routes/console.php`:
+
+```php
+Schedule::command('devlog:check-usage-limits')->hourly();
+```
+
+Para que isso funcione em producao, o cron do servidor precisa executar o Laravel Scheduler:
+
+```bash
+* * * * * cd /caminho/do/projeto && php artisan schedule:run >> /dev/null 2>&1
+```
+
+Tipos de notificacao criados:
+
+- `usage_limit_80`
+- `usage_limit_95`
+- `usage_limit_reached`
+
+As notificacoes sao deduplicadas por workspace, tipo e mes, evitando spam para o usuario.
