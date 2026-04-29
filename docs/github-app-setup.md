@@ -55,3 +55,19 @@ O preflight strict so deve ficar sem bloqueadores quando:
 3. Webhook secret do GitHub App estiver configurado.
 4. Houver ao menos uma instalacao vinculada a um workspace.
 5. Ambiente de producao estiver com `APP_ENV=production`, `APP_DEBUG=false`, Mercado Pago production e dominio HTTPS oficial.
+
+## Diagnostico via terminal
+
+Use o comando abaixo para conferir rapidamente o que falta antes da submissao:
+
+```bash
+php artisan devlog:github-app-check
+```
+
+Para automacao ou preflight em CI, use:
+
+```bash
+php artisan devlog:github-app-check --json
+```
+
+O comando retorna falha enquanto houver variaveis obrigatorias pendentes ou nenhuma instalacao vinculada.
