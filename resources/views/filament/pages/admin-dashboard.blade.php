@@ -52,6 +52,7 @@
           <a class="primary" href="{{ url('/admin/roadmap') }}">Roadmap visual</a>
           <a href="{{ url('/admin/launch-center') }}">Centro de lancamento</a>
           <a href="{{ url('/admin/demo-center') }}">Centro de demo</a>
+          <a href="{{ url('/admin/github-submission') }}">Submissao GitHub</a>
           <a href="{{ url('/admin/docs') }}">Docs admin</a>
           <a href="{{ url('/admin/deploy-runbook') }}">Runbook deploy</a>
           <a href="{{ url('/admin/system-status') }}">Status sistema</a>
