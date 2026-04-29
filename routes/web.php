@@ -28,6 +28,7 @@ $workspaceUsage = fn (Workspace $workspace): int => WorkspaceUsage::usageThisMon
 $workspaceLimitReached = fn (Workspace $workspace): bool => WorkspaceUsage::limitReached($workspace);
 
 Route::get('/', fn () => view('landing'))->name('home');
+Route::get('/status', fn () => view('status'))->name('status');
 Route::get('/health', function () {
     $report = SystemHealth::report();
 
@@ -229,7 +230,7 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
 
         if (! filled($setupUrl) || str_contains($setupUrl, 'your-github-app-slug')) {
             return redirect()->route('dashboard')->withErrors([
-                'github' => 'Configure GITHUB_APP_SETUP_URL com a URL oficial de instalaÃƒÂ§ÃƒÂ£o do GitHub App.',
+                'github' => 'Configure GITHUB_APP_SETUP_URL com a URL oficial de instalaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o do GitHub App.',
             ]);
         }
 
@@ -251,13 +252,13 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
 
         if ($sessionWorkspaceId !== $workspace->id || $sessionState === '' || ! hash_equals($sessionState, $state)) {
             return redirect()->route('dashboard')->withErrors([
-                'github' => 'NÃƒÂ£o foi possÃƒÂ­vel validar o retorno da instalaÃƒÂ§ÃƒÂ£o GitHub. Tente iniciar a instalaÃƒÂ§ÃƒÂ£o novamente.',
+                'github' => 'NÃƒÆ’Ã‚Â£o foi possÃƒÆ’Ã‚Â­vel validar o retorno da instalaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o GitHub. Tente iniciar a instalaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o novamente.',
             ]);
         }
 
         if ($installationId === '') {
             return redirect()->route('dashboard')->withErrors([
-                'github' => 'O GitHub nÃƒÂ£o retornou installation_id. Confirme se a instalaÃƒÂ§ÃƒÂ£o foi concluÃƒÂ­da.',
+                'github' => 'O GitHub nÃƒÆ’Ã‚Â£o retornou installation_id. Confirme se a instalaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o foi concluÃƒÆ’Ã‚Â­da.',
             ]);
         }
 
@@ -277,7 +278,7 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
         Notification::create([
             'workspace_id' => $workspace->id,
             'title' => 'GitHub App instalado',
-            'body' => 'A instalaÃƒÂ§ÃƒÂ£o '.$installationId.' foi vinculada ao workspace.',
+            'body' => 'A instalaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o '.$installationId.' foi vinculada ao workspace.',
             'type' => 'github',
         ]);
 
