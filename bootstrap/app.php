@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         \App\Console\Commands\DevlogSeedSubmissionAssets::class,
         \App\Console\Commands\DevlogCheckUsageLimits::class,
         \App\Console\Commands\DevlogSnapshotUsage::class,
+        \App\Console\Commands\DevlogGenerateUsageInvoices::class,
     ])
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);

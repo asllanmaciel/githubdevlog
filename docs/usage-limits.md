@@ -156,3 +156,32 @@ Essa tela usa os snapshots mensais para calcular:
 - receita estimada por periodo.
 
 Por enquanto, a tela e um preview financeiro: ela nao dispara cobranca automatica. O proximo passo e gerar cobranca Mercado Pago a partir dos itens marcados como cobraveis.
+
+## Faturas internas de uso
+
+Antes de cobrar automaticamente, o sistema gera faturas internas de excedente:
+
+```bash
+php artisan devlog:generate-usage-invoices
+```
+
+Para um periodo especifico:
+
+```bash
+php artisan devlog:generate-usage-invoices --period=2026-04
+```
+
+As faturas ficam em:
+
+```text
+/admin/usage-invoices
+```
+
+Status previstos:
+
+- `draft`: fatura calculada, ainda sem emissao externa;
+- `issued`: fatura enviada ao provedor;
+- `paid`: pagamento confirmado;
+- `void`: fatura cancelada.
+
+Essa camada permite revisar valores antes de acionar Mercado Pago para cobranca real de excedente.
