@@ -185,3 +185,34 @@ Status previstos:
 - `void`: fatura cancelada.
 
 Essa camada permite revisar valores antes de acionar Mercado Pago para cobranca real de excedente.
+
+## Emissao controlada pelo Mercado Pago
+
+No admin, acesse:
+
+```text
+/admin/usage-invoices
+```
+
+Em faturas `draft` com valor maior que zero, use a acao:
+
+```text
+Emitir Mercado Pago
+```
+
+Essa acao cria uma preferencia de pagamento no Mercado Pago e muda a fatura para `issued`.
+O link de checkout fica salvo nos metadados da fatura e visivel na tabela.
+
+Quando o webhook do Mercado Pago confirmar pagamento com `external_reference` contendo `usage_invoice`, o sistema marca a fatura como `paid`.
+
+O formato da referencia externa e:
+
+```text
+workspace:{workspace_id};usage_invoice:{usage_invoice_id}
+```
+
+Tambem e possivel cancelar faturas `draft` ou `issued` pela acao:
+
+```text
+Cancelar
+```

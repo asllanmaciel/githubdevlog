@@ -8,6 +8,7 @@ use App\Models\Notification;
 use App\Models\RoadmapItem;
 use App\Models\SecretRotation;
 use App\Models\SupportTicket;
+use App\Models\UsageInvoice;
 use App\Models\WebhookEvent;
 use App\Models\WebhookEventNote;
 use App\Models\WebhookEventTask;
@@ -527,6 +528,7 @@ Route::post('/webhooks/mercado-pago', function (Request $request, MercadoPagoBil
     $externalReference = null;
     $workspaceId = null;
     $billingPlanId = null;
+    $usageInvoiceId = null;
 
     if ($preferenceId === '') {
         $billingEvent->update([
@@ -546,6 +548,7 @@ Route::post('/webhooks/mercado-pago', function (Request $request, MercadoPagoBil
             $parsed = $billing->parseExternalReference($externalReference);
             $workspaceId = $parsed['workspace_id'];
             $billingPlanId = $parsed['billing_plan_id'];
+            $usageInvoiceId = $parsed['usage_invoice_id'];
         } catch (\Throwable $exception) {
             $billingEvent->update([
                 'status' => 'pending_lookup',
@@ -559,6 +562,59 @@ Route::post('/webhooks/mercado-pago', function (Request $request, MercadoPagoBil
                 'detail' => app()->isLocal() ? $exception->getMessage() : null,
             ]);
         }
+    }
+
+    if ($usageInvoiceId) {
+        $invoice = UsageInvoice::find($usageInvoiceId);
+
+        if (! $invoice) {
+            $billingEvent->update([
+                'status' => 'usage_invoice_unmatched',
+                'error_message' => 'Fatura de uso informada no external_reference nao foi encontrada.',
+                'processed_at' => now(),
+            ]);
+
+            return response()->json([
+                'ok' => true,
+                'message' => 'Fatura de uso nao encontrada.',
+                'billing_event_id' => $billingEvent->id,
+            ]);
+        }
+
+        $approved = str_contains($status, 'approved') || str_contains($status, 'paid');
+        $invoice->update([
+            'status' => $approved ? 'paid' : 'issued',
+            'provider' => 'mercado_pago',
+            'provider_reference' => $payment?->id ?? $invoice->provider_reference ?? $preferenceId,
+            'paid_at' => $approved ? now() : $invoice->paid_at,
+            'metadata' => array_merge($invoice->metadata ?? [], [
+                'last_webhook_status' => $status,
+                'last_billing_event_id' => $billingEvent->id,
+            ]),
+        ]);
+
+        $billingEvent->update([
+            'workspace_id' => $invoice->workspace_id,
+            'billing_plan_id' => $invoice->billing_plan_id,
+            'resource_id' => $payment?->id ?? $preferenceId,
+            'external_reference' => $externalReference,
+            'status' => $approved ? 'usage_invoice_paid' : 'usage_invoice_pending',
+            'processed_at' => now(),
+        ]);
+
+        Notification::create([
+            'workspace_id' => $invoice->workspace_id,
+            'title' => $approved ? 'Fatura de excedente paga' : 'Fatura de excedente atualizada',
+            'body' => 'Fatura de uso '.$invoice->period.' recebeu status '.$status.' via Mercado Pago.',
+            'type' => 'billing',
+        ]);
+
+        return response()->json([
+            'ok' => true,
+            'status' => $invoice->status,
+            'usage_invoice_id' => $invoice->id,
+            'billing_event_id' => $billingEvent->id,
+        ]);
     }
 
     $subscription = null;

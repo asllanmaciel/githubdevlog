@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\BillingPlan;
+use App\Models\UsageInvoice;
 use App\Models\Workspace;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -179,6 +180,53 @@ class MercadoPagoBillingService
         ], $requestOptions);
     }
 
+    public function createUsageInvoicePreference(UsageInvoice $invoice, string $payerEmail): object
+    {
+        if (! $this->isConfigured()) {
+            throw new \RuntimeException('Mercado Pago nao configurado. Preencha as credenciais no .env.');
+        }
+
+        if ($invoice->amount_cents <= 0) {
+            throw new \RuntimeException('Fatura sem valor cobravel.');
+        }
+
+        MercadoPagoConfig::setAccessToken((string) config('services.mercado_pago.access_token'));
+        MercadoPagoConfig::setRuntimeEnviroment(MercadoPagoConfig::SERVER);
+
+        $client = new PreferenceClient();
+        $requestOptions = new RequestOptions();
+        $requestOptions->setCustomHeaders([
+            'X-Idempotency-Key: usage-invoice-'.$invoice->id.'-'.$invoice->period,
+        ]);
+
+        return $client->create([
+            'external_reference' => 'workspace:'.$invoice->workspace_id.';usage_invoice:'.$invoice->id,
+            'notification_url' => route('webhooks.mercado-pago'),
+            'back_urls' => [
+                'success' => route('billing.return', ['status' => 'success']),
+                'pending' => route('billing.return', ['status' => 'pending']),
+                'failure' => route('billing.return', ['status' => 'failure']),
+            ],
+            'payer' => [
+                'email' => $payerEmail,
+            ],
+            'items' => [[
+                'id' => 'usage-invoice-'.$invoice->id,
+                'title' => 'GitHub DevLog AI - excedente '.$invoice->period,
+                'description' => $invoice->overage_count.' evento(s) excedente(s) do workspace '.$invoice->workspace?->name.'.',
+                'quantity' => 1,
+                'currency_id' => $invoice->currency ?: 'BRL',
+                'unit_price' => max($invoice->amount_cents / 100, 0.01),
+            ]],
+            'metadata' => [
+                'workspace_id' => $invoice->workspace_id,
+                'usage_invoice_id' => $invoice->id,
+                'period' => $invoice->period,
+                'environment' => $this->environment(),
+            ],
+        ], $requestOptions);
+    }
+
     public function checkoutUrl(object $preference): ?string
     {
         if ($this->environment() === 'production') {
@@ -202,7 +250,7 @@ class MercadoPagoBillingService
 
     public function parseExternalReference(?string $externalReference): array
     {
-        $result = ['workspace_id' => null, 'billing_plan_id' => null];
+        $result = ['workspace_id' => null, 'billing_plan_id' => null, 'usage_invoice_id' => null];
 
         if (! $externalReference) {
             return $result;
@@ -217,6 +265,10 @@ class MercadoPagoBillingService
 
             if ($key === 'plan') {
                 $result['billing_plan_id'] = (int) $value;
+            }
+
+            if ($key === 'usage_invoice') {
+                $result['usage_invoice_id'] = (int) $value;
             }
         }
 
