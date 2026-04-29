@@ -99,8 +99,9 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
         $workspace = Auth::user()->workspaces()->first();
         $events = $workspace ? $workspace->webhookEvents()->latest()->limit(50)->get() : collect();
         $notifications = $workspace ? Notification::where('workspace_id', $workspace->id)->latest()->limit(5)->get() : collect();
+        $githubInstallation = $workspace ? $workspace->githubInstallations()->latest()->first() : null;
 
-        return view('dashboard', compact('workspace', 'events', 'notifications'));
+        return view('dashboard', compact('workspace', 'events', 'notifications', 'githubInstallation'));
     })->name('dashboard');
 
     Route::post('/workspace/secret/rotate', function () {

@@ -27,6 +27,16 @@
     $retentionDays = (int) ($plan?->event_retention_days ?? 30);
     $planName = $plan?->name ?? 'Free';
     $subscriptionStatus = $subscription?->status ?? 'trialing';
+    $subscriptionStatusLabel = [
+        'trialing' => 'Trial',
+        'pending' => 'Pagamento pendente',
+        'active' => 'Ativa',
+        'past_due' => 'Em atraso',
+        'canceled' => 'Cancelada',
+    ][$subscriptionStatus] ?? ucfirst($subscriptionStatus);
+    $subscriptionEndsAt = $subscription?->current_period_ends_at;
+    $subscriptionProviderReference = $subscription?->provider_reference ?: 'Ainda nao gerada';
+    $canUseWebhooks = in_array($subscriptionStatus, ['trialing', 'active', 'pending'], true);
     $healthStatus = $totalEvents === 0 ? 'Aguardando evento' : ($invalidEvents > 0 ? 'Atencao' : 'Saudavel');
     $healthClass = $invalidEvents > 0 ? 'status-warn' : 'status-ok';
     $usageWarning = $usagePercent >= 100
@@ -60,6 +70,10 @@
             <div class="control-label">Retencao</div>
             <div class="control-value">{{ $retentionDays }} dias</div>
           </div>
+          <div class="control-card">
+            <div class="control-label">Assinatura</div>
+            <div class="control-value">{{ $subscriptionStatusLabel }}</div>
+          </div>
         </div>
       </div>
 
@@ -75,7 +89,7 @@
         <div class="mt-4">
           <div class="d-flex justify-content-between mb-2"><span class="muted">Limite mensal usado</span><strong>{{ $usagePercent }}%</strong></div>
           <div class="bar-track"><span class="bar-fill" style="width: {{ $usagePercent }}%"></span></div>
-          <div class="muted mt-2">Status da assinatura: {{ $subscriptionStatus }}</div>
+          <div class="muted mt-2">Status da assinatura: {{ $subscriptionStatusLabel }}</div>
         </div>
       </aside>
     </section>
@@ -108,8 +122,49 @@
         <h2 class="h4">Operacao guiada</h2>
         <div class="quick-actions">
           <a class="quick-action" href="#setup"><span>Configurar webhook no GitHub</span><span>?</span></a>
-          <a class="quick-action" href="#eventos"><span>Investigar eventos recebidos</span><span>?</span></a>
-          <a class="quick-action" href="{{ route('support') }}"><span>Abrir chamado de suporte</span><span>?</span></a>
+          <a class="quick-action" href="#eventos"><span>Investigar eventos recebidos</span><span>></span></a>
+          <a class="quick-action" href="{{ route('support') }}"><span>Abrir chamado de suporte</span><span>></span></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="cardx mb-3">
+      <div class="d-flex justify-content-between gap-3 flex-wrap align-items-start">
+        <div>
+          <div class="kicker">Central da assinatura</div>
+          <h2 class="h4 mt-2 mb-1">{{ $canUseWebhooks ? 'Seu workspace esta apto a receber eventos' : 'Assinatura precisa de atencao' }}</h2>
+          <p class="muted mb-0">Aqui ficam os dados essenciais para acompanhar limite, periodo atual e referencia do pagamento.</p>
+        </div>
+        <span class="pill {{ $subscriptionStatus === 'active' ? 'status-ok' : ($subscriptionStatus === 'canceled' ? 'status-warn' : '') }}">{{ $subscriptionStatusLabel }}</span>
+      </div>
+      <div class="row g-2 mt-2">
+        <div class="col-md-3">
+          <div class="summary-cell h-100">
+            <div class="summary-label">Plano</div>
+            <div class="summary-value">{{ $planName }}</div>
+            <div class="muted mt-1">{{ number_format($monthlyLimit, 0, ',', '.') }} eventos por mes</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="summary-cell h-100">
+            <div class="summary-label">Uso no mes</div>
+            <div class="summary-value">{{ $usagePercent }}%</div>
+            <div class="bar-track mt-2"><span class="bar-fill" style="width: {{ $usagePercent }}%"></span></div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="summary-cell h-100">
+            <div class="summary-label">Periodo atual</div>
+            <div class="summary-value">{{ $subscriptionEndsAt ? $subscriptionEndsAt->format('d/m/Y') : 'Sem vencimento' }}</div>
+            <div class="muted mt-1">Renovacao ou rechecagem do ciclo.</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="summary-cell h-100">
+            <div class="summary-label">Referencia Mercado Pago</div>
+            <div class="summary-value" style="font-size:14px;word-break:break-all">{{ $subscriptionProviderReference }}</div>
+            <div class="muted mt-1">Usada para suporte e conciliacao.</div>
+          </div>
         </div>
       </div>
     </section>
@@ -279,7 +334,7 @@
               <div class="col-md-4">
                 <div class="summary-cell h-100">
                   <div class="summary-label">2. Configure no GitHub</div>
-                  <div class="summary-value">Em Settings ? Webhooks, escolha JSON e cole o Secret do workspace.</div>
+                  <div class="summary-value">Em Settings -> Webhooks, escolha JSON e cole o Secret do workspace.</div>
                 </div>
               </div>
               <div class="col-md-4">
