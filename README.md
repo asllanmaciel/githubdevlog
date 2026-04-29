@@ -60,3 +60,19 @@ O MVP já contempla:
 - O endpoint `GET /docs` abre uma interface simples para leitura dos arquivos `.md` da pasta `docs`.
 - `GET /api/docs/list` retorna a lista de arquivos markdown.
 - `GET /api/docs/raw?file=<nome.md>` retorna o conteúdo bruto de um documento.
+
+## Observabilidade visual da documentacao
+
+- A pagina `GET /docs` foi redesenhada com UX premium: sidebar com fundo em vidro, busca de arquivos, metadados e preview responsivo.
+
+## Versionamento e GitHub
+
+- O projeto esta versionado com Git neste diretorio com commit inicial:
+  - `feat: inicializa MVP DevLog AI com webhook, docs e Docker`
+- Arquivos sensiveis ou de runtime estao no `.gitignore`:
+  - `.env`
+  - `database/devlog.sqlite`
+- Para publicar no GitHub:
+  1. `git remote add origin https://github.com/<SEU_USUARIO>/<SEU_REPO>.git`
+  2. `git branch -M master`
+  3. `git push -u origin master`
