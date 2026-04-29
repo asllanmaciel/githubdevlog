@@ -1,4 +1,4 @@
-﻿<x-layout title="Dashboard | GitHub DevLog AI">
+<x-layout title="Dashboard | GitHub DevLog AI">
 @php
     use App\Models\BillingPlan;
     use App\Support\WorkspaceUsage;
@@ -104,6 +104,84 @@
       <div class="metric"><div class="metric-label">Repositorios vistos</div><div class="metric-value">{{ $repos }}</div><div class="muted mt-2">Origem mais recente: {{ $latestRepo }}</div></div>
       <div class="metric"><div class="metric-label">Push recebidos</div><div class="metric-value">{{ $pushes }}</div><div class="muted mt-2">Sender recente: {{ $latestSender }}</div></div>
       <div class="metric"><div class="metric-label">Notas e tarefas</div><div class="metric-value">{{ $notesCount + $openTasks }}</div><div class="muted mt-2">{{ $openTasks }} tarefa(s) aberta(s)</div></div>
+    </section>
+
+    <section class="cardx mb-3" id="equipe">
+      <div class="d-flex justify-content-between gap-3 flex-wrap align-items-start">
+        <div>
+          <div class="kicker">Equipe do workspace</div>
+          <h2 class="h4 mt-2 mb-1">Acesso privado, compartilhado com controle</h2>
+          <p class="muted mb-0">Convide devs do time para acompanhar webhooks, abrir tarefas e investigar entregas sem compartilhar senha ou secret fora do workspace.</p>
+        </div>
+        <span class="pill">Seu papel: {{ $workspaceRole ?? 'membro' }}</span>
+      </div>
+      <div class="row g-3 mt-2">
+        <div class="col-lg-7">
+          <div class="summary-cell h-100">
+            <div class="summary-label">Membros atuais</div>
+            @forelse ($members as $member)
+              <div class="d-flex justify-content-between gap-2 align-items-center mt-2">
+                <div>
+                  <strong>{{ $member->user?->name ?? 'Usuario removido' }}</strong>
+                  <div class="muted">{{ $member->user?->email ?? 'sem email' }} · {{ $member->role }}</div>
+                </div>
+                @if ($canManageWorkspace && $member->role !== 'owner' && $member->user_id !== auth()->id())
+                  <form method="POST" action="{{ route('workspace.members.remove', $member) }}">
+                    @csrf
+                    <button class="btnx" type="submit">Remover</button>
+                  </form>
+                @endif
+              </div>
+            @empty
+              <div class="muted mt-2">Nenhum membro vinculado ainda.</div>
+            @endforelse
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="summary-cell h-100">
+            <div class="summary-label">Convidar dev</div>
+            @if ($canManageWorkspace)
+              <form method="POST" action="{{ route('workspace.members.invite') }}" class="mt-2">
+                @csrf
+                <label>Email</label>
+                <input name="email" type="email" required placeholder="dev@empresa.com">
+                <label class="mt-2">Papel</label>
+                <select name="role" required>
+                  <option value="developer">Developer</option>
+                  <option value="admin">Admin</option>
+                  <option value="viewer">Viewer</option>
+                </select>
+                <button class="btnx primary w-100 mt-2" type="submit">Adicionar ou criar convite</button>
+              </form>
+            @else
+              <div class="muted mt-2">Somente owner ou admin pode convidar novos membros.</div>
+            @endif
+          </div>
+        </div>
+      </div>
+      @if ($invites->where('status', 'pending')->count() > 0)
+        <div class="row g-2 mt-2">
+          @foreach ($invites->where('status', 'pending') as $invite)
+            <div class="col-md-6">
+              <div class="summary-cell">
+                <div class="d-flex justify-content-between gap-2 align-items-start">
+                  <div>
+                    <div class="summary-label">Convite pendente</div>
+                    <div class="summary-value">{{ $invite->email }}</div>
+                    <div class="muted">{{ $invite->role }} · expira {{ $invite->expires_at?->format('d/m/Y') }}</div>
+                  </div>
+                  @if ($canManageWorkspace)
+                    <form method="POST" action="{{ route('workspace.invites.cancel', $invite) }}">
+                      @csrf
+                      <button class="btnx" type="submit">Cancelar</button>
+                    </form>
+                  @endif
+                </div>
+              </div>
+            </div>
+          @endforeach
+        </div>
+      @endif
     </section>
 
     <x-workspace-onboarding

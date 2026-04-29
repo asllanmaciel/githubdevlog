@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use App\Models\BillingPlan;
 use App\Models\BillingEvent;
@@ -13,12 +13,15 @@ use App\Models\WebhookEvent;
 use App\Models\WebhookEventNote;
 use App\Models\WebhookEventTask;
 use App\Models\Workspace;
+use App\Models\WorkspaceInvite;
+use App\Models\WorkspaceMember;
 use App\Models\WorkspaceSubscription;
 use App\Services\MercadoPagoBillingService;
 use App\Support\AuditTrail;
 use App\Support\SystemHealth;
 use App\Support\SupportSla;
 use App\Support\WebhookSanitizer;
+use App\Support\WorkspaceAccess;
 use App\Support\WorkspaceUsage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -68,6 +71,21 @@ Route::middleware('guest')->group(function () {
         ]);
 
         $workspace->members()->create(['user_id' => $user->id, 'role' => 'owner']);
+
+        WorkspaceInvite::where('email', $user->email)
+            ->where('status', 'pending')
+            ->where(function ($query) {
+                $query->whereNull('expires_at')->orWhere('expires_at', '>', now());
+            })
+            ->get()
+            ->each(function (WorkspaceInvite $invite) use ($user) {
+                WorkspaceMember::updateOrCreate(
+                    ['workspace_id' => $invite->workspace_id, 'user_id' => $user->id],
+                    ['role' => $invite->role],
+                );
+                $invite->update(['status' => 'accepted', 'accepted_at' => now()]);
+            });
+
         Auth::login($user);
 
         return redirect()->route('dashboard');
@@ -98,8 +116,12 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
         $events = $workspace ? $workspace->webhookEvents()->latest()->limit(50)->get() : collect();
         $notifications = $workspace ? Notification::where('workspace_id', $workspace->id)->latest()->limit(5)->get() : collect();
         $githubInstallation = $workspace ? $workspace->githubInstallations()->latest()->first() : null;
+        $members = $workspace ? $workspace->members()->with('user')->get() : collect();
+        $invites = $workspace ? $workspace->invites()->latest()->limit(10)->get() : collect();
+        $canManageWorkspace = $workspace ? WorkspaceAccess::canManage(Auth::user(), $workspace) : false;
+        $workspaceRole = $workspace ? WorkspaceAccess::currentRole(Auth::user(), $workspace) : null;
 
-        return view('dashboard', compact('workspace', 'events', 'notifications', 'githubInstallation'));
+        return view('dashboard', compact('workspace', 'events', 'notifications', 'githubInstallation', 'members', 'invites', 'canManageWorkspace', 'workspaceRole'));
     })->name('dashboard');
 
     Route::post('/notifications/{notification}/read', function (Notification $notification) {
@@ -120,6 +142,50 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
 
         return redirect()->route('dashboard')->with('status', 'Notificacoes marcadas como lidas.');
     })->name('notifications.read-all');
+    Route::post('/workspace/members/invite', function (Request $request) {
+        $workspace = Auth::user()->workspaces()->firstOrFail();
+        abort_unless(WorkspaceAccess::canManage(Auth::user(), $workspace), 403);
+
+        $data = $request->validate([
+            'email' => ['required', 'email', 'max:180'],
+            'role' => ['required', 'string', 'in:admin,developer,viewer'],
+        ]);
+
+        $result = WorkspaceAccess::invite($workspace, Auth::user(), $data['email'], $data['role']);
+        AuditTrail::record('workspace.member.invited', $workspace, $workspace, [
+            'email' => strtolower($data['email']),
+            'role' => $data['role'],
+            'status' => $result['status'],
+        ]);
+
+        return redirect()->route('dashboard')->with('status', $result['status'] === 'member_added'
+            ? 'Membro adicionado ao workspace.'
+            : 'Convite pendente criado. O usuario sera vinculado quando criar conta com este email.');
+    })->name('workspace.members.invite');
+
+    Route::post('/workspace/members/{member}/remove', function (WorkspaceMember $member) {
+        $workspace = Auth::user()->workspaces()->firstOrFail();
+        abort_unless($member->workspace_id === $workspace->id, 403);
+        abort_unless(WorkspaceAccess::canManage(Auth::user(), $workspace), 403);
+        abort_if($member->role === 'owner', 422, 'Owner nao pode ser removido por esta acao.');
+
+        $removedUserId = $member->user_id;
+        $member->delete();
+        AuditTrail::record('workspace.member.removed', $workspace, $workspace, ['removed_user_id' => $removedUserId]);
+
+        return redirect()->route('dashboard')->with('status', 'Membro removido do workspace.');
+    })->name('workspace.members.remove');
+
+    Route::post('/workspace/invites/{invite}/cancel', function (WorkspaceInvite $invite) {
+        $workspace = Auth::user()->workspaces()->firstOrFail();
+        abort_unless($invite->workspace_id === $workspace->id, 403);
+        abort_unless(WorkspaceAccess::canManage(Auth::user(), $workspace), 403);
+
+        $invite->update(['status' => 'canceled']);
+        AuditTrail::record('workspace.invite.canceled', $invite, $workspace, ['email' => $invite->email]);
+
+        return redirect()->route('dashboard')->with('status', 'Convite cancelado.');
+    })->name('workspace.invites.cancel');
 
     Route::post('/workspace/secret/rotate', function () {
         $workspace = Auth::user()->workspaces()->firstOrFail();

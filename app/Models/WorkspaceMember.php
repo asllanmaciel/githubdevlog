@@ -17,4 +17,9 @@ class WorkspaceMember extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function canManageWorkspace(): bool
+    {
+        return in_array($this->role, ['owner', 'admin'], true);
+    }
 }
