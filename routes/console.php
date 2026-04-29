@@ -11,3 +11,4 @@ Artisan::command('inspire', function () {
 Schedule::command('devlog:check-usage-limits')->hourly();
 
 Schedule::command('devlog:snapshot-usage')->dailyAt('23:50');
+Schedule::command('devlog:prune-webhook-events')->dailyAt('02:30');
