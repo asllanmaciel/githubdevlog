@@ -1,5 +1,8 @@
 @php
   $report = \App\Support\LaunchReadiness::report();
+  $launchTests = class_exists(\App\Models\LaunchTest::class) ? \App\Models\LaunchTest::all() : collect();
+  $launchTestsDone = $launchTests->where('status', 'passed')->count();
+  $launchTestsPercent = round(($launchTestsDone / max($launchTests->count(), 1)) * 100);
 @endphp
 
 <x-filament-panels::page>
@@ -50,6 +53,18 @@
         </div>
       </section>
     @endif
+
+    <section class="launch-card" style="margin-bottom:16px">
+      <div class="kicker">QA de lancamento</div>
+      <div style="display:flex;justify-content:space-between;gap:18px;align-items:center;flex-wrap:wrap">
+        <div>
+          <div style="font-size:32px;font-weight:950;letter-spacing:-.05em">{{ $launchTestsPercent }}%</div>
+          <div class="detail">{{ $launchTestsDone }} de {{ $launchTests->count() }} testes aprovados</div>
+        </div>
+        <a class="pill" href="{{ url('/admin/launch-tests') }}">Abrir QA de lancamento</a>
+      </div>
+      <div class="bar" style="margin-top:14px"><span style="width:{{ $launchTestsPercent }}%"></span></div>
+    </section>
 
     <section class="grid">
       @foreach ($report['groups'] as $group => $items)
