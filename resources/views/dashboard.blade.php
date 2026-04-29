@@ -102,7 +102,17 @@
       <div class="metric"><div class="metric-label">Notas e tarefas</div><div class="metric-value">{{ $notesCount + $openTasks }}</div><div class="muted mt-2">{{ $openTasks }} tarefa(s) aberta(s)</div></div>
     </section>
 
-    <section class="cardx mb-3">
+    <x-workspace-onboarding
+      :workspace="$workspace"
+      :endpoint="$endpoint"
+      :github-installation="$githubInstallation"
+      :total-events="$totalEvents"
+      :valid-events="$validEvents"
+      :subscription-status-label="$subscriptionStatusLabel"
+      :can-use-webhooks="$canUseWebhooks"
+    />
+
+    <section class="cardx mb-3" id="billing">
       <div class="d-flex justify-content-between gap-3 flex-wrap align-items-start">
         <div>
           <div class="kicker">Notificacoes do workspace</div>
