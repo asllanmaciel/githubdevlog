@@ -3,6 +3,7 @@
 use App\Models\BillingPlan;
 use App\Models\BillingEvent;
 use App\Models\GithubInstallation;
+use App\Models\KnowledgeBaseArticle;
 use App\Models\Notification;
 use App\Models\RoadmapItem;
 use App\Models\SecretRotation;
@@ -305,7 +306,23 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
         return redirect()->route('dashboard')->with('status', 'Tarefa criada a partir do webhook.');
     })->name('events.tasks.store');
 
-    Route::get('/support', fn () => view('support'))->name('support');
+    Route::get('/support', function () {
+        $articles = KnowledgeBaseArticle::where('published', true)
+            ->orderBy('position')
+            ->orderBy('title')
+            ->get();
+
+        return view('support', compact('articles'));
+    })->name('support');
+
+    Route::get('/help', function () {
+        $articles = KnowledgeBaseArticle::where('published', true)
+            ->orderBy('position')
+            ->orderBy('title')
+            ->get();
+
+        return view('support', compact('articles'));
+    })->name('help');
 
     Route::post('/support', function (Request $request) {
         $workspace = Auth::user()->workspaces()->first();

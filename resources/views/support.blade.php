@@ -19,4 +19,29 @@
       <button class="btnx primary w-100 mt-3" type="submit">Abrir chamado</button>
     </form>
   </section>
+
+  <section class="band">
+    <div class="kicker">Base de conhecimento</div>
+    <h2>Resolva os casos mais comuns antes de abrir chamado.</h2>
+    <div class="row g-3 mt-2">
+      @forelse (($articles ?? collect())->groupBy('category') as $category => $items)
+        <div class="col-lg-6">
+          <div class="cardx h-100">
+            <div class="kicker">{{ $category }}</div>
+            @foreach ($items as $article)
+              <details class="payload" style="margin-top:12px">
+                <summary>{{ $article->title }}</summary>
+                <p class="muted mt-2">{{ $article->summary }}</p>
+                <pre style="white-space:pre-wrap">{{ $article->body }}</pre>
+              </details>
+            @endforeach
+          </div>
+        </div>
+      @empty
+        <div class="col-12">
+          <div class="cardx">A base de conhecimento ainda esta sendo preparada. Abra um chamado com o maximo de contexto tecnico.</div>
+        </div>
+      @endforelse
+    </div>
+  </section>
 </x-layout>

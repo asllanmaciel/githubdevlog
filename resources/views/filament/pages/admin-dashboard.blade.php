@@ -55,6 +55,7 @@
           <a href="{{ url('/admin/deploy-runbook') }}">Runbook deploy</a>
           <a href="{{ url('/admin/system-status') }}">Status sistema</a>
           <a href="{{ url('/admin/security-center') }}">Seguranca</a>
+          <a href="{{ url('/admin/knowledge-base-articles') }}">Base conhecimento</a>
           <a href="{{ url('/admin/github-readiness') }}">Prontidao GitHub</a>
           <a href="{{ url('/admin/support-tickets') }}">Suporte</a>
           <a href="{{ url('/admin/workspace-subscriptions') }}">Assinaturas</a>
