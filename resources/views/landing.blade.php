@@ -1,4 +1,10 @@
 <x-layout title="GitHub DevLog AI - Inbox privado para webhooks do GitHub">
+  @php
+    $creatorName = config('devlog.creator_name');
+    $creatorRole = config('devlog.creator_role');
+    $creatorUrl = config('devlog.creator_url');
+  @endphp
+
   <main class="hero">
     <span class="eyebrow">Feito para devs que precisam confiar nos webhooks do GitHub</span>
     <h1>Transforme webhooks do GitHub em um histórico privado, legível e auditável.</h1>
@@ -50,6 +56,22 @@ X-Hub-Signature-256: sha256=...
     </div>
   </section>
 
+  <section class="band" id="criador">
+    <div class="kicker">Criador</div>
+    <h2>Projeto criado e mantido por {{ $creatorName }}.</h2>
+    <p class="lead">
+      O GitHub DevLog AI nasceu de uma dor prática de desenvolvimento: entender, validar e demonstrar webhooks do GitHub sem depender de logs espalhados, payloads perdidos ou ferramentas genéricas demais. {{ $creatorRole }} conduz a iniciativa com foco em SaaS, integração GitHub-first e experiência real para devs.
+    </p>
+    <div class="row g-3 mt-3">
+      <div class="col-md-4"><div class="cardx"><h3>Visão de produto</h3><p>Um painel que ajuda devs e times a transformar eventos brutos em sinais úteis para debugging, auditoria e colaboração.</p></div></div>
+      <div class="col-md-4"><div class="cardx"><h3>Integração GitHub-first</h3><p>A solução foi desenhada para o ecossistema GitHub: assinatura, delivery id, GitHub App, eventos e workspaces privados.</p></div></div>
+      <div class="col-md-4"><div class="cardx"><h3>Autoria transparente</h3><p>O projeto tem responsável claro, roadmap visível e evolução orientada a lançamento oficial.</p></div></div>
+    </div>
+    @if ($creatorUrl)
+      <div class="mt-4"><a class="btnx" href="{{ $creatorUrl }}" target="_blank" rel="noopener">Ver perfil do criador</a></div>
+    @endif
+  </section>
+
   <section class="band steps" id="uso">
     <div class="kicker">Como o dev usa</div>
     <h2>Do cadastro ao primeiro webhook em minutos.</h2>
@@ -82,8 +104,8 @@ X-Hub-Signature-256: sha256=...
 
   <footer class="footer">
     <div class="d-flex justify-content-between gap-3 flex-wrap">
-      <span>GitHub DevLog AI · produto para validar webhooks do GitHub com menos ruído e mais confiança.</span>
-      <span><a href="{{ route('health') }}">Status</a> · <a href="{{ route('login') }}">Login</a> · <a href="{{ route('register') }}">Cadastro</a></span>
+      <span>GitHub DevLog AI · criado por {{ $creatorName }} para validar webhooks do GitHub com menos ruído e mais confiança.</span>
+      <span><a href="{{ route('status') }}">Status</a> · <a href="{{ route('github') }}">GitHub</a> · <a href="{{ route('login') }}">Login</a> · <a href="{{ route('register') }}">Cadastro</a></span>
     </div>
   </footer>
 </x-layout>

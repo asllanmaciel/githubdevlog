@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
@@ -193,7 +193,8 @@
       <nav class="nav" aria-label="Menu principal">
         <a class="btnx" href="{{ route('home') }}#produto">Produto</a>
         <a class="btnx" href="{{ route('home') }}#uso">Como usar</a>
-        <a class="btnx" href="{{ route('home') }}#SeguranÃ§a</a>
+        <a class="btnx" href="{{ route('home') }}#criador">Criador</a>
+        <a class="btnx" href="{{ route('home') }}#seguranca">Segurança</a>
         @auth
           @if(Auth::user()->is_super_admin)
             <a class="btnx primary" href="{{ url('/admin') }}">Admin</a>
