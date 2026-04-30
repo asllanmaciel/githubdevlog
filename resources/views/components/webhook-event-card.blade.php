@@ -15,11 +15,23 @@
       ->take(8);
   $notes = \App\Models\WebhookEventNote::where('webhook_event_id', $event->id)->latest()->limit(3)->get();
   $tasks = \App\Models\WebhookEventTask::where('webhook_event_id', $event->id)->latest()->limit(4)->get();
-  $statusLabel = $event->signature_valid ? 'Assinatura valida' : 'Assinatura pendente';
+  $statusLabel = $event->signature_valid ? 'Assinatura válida' : 'Assinatura pendente';
   $statusClass = $event->signature_valid ? 'success' : 'warning';
+  $aiBilling = $event->workspace ? \App\Support\AiAnalysisBilling::report($event->workspace) : null;
+  $openAiConfigured = filled(config('services.openai.api_key'));
   $diagnostic = $event->signature_valid
-      ? 'Evento confiavel para diagnostico e automacao.'
+      ? 'Evento confiável para diagnóstico e automação.'
       : 'Confira o secret configurado no GitHub antes de confiar neste payload.';
+  $riskLabel = [
+      'high' => 'Risco alto',
+      'medium' => 'Risco médio',
+      'low' => 'Risco baixo',
+  ][$event->ai_risk_level] ?? 'Ainda sem análise';
+  $riskClass = [
+      'high' => 'warning',
+      'medium' => 'soft',
+      'low' => 'success',
+  ][$event->ai_risk_level] ?? 'soft';
 @endphp
 
 <article class="event event-card" data-event-type="{{ $event->event_name }}" data-signature="{{ $event->signature_valid ? 'valid' : 'pending' }}">
@@ -50,7 +62,6 @@
     <span>{{ $diagnostic }}</span>
   </div>
 
-
   <div class="event-diagnostic ai-diagnostic">
     <div class="d-flex justify-content-between gap-2 flex-wrap align-items-start">
       <div>
@@ -60,7 +71,10 @@
       <span class="pill {{ $riskClass }}">{{ $riskLabel }}</span>
     </div>
     @if($event->ai_generated_at)
-      <div class="muted mt-2">Gerada em {{ $event->ai_generated_at->format('d/m/Y H:i') }} · {{ $event->ai_provider }}</div>
+      <div class="muted mt-2">Gerada em {{ $event->ai_generated_at->format('d/m/Y H:i') }} · {{ $event->ai_provider }} · {{ $event->ai_analysis_type === 'llm' ? 'AI avançada' : 'AI grátis' }} @if($event->ai_estimated_cost_cents > 0) · custo estimado R$ {{ number_format($event->ai_estimated_cost_cents / 100, 2, ',', '.') }} @endif</div>
+    @endif
+    @if($event->ai_error)
+      <div class="muted mt-2">Último erro AI: {{ $event->ai_error }}</div>
     @endif
     @if(is_array($event->ai_signals) && count($event->ai_signals) > 0)
       <div class="file-strip mt-2">
@@ -76,10 +90,19 @@
         @endforeach
       </ul>
     @endif
-    <form method="POST" action="{{ route('events.ai-analysis.generate', $event) }}" class="mt-2">
-      @csrf
-      <button class="btnx primary" type="submit">{{ $event->ai_summary ? 'Regerar análise AI' : 'Gerar análise AI' }}</button>
-    </form>
+    <div class="d-flex gap-2 flex-wrap mt-2">
+      <form method="POST" action="{{ route('events.ai-analysis.generate', $event) }}">
+        @csrf
+        <input type="hidden" name="mode" value="local">
+        <button class="btnx" type="submit">{{ $event->ai_summary && $event->ai_analysis_type === 'local' ? 'Regerar AI grátis' : 'Gerar AI grátis' }}</button>
+      </form>
+      <form method="POST" action="{{ route('events.ai-analysis.generate', $event) }}">
+        @csrf
+        <input type="hidden" name="mode" value="llm">
+        <button class="btnx primary" type="submit" {{ ! $openAiConfigured || ! ($aiBilling['can_use'] ?? false) ? 'disabled' : '' }}>Gerar AI avançada</button>
+      </form>
+    </div>
+    <div class="muted mt-2">AI grátis: inclusa. AI avançada: {{ $openAiConfigured ? (($aiBilling['enabled'] ?? false) ? (($aiBilling['remaining'] ?? 0).' restante(s) no plano') : 'não inclusa neste plano') : 'OPENAI_API_KEY não configurada' }}.</div>
   </div>
 
   @if($files->isNotEmpty())
@@ -100,7 +123,7 @@
       @endforelse
       <form method="POST" action="{{ route('events.notes.store', $event) }}">
         @csrf
-        <textarea name="body" rows="3" placeholder="Ex.: confirmar se o payload ja pode acionar automacao"></textarea>
+        <textarea name="body" rows="3" placeholder="Ex.: confirmar se o payload já pode acionar automação"></textarea>
         <button class="btnx w-100 mt-2" type="submit">Adicionar nota</button>
       </form>
     </div>

@@ -47,6 +47,14 @@ return [
         'webhook_tolerance_seconds' => env('MERCADO_PAGO_WEBHOOK_TOLERANCE_SECONDS', 900),
     ],
 
+    'openai' => [
+        'api_key' => env('OPENAI_API_KEY'),
+        'base_url' => env('OPENAI_BASE_URL', 'https://api.openai.com/v1'),
+        'model' => env('OPENAI_AI_ANALYSIS_MODEL', 'gpt-5.4-mini'),
+        'timeout' => (int) env('OPENAI_AI_ANALYSIS_TIMEOUT', 20),
+        'estimated_cost_cents' => (int) env('OPENAI_AI_ANALYSIS_COST_CENTS', 15),
+    ],
+
     'github_app' => [
         'name' => env('GITHUB_APP_NAME', 'GitHub DevLog AI'),
         'app_id' => env('GITHUB_APP_ID'),

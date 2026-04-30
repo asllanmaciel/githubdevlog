@@ -53,6 +53,9 @@
             ? 'Uso mensal em nivel critico. Faca upgrade antes de perder eventos importantes.'
             : ($usagePercent >= 80 ? 'Uso mensal proximo do limite. Considere upgrade antes de perder eventos importantes.' : null));
     $unreadNotifications = $notifications->whereNull('read_at')->count();
+    $aiUsage = $workspace ? \App\Support\AiAnalysisBilling::report($workspace) : null;
+    $openAiConfigured = filled(config('services.openai.api_key'));
+    $advancedAiPrice = (($aiUsage['overage_price_cents'] ?? 0) / 100);
 @endphp
 
 @if (! $workspace)
@@ -116,6 +119,23 @@
       <div class="metric"><div class="metric-label">Notas e tarefas</div><div class="metric-value">{{ $notesCount + $openTasks }}</div><div class="muted mt-2">{{ $openTasks }} tarefa(s) aberta(s)</div></div>
     </section>
 
+
+    <section class="cardx mb-3" id="ai">
+      <div class="d-flex justify-content-between gap-3 flex-wrap align-items-start">
+        <div>
+          <div class="kicker">AI do workspace</div>
+          <h2 class="h4 mt-2 mb-1">AI grátis para triagem, AI avançada como recurso pago</h2>
+          <p class="muted mb-0">A análise local continua inclusa para todos. A análise com LLM usa provedor externo, tem custo real e por isso é limitada por plano.</p>
+        </div>
+        <span class="pill">{{ $openAiConfigured ? 'OpenAI configurada' : 'OpenAI pendente' }}</span>
+      </div>
+      <div class="row g-2 mt-2">
+        <div class="col-md-3"><div class="summary-cell h-100"><div class="summary-label">AI grátis</div><div class="summary-value">Ilimitada</div><div class="muted mt-1">Provider local-devlog-ai-v1</div></div></div>
+        <div class="col-md-3"><div class="summary-cell h-100"><div class="summary-label">AI avançada no mês</div><div class="summary-value">{{ $aiUsage['usage'] ?? 0 }} / {{ $aiUsage['limit'] ?? 0 }}</div><div class="bar-track mt-2"><span class="bar-fill" style="width: {{ $aiUsage['percent'] ?? 0 }}%"></span></div></div></div>
+        <div class="col-md-3"><div class="summary-cell h-100"><div class="summary-label">Restantes</div><div class="summary-value">{{ $aiUsage['remaining'] ?? 0 }}</div><div class="muted mt-1">{{ ($aiUsage['enabled'] ?? false) ? 'Inclusas no plano atual' : 'Faça upgrade para usar LLM' }}</div></div></div>
+        <div class="col-md-3"><div class="summary-cell h-100"><div class="summary-label">Custo excedente</div><div class="summary-value">{{ $advancedAiPrice > 0 ? 'R$ '.number_format($advancedAiPrice, 2, ',', '.') : 'Sem excedente' }}</div><div class="muted mt-1">Custo estimado por análise avançada</div></div></div>
+      </div>
+    </section>
     <section class="cardx mb-3" id="equipe">
       <div class="d-flex justify-content-between gap-3 flex-wrap align-items-start">
         <div>

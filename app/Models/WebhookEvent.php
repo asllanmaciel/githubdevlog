@@ -9,7 +9,8 @@ class WebhookEvent extends Model
     protected $fillable = [
         'workspace_id', 'repository_id', 'source', 'event_name', 'action', 'delivery_id',
         'signature_valid', 'validation_method', 'headers', 'payload', 'ai_summary', 'ai_risk_level',
-        'ai_action_items', 'ai_signals', 'ai_provider', 'ai_generated_at', 'received_at', 'processed_at',
+        'ai_action_items', 'ai_signals', 'ai_provider', 'ai_analysis_type', 'ai_estimated_cost_cents',
+        'ai_input_tokens', 'ai_output_tokens', 'ai_error', 'ai_generated_at', 'received_at', 'processed_at',
     ];
 
     protected function casts(): array
@@ -17,6 +18,8 @@ class WebhookEvent extends Model
         return [
             'headers' => 'array',
             'payload' => 'array',
+            'ai_action_items' => 'array',
+            'ai_signals' => 'array',
             'signature_valid' => 'boolean',
             'received_at' => 'datetime',
             'processed_at' => 'datetime',

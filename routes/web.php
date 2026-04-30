@@ -21,7 +21,7 @@ use App\Support\AuditTrail;
 use App\Support\SystemHealth;
 use App\Support\SupportSla;
 use App\Support\SubscriptionLifecycle;
-use App\Support\WebhookEventAiAnalyzer;
+use App\Support\WebhookEventAiAnalysisService;
 use App\Support\WebhookSanitizer;
 use App\Support\WorkspaceAccess;
 use App\Support\WorkspaceInviteDelivery;
@@ -458,11 +458,21 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
         return redirect()->route('dashboard')->with('status', 'Nota adicionada ao evento.');
     })->name('events.notes.store');
 
-    Route::post('/events/{event}/ai-analysis', function (WebhookEvent $event, WebhookEventAiAnalyzer $analyzer) {
+    Route::post('/events/{event}/ai-analysis', function (WebhookEvent $event, Request $request, WebhookEventAiAnalysisService $ai) {
         $workspace = Auth::user()->workspaces()->firstOrFail();
         abort_unless($event->workspace_id === $workspace->id, 403);
 
-        $analysis = $analyzer->analyze($event);
+        $mode = $request->input('mode') === 'llm' ? 'llm' : 'local';
+
+        try {
+            $analysis = $ai->analyze($event, $workspace, $mode);
+        } catch (\Throwable $exception) {
+            $event->update(['ai_error' => $exception->getMessage()]);
+
+            return redirect()->route('dashboard')->withErrors([
+                'ai' => $exception->getMessage(),
+            ]);
+        }
 
         $event->update([
             'ai_summary' => $analysis['summary'],
@@ -470,15 +480,24 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
             'ai_action_items' => $analysis['action_items'],
             'ai_signals' => $analysis['signals'],
             'ai_provider' => $analysis['provider'],
+            'ai_analysis_type' => $analysis['type'],
+            'ai_estimated_cost_cents' => $analysis['estimated_cost_cents'],
+            'ai_input_tokens' => $analysis['input_tokens'],
+            'ai_output_tokens' => $analysis['output_tokens'],
+            'ai_error' => null,
             'ai_generated_at' => $analysis['generated_at'],
         ]);
 
         AuditTrail::record('webhook.ai_analysis.generated', $event, $workspace, [
             'risk_level' => $analysis['risk_level'],
             'provider' => $analysis['provider'],
+            'type' => $analysis['type'],
+            'estimated_cost_cents' => $analysis['estimated_cost_cents'],
         ]);
 
-        return redirect()->route('dashboard')->with('status', 'Análise AI gerada para o evento.');
+        return redirect()->route('dashboard')->with('status', $mode === 'llm'
+            ? 'Análise AI avançada gerada para o evento.'
+            : 'Análise AI gratuita gerada para o evento.');
     })->name('events.ai-analysis.generate');
     Route::post('/events/{event}/tasks', function (WebhookEvent $event, Request $request) {
         $workspace = Auth::user()->workspaces()->firstOrFail();
