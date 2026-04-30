@@ -55,6 +55,35 @@ Route::get('/pricing', function () {
 Route::get('/privacy', fn () => view('legal.privacy'))->name('privacy');
 Route::get('/terms', fn () => view('legal.terms'))->name('terms');
 Route::get('/security', fn () => view('legal.security'))->name('security');
+Route::get('/sitemap.xml', function () {
+    $urls = collect([
+        route('home'),
+        route('pricing'),
+        route('github'),
+        route('docs.users'),
+        route('status'),
+        route('security'),
+        route('privacy'),
+        route('terms'),
+        route('login'),
+        route('register'),
+    ]);
+
+    return response()
+        ->view('sitemap', ['urls' => $urls])
+        ->header('Content-Type', 'application/xml');
+})->name('sitemap');
+Route::get('/robots.txt', function () {
+    return response(
+        "User-agent: *\n".
+        "Allow: /\n".
+        "Disallow: /admin\n".
+        "Disallow: /dashboard\n".
+        "Sitemap: ".route('sitemap')."\n",
+        200,
+        ['Content-Type' => 'text/plain'],
+    );
+})->name('robots');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', fn () => view('auth', ['mode' => 'login']))->name('login');

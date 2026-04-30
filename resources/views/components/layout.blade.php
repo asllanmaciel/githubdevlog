@@ -192,6 +192,7 @@
       </a>
       <nav class="nav" aria-label="Menu principal">
         <a class="btnx" href="{{ route('home') }}#produto">Produto</a>
+        <a class="btnx" href="{{ route('pricing') }}">Planos</a>
         <a class="btnx" href="{{ route('home') }}#uso">Como usar</a>
         <a class="btnx" href="{{ route('home') }}#criador">Criador</a>
         <a class="btnx" href="{{ route('home') }}#seguranca">Segurança</a>
