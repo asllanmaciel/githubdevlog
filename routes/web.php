@@ -44,6 +44,14 @@ Route::get('/health', function () {
 Route::get('/docs/usuarios', fn () => view('docs.users'))->name('docs.users');
 Route::get('/docs/admin', fn () => redirect('/admin/docs'))->name('docs.admin');
 Route::get('/github', fn () => view('github'))->name('github');
+Route::get('/pricing', function () {
+    $plans = BillingPlan::where('active', true)
+        ->orderBy('price_cents')
+        ->orderBy('monthly_event_limit')
+        ->get();
+
+    return view('pricing', compact('plans'));
+})->name('pricing');
 Route::get('/privacy', fn () => view('legal.privacy'))->name('privacy');
 Route::get('/terms', fn () => view('legal.terms'))->name('terms');
 Route::get('/security', fn () => view('legal.security'))->name('security');
