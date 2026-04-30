@@ -23,6 +23,7 @@ class GitHubProgramReadiness
             self::check('Base de conhecimento', Schema::hasTable('knowledge_base_articles') && KnowledgeBaseArticle::where('published', true)->count() >= 3, 'Artigos publicados ajudam suporte e onboarding.', 'Docs'),
             self::check('Status e confianca', Route::has('status'), 'Pagina publica de status existe para operacao.', 'Confianca'),
             self::check('Suporte operacional', Schema::hasTable('support_tickets'), 'Sistema de chamados permite receber feedback e problemas.', 'Suporte'),
+            self::check('Contato publico', Route::has('contact') && filled(config('devlog.support_email')), 'Revisores e usuarios conseguem falar com o projeto fora do painel autenticado.', 'Suporte'),
             self::check('Politicas publicas', Route::has('privacy') && Route::has('terms') && Route::has('security'), 'Privacidade, termos e seguranca ficam publicados antes da submissao.', 'Confianca'),
             self::check('Ativos publicos de launch', Route::has('sitemap') && Route::has('robots'), 'Sitemap e robots ajudam a apresentar o produto como publico e navegavel.', 'Launch'),
             self::check('Changelog publico', Route::has('changelog'), 'Historico publico demonstra evolucao, manutencao e maturidade do projeto.', 'Launch'),

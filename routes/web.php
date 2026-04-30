@@ -45,6 +45,7 @@ Route::get('/docs/usuarios', fn () => view('docs.users'))->name('docs.users');
 Route::get('/docs/api', fn () => view('docs.api'))->name('docs.api');
 Route::get('/docs/admin', fn () => redirect('/admin/docs'))->name('docs.admin');
 Route::get('/github', fn () => view('github'))->name('github');
+Route::get('/contact', fn () => view('contact'))->name('contact');
 Route::get('/changelog', fn () => view('changelog', [
     'entries' => \App\Support\PublicChangelog::entries(),
 ]))->name('changelog');
@@ -64,6 +65,7 @@ Route::get('/sitemap.xml', function () {
         route('home'),
         route('pricing'),
         route('changelog'),
+        route('contact'),
         route('github'),
         route('docs.users'),
         route('docs.api'),
