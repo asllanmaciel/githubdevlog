@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 return [
     'creator_name' => env('DEVLOG_CREATOR_NAME', 'Asllan Maciel'),

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use App\Models\BillingPlan;
 use App\Models\BillingEvent;
