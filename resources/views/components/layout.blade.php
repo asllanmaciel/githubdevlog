@@ -4,7 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ $title ?? 'GitHub DevLog AI' }}</title>
-  @php($isDashboardShell = request()->routeIs('dashboard'))
+  @php
+    $isDashboardShell = request()->routeIs('dashboard');
+  @endphp
   <meta name="description" content="Capture, valide e acompanhe webhooks do GitHub em workspaces privados, com segredo por conta e painel para debugging.">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
