@@ -8,9 +8,9 @@
 
   <main class="hero">
     <span class="eyebrow">Feito para devs que precisam confiar nos webhooks do GitHub</span>
-    <h1>Transforme webhooks do GitHub em um histórico privado, legível e auditável.</h1>
+    <h1>Pare de perder tempo tentando descobrir se o webhook do GitHub chegou, falhou ou sumiu.</h1>
     <p class="lead">
-      O DevLog AI recebe eventos do GitHub, valida o segredo configurado no repositório e mostra tudo em um painel por workspace. Sem misturar payloads de outros devs, sem procurar logs no terminal, sem adivinhar se o webhook chegou.
+      O DevLog AI é uma central privada para receber, validar e investigar webhooks do GitHub com clareza. Veja cada evento, assinatura, payload e entrega em um painel feito para debugging, demonstrações e auditoria real de integrações.
     </p>
     <div class="d-flex gap-2 flex-wrap mt-4">
       <a class="btnx primary" href="{{ route('register') }}">Criar meu workspace</a>
@@ -144,6 +144,7 @@ X-Hub-Signature-256: sha256=...
     </div>
   </footer>
 </x-layout>
+
 
 
 
