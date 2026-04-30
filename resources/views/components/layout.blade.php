@@ -199,171 +199,204 @@
       width: 100%;
       min-height: 100vh;
       padding: 0;
-      display: block;
     }
-    body.app-dashboard .topbar {
-      position: sticky;
-      top: 0;
-      min-height: auto;
-      padding: 14px clamp(18px, 3vw, 44px);
-      border-right: 0;
-      border-bottom: 1px solid rgba(39, 53, 68, .92);
+    .app-shell { display:grid; grid-template-columns:292px minmax(0,1fr); min-height:100vh; }
+    .app-sidebar {
+      position:sticky;
+      top:0;
+      height:100vh;
+      padding:18px 14px;
+      border-right:1px solid rgba(39,53,68,.92);
       background:
-        linear-gradient(90deg, rgba(8, 16, 25, .98), rgba(7, 20, 18, .96)),
-        radial-gradient(circle at 18% 0%, rgba(80,184,255,.14), transparent 34%);
-      box-shadow: 0 18px 70px rgba(0,0,0,.24);
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-      gap: 18px;
-      z-index: 5;
-      backdrop-filter: blur(12px);
+        radial-gradient(circle at 18% 0%, rgba(80,184,255,.16), transparent 32%),
+        linear-gradient(180deg, rgba(8,16,25,.98), rgba(5,11,17,.96));
+      box-shadow:22px 0 80px rgba(0,0,0,.26);
+      overflow:auto;
+      z-index:6;
     }
-    body.app-dashboard .brand {
-      align-items: center;
-      padding-bottom: 0;
-      border-bottom: 0;
-      width: auto;
-      min-width: 240px;
+    .app-sidebar .brand { width:100%; padding-bottom:16px; margin-bottom:16px; border-bottom:1px solid rgba(39,53,68,.86); }
+    .app-sidebar .brand img { width:42px; height:42px; filter:drop-shadow(0 14px 28px rgba(80,184,255,.22)); }
+    .app-user-card {
+      border:1px solid rgba(56,77,96,.92);
+      border-radius:16px;
+      padding:14px;
+      margin-bottom:16px;
+      background:linear-gradient(135deg, rgba(80,184,255,.1), rgba(105,227,154,.06)), #08111a;
     }
-    body.app-dashboard .brand img {
-      width: 44px;
-      height: 44px;
-      filter: drop-shadow(0 14px 28px rgba(80,184,255,.2));
+    .app-avatar {
+      width:42px;
+      height:42px;
+      border-radius:14px;
+      display:grid;
+      place-items:center;
+      color:#061018;
+      font-weight:950;
+      background:linear-gradient(135deg,var(--blue),var(--green));
+      box-shadow:0 14px 34px rgba(80,184,255,.18);
+      flex:0 0 auto;
     }
-    body.app-dashboard .brand strong {
-      font-size: 18px;
+    .app-user-name { font-weight:950; line-height:1.15; }
+    .app-user-email { color:var(--muted); font-size:12px; word-break:break-all; margin-top:3px; }
+    .app-menu-label { color:var(--muted); font-size:11px; letter-spacing:.14em; text-transform:uppercase; font-weight:950; margin:18px 0 8px; }
+    .app-menu { display:grid; gap:8px; }
+    .app-menu a,
+    .app-menu button {
+      width:100%;
+      border:1px solid rgba(39,53,68,.92);
+      border-radius:12px;
+      background:rgba(11,17,24,.76);
+      color:var(--ink);
+      padding:11px 12px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      font-weight:850;
+      text-align:left;
     }
-    body.app-dashboard .brand span span {
-      display: block;
-      max-width: 180px;
-      line-height: 1.45;
-    }
-    body.app-dashboard .nav {
-      width: auto;
-      flex-direction: row;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 8px;
-    }
-    body.app-dashboard .btnx {
-      width: auto;
-      justify-content: center;
-      min-height: 40px;
-      border-radius: 999px;
-      background: rgba(11, 17, 24, .72);
-      padding: 9px 13px;
-    }
-    body.app-dashboard .btnx.primary {
-      background: linear-gradient(135deg, var(--blue), var(--green));
-      border-color: transparent;
-      color: #061018;
-      box-shadow: 0 14px 34px rgba(80, 184, 255, .18);
-    }
-    body.app-dashboard form {
-      width: auto;
-      margin-top: 0;
-      padding-top: 0;
-      border-top: 0;
-    }
+    .app-menu a:hover,
+    .app-menu button:hover { border-color:var(--blue); color:var(--ink); }
+    .app-menu a.active { color:#061018; border-color:transparent; background:linear-gradient(135deg,var(--blue),var(--green)); }
+    .app-menu .hint { color:inherit; opacity:.72; font-size:12px; font-weight:900; }
+    .app-sidebar form { margin:0; }
+    .app-content { min-width:0; }
+    .app-mobilebar { display:none; }
     body.app-dashboard main {
       width: min(100% - 36px, 1420px);
       padding: 28px 0 54px;
       margin: 0 auto;
     }
-    body.app-dashboard .dashboard-hero {
-      grid-template-columns: minmax(0, 1.45fr) minmax(340px, .72fr);
-      gap: 18px;
-    }
-    body.app-dashboard .dashboard-title {
-      max-width: 980px;
-      font-size: clamp(42px, 4.2vw, 72px);
-    }
+    body.app-dashboard .dashboard-hero { grid-template-columns: minmax(0, 1.45fr) minmax(340px, .72fr); gap: 18px; }
+    body.app-dashboard .dashboard-title { max-width: 980px; font-size: clamp(42px, 4.2vw, 72px); }
     body.app-dashboard .cardx,
     body.app-dashboard .metric,
     body.app-dashboard .event-card,
     body.app-dashboard .control-card,
     body.app-dashboard .insight-card {
       border-radius: 16px;
-      background:
-        linear-gradient(180deg, rgba(15, 25, 35, .94), rgba(8, 15, 22, .9));
+      background: linear-gradient(180deg, rgba(15, 25, 35, .94), rgba(8, 15, 22, .9));
       border-color: rgba(56, 77, 96, .92);
       box-shadow: 0 24px 80px rgba(0, 0, 0, .22);
     }
-    body.app-dashboard .metric-grid {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 14px;
-    }
-    body.app-dashboard .dashboard-grid {
-      grid-template-columns: 410px minmax(0, 1fr);
-      gap: 18px;
-    }
-    body.app-dashboard .config-card {
-      top: 28px;
-    }
+    body.app-dashboard .metric-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+    body.app-dashboard .dashboard-grid { grid-template-columns: 410px minmax(0, 1fr); gap: 18px; }
+    body.app-dashboard .config-card { top: 28px; }
     body.app-dashboard .event-feed-head {
       border-radius: 16px;
       padding: 18px;
-      background:
-        linear-gradient(135deg, rgba(80,184,255,.08), rgba(105,227,154,.05)),
-        rgba(8, 15, 22, .74);
+      background: linear-gradient(135deg, rgba(80,184,255,.08), rgba(105,227,154,.05)), rgba(8, 15, 22, .74);
       border: 1px solid rgba(56, 77, 96, .8);
     }
-    body.app-dashboard .alert {
-      width: min(100% - 36px, 1500px);
-      margin: 18px auto 0;
-      border-radius: 14px;
-    }
+    body.app-dashboard .alert { width: min(100% - 36px, 1420px); margin: 18px auto 0; border-radius: 14px; }
     @media (max-width: 1100px) {
-      body.app-dashboard .wrap {
-        display: block;
+      .app-shell { display:block; }
+      .app-sidebar { display:none; }
+      .app-mobilebar {
+        position:sticky;
+        top:0;
+        z-index:7;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:12px;
+        padding:12px 14px;
+        border-bottom:1px solid rgba(39,53,68,.92);
+        background:rgba(8,16,25,.96);
+        backdrop-filter:blur(12px);
       }
-      body.app-dashboard .topbar {
-        position: static;
-        padding: 16px;
-        align-items: flex-start;
-        flex-direction: column;
-      }
-      body.app-dashboard .nav {
-        flex-direction: row;
-      }
-      body.app-dashboard .btnx,
-      body.app-dashboard form {
-        width: auto;
-      }
-      body.app-dashboard main {
-        padding: 20px 14px 42px;
-      }
+      body.app-dashboard main { padding:20px 14px 42px; width:100%; }
     }
   </style>
 </head>
 <body class="{{ $isDashboardShell ? 'app-dashboard' : '' }}">
   <div class="wrap">
-    <header class="topbar">
-      <a class="brand" href="{{ route('home') }}">
-        <img src="/logo.svg" alt="GitHub DevLog AI">
-        <span><strong>GitHub DevLog AI</strong><span>Webhook inbox privado para GitHub</span></span>
-      </a>
-      <nav class="nav" aria-label="Menu principal">
-        <a class="btnx" href="{{ route('home') }}#produto">Produto</a>
-        <a class="btnx" href="{{ route('docs.api') }}">API</a>
-        <a class="btnx" href="{{ route('trust') }}">Confiança</a>
-        <a class="btnx" href="{{ route('faq') }}">FAQ</a>
-        @auth
-          @if(Auth::user()->is_super_admin)
-            <a class="btnx primary" href="{{ url('/admin') }}">Admin</a>
-            <a class="btnx" href="{{ route('admin.roadmap.dashboard') }}">Roadmap</a>
+    @if ($isDashboardShell)
+      @php
+        $dashboardUser = auth()->user();
+        $dashboardWorkspace = $dashboardUser?->workspaces()->first();
+        $dashboardRole = $dashboardWorkspace ? \App\Support\WorkspaceAccess::currentRole($dashboardUser, $dashboardWorkspace) : null;
+        $initials = collect(explode(' ', trim((string) ($dashboardUser?->name ?: $dashboardUser?->email))))
+          ->filter()
+          ->take(2)
+          ->map(fn ($part) => mb_substr($part, 0, 1))
+          ->join('');
+      @endphp
+      <div class="app-shell">
+        <aside class="app-sidebar" aria-label="Menu do workspace">
+          <a class="brand" href="{{ route('dashboard') }}">
+            <img src="/logo.svg" alt="GitHub DevLog AI">
+            <span><strong>GitHub DevLog AI</strong><span>Painel do workspace</span></span>
+          </a>
+
+          <div class="app-user-card">
+            <div class="d-flex gap-3 align-items-center">
+              <div class="app-avatar">{{ $initials ?: 'DV' }}</div>
+              <div>
+                <div class="app-user-name">{{ $dashboardUser?->name }}</div>
+                <div class="app-user-email">{{ $dashboardUser?->email }}</div>
+              </div>
+            </div>
+            <div class="mt-3 d-flex gap-2 flex-wrap">
+              <span class="pill">{{ $dashboardWorkspace?->name ?? 'Sem workspace' }}</span>
+              <span class="pill">{{ $dashboardRole ?? 'membro' }}</span>
+            </div>
+          </div>
+
+          <div class="app-menu-label">Operação</div>
+          <nav class="app-menu">
+            <a class="active" href="{{ route('dashboard') }}"><span>Visão geral</span><span class="hint">Home</span></a>
+            <a href="#eventos"><span>Eventos</span><span class="hint">Webhook</span></a>
+            <a href="#setup"><span>GitHub App e endpoint</span><span class="hint">Setup</span></a>
+            <a href="#ai"><span>AI do workspace</span><span class="hint">Análise</span></a>
+            <a href="#equipe"><span>Equipe e permissões</span><span class="hint">Acesso</span></a>
+            <a href="#billing"><span>Uso, plano e alertas</span><span class="hint">Billing</span></a>
+            <a href="{{ route('support') }}"><span>Suporte</span><span class="hint">SLA</span></a>
+          </nav>
+
+          <div class="app-menu-label">Conta</div>
+          <nav class="app-menu">
+            <a href="{{ route('home') }}"><span>Site público</span><span class="hint">Abrir</span></a>
+            <form method="POST" action="{{ route('logout') }}">
+              @csrf
+              <button type="submit"><span>Sair</span><span class="hint">Logout</span></button>
+            </form>
+          </nav>
+        </aside>
+
+        <div class="app-content">
+          <div class="app-mobilebar">
+            <a class="brand" href="{{ route('dashboard') }}">
+              <img src="/logo.svg" alt="GitHub DevLog AI">
+              <span><strong>GitHub DevLog AI</strong><span>{{ $dashboardUser?->email }}</span></span>
+            </a>
+            <form method="POST" action="{{ route('logout') }}">@csrf<button class="btnx" type="submit">Sair</button></form>
+          </div>
+    @else
+      <header class="topbar">
+        <a class="brand" href="{{ route('home') }}">
+          <img src="/logo.svg" alt="GitHub DevLog AI">
+          <span><strong>GitHub DevLog AI</strong><span>Webhook inbox privado para GitHub</span></span>
+        </a>
+        <nav class="nav" aria-label="Menu principal">
+          <a class="btnx" href="{{ route('home') }}#produto">Produto</a>
+          <a class="btnx" href="{{ route('docs.api') }}">API</a>
+          <a class="btnx" href="{{ route('trust') }}">Confiança</a>
+          <a class="btnx" href="{{ route('faq') }}">FAQ</a>
+          @auth
+            @if(Auth::user()->is_super_admin)
+              <a class="btnx primary" href="{{ url('/admin') }}">Admin</a>
+              <a class="btnx" href="{{ route('admin.roadmap.dashboard') }}">Roadmap</a>
+            @else
+              <a class="btnx primary" href="{{ route('dashboard') }}">Painel</a>
+            @endif
+            <form method="POST" action="{{ route('logout') }}">@csrf<button class="btnx" type="submit">Sair</button></form>
           @else
-            <a class="btnx primary" href="{{ route('dashboard') }}">Painel</a>
-          @endif
-          <form method="POST" action="{{ route('logout') }}">@csrf<button class="btnx" type="submit">Sair</button></form>
-        @else
-          <a class="btnx" href="{{ route('login') }}">Entrar</a>
-          <a class="btnx primary" href="{{ route('register') }}">Criar workspace</a>
-        @endauth
-      </nav>
-    </header>
+            <a class="btnx" href="{{ route('login') }}">Entrar</a>
+            <a class="btnx primary" href="{{ route('register') }}">Criar workspace</a>
+          @endauth
+        </nav>
+      </header>
+    @endif
 
     @if (session('status'))
       <div class="alert alert-success">{{ session('status') }}</div>
@@ -378,6 +411,11 @@
     @endif
 
     {{ $slot }}
+
+    @if ($isDashboardShell)
+        </div>
+      </div>
+    @endif
   </div>
 </body>
 </html>
