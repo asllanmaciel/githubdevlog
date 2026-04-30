@@ -46,6 +46,7 @@ Route::get('/docs/admin', fn () => redirect('/admin/docs'))->name('docs.admin');
 Route::get('/github', fn () => view('github'))->name('github');
 Route::get('/privacy', fn () => view('legal.privacy'))->name('privacy');
 Route::get('/terms', fn () => view('legal.terms'))->name('terms');
+Route::get('/security', fn () => view('legal.security'))->name('security');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', fn () => view('auth', ['mode' => 'login']))->name('login');

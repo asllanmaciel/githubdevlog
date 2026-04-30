@@ -22,6 +22,7 @@ class GitHubProgramReadiness
             self::check('Base de conhecimento', Schema::hasTable('knowledge_base_articles') && KnowledgeBaseArticle::where('published', true)->count() >= 3, 'Artigos publicados ajudam suporte e onboarding.', 'Docs'),
             self::check('Status e confianca', Route::has('status'), 'Pagina publica de status existe para operacao.', 'Confianca'),
             self::check('Suporte operacional', Schema::hasTable('support_tickets'), 'Sistema de chamados permite receber feedback e problemas.', 'Suporte'),
+            self::check('Politicas publicas', Route::has('privacy') && Route::has('terms') && Route::has('security'), 'Privacidade, termos e seguranca ficam publicados antes da submissao.', 'Confianca'),
         ]);
 
         $evidence = [
