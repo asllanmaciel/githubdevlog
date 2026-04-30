@@ -1,24 +1,31 @@
-# Produto AI
+# Prontidão de Produto AI
 
-O painel `/admin/ai-product` acompanha a camada de inteligência do DevLog AI.
+O painel `Admin > Produto AI` mostra se a camada de inteligência do DevLog AI está pronta para uso real, demonstração comercial e evolução paga.
 
-## O que ele mostra
+## O que o painel mede
 
-- se os campos de análise estão persistidos;
-- se o provider local está disponível;
-- se o dashboard permite gerar análise AI;
-- se a geração deixa auditoria;
-- se existe documentação do recurso;
-- quantos eventos já possuem análise;
-- distribuição por risco.
+- Eventos recebidos no ambiente.
+- Eventos que já possuem análise AI salva.
+- Quantidade de análises avançadas geradas por LLM.
+- Custo estimado das análises avançadas.
+- Cobertura percentual de eventos analisados.
+- Distribuição de risco dos eventos.
+- Checklist técnico de schema, ação no dashboard, auditoria e documentação.
 
-## Leitura de produto
+## Estratégia de produto
 
-Essa camada justifica o nome DevLog AI no MVP: o sistema deixa de ser apenas um inbox de webhooks e passa a transformar payloads técnicos em contexto acionável para devs.
+A V1 da AI deve ser gratuita e inclusa nos planos de entrada. Ela usa o analisador local `local-devlog-ai-v1`, não depende de chave externa e entrega resumo, risco, sinais e próximas ações.
+
+A V2 deve ser paga por uso ou limitada por plano, porque utiliza LLM externo e gera custo variável. O produto já registra provider, modelo, custo estimado e tipo de análise para permitir cobrança, auditoria e margem.
+
+## Por que isso importa para lançamento
+
+O nome DevLog AI precisa representar um ganho claro, não apenas marketing. A camada AI ajuda o dev a entender rapidamente o que aconteceu em um webhook, quais riscos existem e qual ação tomar sem ler payloads gigantes linha por linha.
 
 ## Próximas evoluções
 
-- provider LLM opcional;
-- geração automática por tipo/risco de evento;
-- filtros por risco e eventos sem análise;
-- uso de análise AI como diferencial de planos pagos.
+- Configurar chave OpenAI em produção.
+- Definir limites comerciais por plano.
+- Exibir consumo de AI no painel do usuário.
+- Transformar análises recorrentes em alertas automáticos.
+- Criar recomendações por tipo de evento e repositório.
