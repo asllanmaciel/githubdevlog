@@ -1,49 +1,57 @@
 # Roteiro de demo para GitHub Developer Program
 
-Este roteiro ajuda a demonstrar o DevLog AI como ferramenta SaaS para receber, validar e investigar webhooks do GitHub.
+Este roteiro demonstra o DevLog AI como uma ferramenta SaaS para receber, validar, investigar e resumir webhooks do GitHub.
 
 ## Objetivo da demo
 
 Mostrar que um dev consegue:
 
 1. Criar um workspace privado.
-2. Conectar um repositorio GitHub.
+2. Conectar um repositório GitHub.
 3. Receber um webhook real.
 4. Validar assinatura HMAC.
 5. Ver payload sanitizado.
-6. Criar nota ou tarefa a partir do evento.
-7. Acompanhar uso, plano e suporte.
+6. Gerar uma análise AI do evento.
+7. Criar nota ou tarefa a partir do webhook.
+8. Acompanhar uso, plano, suporte e readiness.
 
-## Preparacao
+## Preparação
 
-- Usar dominio HTTPS definitivo ou tunnel ativo.
+- Usar domínio HTTPS definitivo ou tunnel ativo.
 - Ter um workspace demo.
-- Ter um repositorio GitHub de teste.
+- Ter um repositório GitHub de teste.
 - Ter Secret do workspace configurado no webhook do GitHub.
 - Ter pelo menos um evento `ping` e um `push`.
-- Ter um plano ativo ou trial visivel no dashboard.
+- Ter um plano ativo ou trial visível no dashboard.
+- Ter `/admin/demo-center` e `/admin/launch-gate` revisados antes da apresentação.
 
-## Fluxo sugerido
+## Fluxo sugerido em 7 minutos
 
-### 1. Abrir landing
+### 1. Pitch em uma frase
 
-Mostre a proposta:
+> Debug e auditoria de webhooks GitHub sem expor payload, sem depender de terminal e sem misturar clientes.
 
-- Inbox privado para webhooks GitHub.
-- Validacao por assinatura.
-- Debug e auditoria sem depender de terminal.
-- SaaS por workspace.
+### 2. Landing e confiança
 
-### 2. Criar conta ou abrir workspace demo
+Mostre:
+
+- Proposta GitHub-first.
+- Privacidade por workspace.
+- Segurança por assinatura.
+- Página de status.
+- Contato e suporte.
+
+### 3. Workspace demo
 
 Mostre:
 
 - Login/cadastro.
 - Workspace isolado.
-- Central da assinatura.
-- Launch checklist.
+- Checklist de ativação.
+- Plano e consumo.
+- Payload URL e Secret.
 
-### 3. Configurar webhook GitHub
+### 4. Configurar webhook GitHub
 
 No dashboard:
 
@@ -58,56 +66,52 @@ No GitHub:
 - Secret: secret do workspace.
 - Evento: `push` ou `ping`.
 
-### 4. Enviar evento
+### 5. Enviar evento
 
 Faça um `ping` ou `push`.
 
 No DevLog AI, mostre:
 
 - Evento recebido.
-- Status de assinatura valida.
+- Status de assinatura válida.
 - Delivery id.
-- Repositorio.
+- Repositório.
 - Branch.
 - Commits.
 - Arquivos tocados.
 - Payload sanitizado.
 
-### 5. Operacao
+### 6. AI e operação
 
 Mostre:
 
-- Notificacoes do workspace.
+- Análise AI grátis.
+- Análise AI avançada quando houver plano/chave.
+- Nível de risco.
+- Próximos passos.
 - Notas internas.
 - Tarefas a partir de webhook.
-- Suporte.
-- Base de conhecimento.
 
-### 6. Admin
+### 7. Admin SaaS
 
 Mostre:
 
-- Centro de Lancamento.
-- Status do sistema.
-- Centro de seguranca.
-- Assinaturas.
-- Eventos de cobranca.
+- Centro de demo.
+- Gate de lançamento.
 - Roadmap visual.
-
-## Ponto de venda
-
-O DevLog AI resolve uma dor comum:
-
-> "Recebi ou nao recebi o webhook? A assinatura estava valida? Qual payload chegou? Quem viu isso? Como eu mostro para o time?"
+- Status do sistema.
+- Centro de segurança.
+- Assinaturas e billing.
+- Suporte e base de conhecimento.
 
 ## Checklist antes de apresentar
 
-- `/health` esta OK.
-- `/admin/launch-center` com score alto.
-- `/admin/system-status` sem falhas criticas.
+- `/health` está OK.
+- `/admin/demo-center` acima de 80%.
+- `/admin/launch-gate` mostra pendências externas com clareza.
+- `/admin/system-status` sem falhas críticas.
 - `/admin/security-center` sem bloqueadores graves.
 - Webhook GitHub real validado.
-- Webhook Mercado Pago testado.
+- Webhook Mercado Pago testado em sandbox ou produção.
 - Base de conhecimento publicada.
 - Suporte funcionando.
-

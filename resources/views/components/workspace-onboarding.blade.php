@@ -16,8 +16,8 @@
         ['title' => 'Definir Content type', 'description' => 'Escolha application/json para receber payload estruturado.', 'done' => true, 'action' => '#setup'],
         ['title' => 'Configurar Secret', 'description' => 'Cole o secret do workspace para validar X-Hub-Signature-256.', 'done' => filled($workspace?->webhook_secret), 'action' => '#setup'],
         ['title' => 'Selecionar eventos', 'description' => 'Comece com push, pull_request, workflow_run e issues.', 'done' => $totalEvents > 0, 'action' => '#setup'],
-        ['title' => 'Enviar ping/push', 'description' => 'O primeiro evento deve aparecer no historico privado.', 'done' => $totalEvents > 0, 'action' => '#eventos'],
-        ['title' => 'Confirmar assinatura', 'description' => 'Ao menos um evento precisa chegar com assinatura valida.', 'done' => $validEvents > 0, 'action' => '#eventos'],
+        ['title' => 'Enviar ping ou push', 'description' => 'O primeiro evento deve aparecer no histórico privado.', 'done' => $totalEvents > 0, 'action' => '#eventos'],
+        ['title' => 'Confirmar assinatura', 'description' => 'Ao menos um evento precisa chegar com assinatura válida.', 'done' => $validEvents > 0, 'action' => '#eventos'],
     ]);
     $doneCount = $steps->where('done', true)->count();
     $percent = round(($doneCount / max($steps->count(), 1)) * 100);
@@ -33,7 +33,7 @@
     <div>
       <div class="kicker">Webhook onboarding</div>
       <h2 class="h4 mt-2 mb-1">Configure, teste e valide seu primeiro webhook GitHub.</h2>
-      <p class="muted mb-0">Este guia e para o dev que quer sair de workspace criado para evento GitHub validado sem caçar configuracao em documentacao solta.</p>
+      <p class="muted mb-0">Este guia leva o dev de workspace criado para evento GitHub validado sem caçar configuração em documentação solta.</p>
     </div>
     <span class="pill">Modo: {{ $manualMode ? 'Webhook manual' : 'GitHub App conectado' }}</span>
   </div>

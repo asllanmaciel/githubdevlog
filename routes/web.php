@@ -61,6 +61,8 @@ Route::get('/pricing', function () {
 Route::get('/privacy', fn () => view('legal.privacy'))->name('privacy');
 Route::get('/terms', fn () => view('legal.terms'))->name('terms');
 Route::get('/security', fn () => view('legal.security'))->name('security');
+Route::get('/trust', fn () => view('trust'))->name('trust');
+Route::get('/faq', fn () => view('faq'))->name('faq');
 Route::get('/sitemap.xml', function () {
     $urls = collect([
         route('home'),        route('changelog'),
@@ -70,6 +72,8 @@ Route::get('/sitemap.xml', function () {
         route('docs.api'),
         route('status'),
         route('security'),
+        route('trust'),
+        route('faq'),
         route('privacy'),
         route('terms'),
         route('login'),
@@ -268,6 +272,7 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
 
     Route::post('/workspace/secret/rotate', function () {
         $workspace = Auth::user()->workspaces()->firstOrFail();
+        abort_unless(WorkspaceAccess::can(Auth::user(), $workspace, 'manage_secrets'), 403);
         $workspace->update([
             'webhook_secret' => 'dlog_'.Str::random(48),
             'webhook_secret_rotated_at' => now(),
@@ -292,6 +297,8 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
     Route::post('/dashboard/test-event', function (Request $request) use ($workspaceLimitReached) {
         $workspace = Auth::user()->workspaces()->firstOrFail();
 
+        abort_unless(WorkspaceAccess::can(Auth::user(), $workspace, 'create_test_events'), 403);
+
         if ($workspaceLimitReached($workspace)) {
             return back()->withErrors(['payload' => 'Limite mensal de eventos atingido para este workspace. Faca upgrade do plano ou aguarde a proxima janela mensal.']);
         }
@@ -313,6 +320,8 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
 
     Route::post('/billing/checkout/{plan}', function (BillingPlan $plan, MercadoPagoBillingService $billing) {
         $workspace = Auth::user()->workspaces()->firstOrFail();
+
+        abort_unless(WorkspaceAccess::can(Auth::user(), $workspace, 'manage_billing'), 403);
 
         if (! $plan->active || $plan->price_cents <= 0) {
             return redirect()->route('dashboard')->withErrors([
@@ -367,6 +376,8 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
             'reason' => ['nullable', 'string', 'max:240'],
         ]);
 
+        abort_unless(WorkspaceAccess::can(Auth::user(), $workspace, 'manage_billing'), 403);
+
         $subscription = SubscriptionLifecycle::cancel($workspace, Auth::user(), $data['reason'] ?? null);
 
         if (! $subscription) {
@@ -389,11 +400,12 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
 
     Route::get('/github/install', function (Request $request) {
         $workspace = Auth::user()->workspaces()->firstOrFail();
+        abort_unless(WorkspaceAccess::can(Auth::user(), $workspace, 'manage_github_app'), 403);
         $setupUrl = config('services.github_app.setup_url');
 
         if (! filled($setupUrl) || str_contains($setupUrl, 'your-github-app-slug')) {
             return redirect()->route('dashboard')->withErrors([
-                'github' => 'Configure GITHUB_APP_SETUP_URL com a URL oficial de instalaÃ§Ã£o do GitHub App.',
+                'github' => 'Configure GITHUB_APP_SETUP_URL com a URL oficial de instalação do GitHub App.',
             ]);
         }
 
@@ -415,13 +427,13 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
 
         if ($sessionWorkspaceId !== $workspace->id || $sessionState === '' || ! hash_equals($sessionState, $state)) {
             return redirect()->route('dashboard')->withErrors([
-                'github' => 'NÃ£o foi possÃ­vel validar o retorno da instalaÃ§Ã£o GitHub. Tente iniciar a instalaÃ§Ã£o novamente.',
+                'github' => 'Não foi possível validar o retorno da instalação GitHub. Tente iniciar a instalação novamente.',
             ]);
         }
 
         if ($installationId === '') {
             return redirect()->route('dashboard')->withErrors([
-                'github' => 'O GitHub nÃ£o retornou installation_id. Confirme se a instalaÃ§Ã£o foi concluÃ­da.',
+                'github' => 'O GitHub não retornou installation_id. Confirme se a instalação foi concluída.',
             ]);
         }
 
@@ -441,7 +453,7 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
         Notification::create([
             'workspace_id' => $workspace->id,
             'title' => 'GitHub App instalado',
-            'body' => 'A instalaÃ§Ã£o '.$installationId.' foi vinculada ao workspace.',
+            'body' => 'A instalação '.$installationId.' foi vinculada ao workspace.',
             'type' => 'github',
         ]);
 
@@ -451,6 +463,7 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
     Route::post('/events/{event}/notes', function (WebhookEvent $event, Request $request) {
         $workspace = Auth::user()->workspaces()->firstOrFail();
         abort_unless($event->workspace_id === $workspace->id, 403);
+        abort_unless(WorkspaceAccess::can(Auth::user(), $workspace, 'annotate_events'), 403);
         $data = $request->validate(['body' => ['required', 'string', 'max:2000']]);
         $note = WebhookEventNote::create(['webhook_event_id' => $event->id, 'user_id' => Auth::id(), 'body' => $data['body']]);
         AuditTrail::record('webhook.note.created', $event, $workspace, ['note_id' => $note->id]);
@@ -502,6 +515,7 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
     Route::post('/events/{event}/tasks', function (WebhookEvent $event, Request $request) {
         $workspace = Auth::user()->workspaces()->firstOrFail();
         abort_unless($event->workspace_id === $workspace->id, 403);
+        abort_unless(WorkspaceAccess::can(Auth::user(), $workspace, 'annotate_events'), 403);
         $data = $request->validate(['title' => ['required', 'string', 'max:180']]);
         $task = WebhookEventTask::create(['webhook_event_id' => $event->id, 'title' => $data['title'], 'status' => 'open']);
         AuditTrail::record('webhook.task.created', $event, $workspace, ['task_id' => $task->id]);
@@ -916,6 +930,5 @@ Route::post('/webhooks/mercado-pago', function (Request $request, MercadoPagoBil
         'billing_event_id' => $billingEvent->id,
     ]);
 })->name('webhooks.mercado-pago');
-
 
 

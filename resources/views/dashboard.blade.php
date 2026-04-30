@@ -28,7 +28,7 @@
     $remainingEvents = $usageReport['remaining'] ?? max($monthlyLimit - $monthlyEvents, 0);
     $usagePercent = $usageReport['percent'] ?? 0;
     $usageStateClass = $usagePercent >= 100 ? 'danger' : ($usagePercent >= 80 ? 'warn' : '');
-    $usageStateLabel = $usagePercent >= 100 ? 'Limite atingido' : ($usagePercent >= 80 ? 'Perto do limite' : 'Uso saudavel');
+    $usageStateLabel = $usagePercent >= 100 ? 'Limite atingido' : ($usagePercent >= 80 ? 'Perto do limite' : 'Uso saudável');
     $periodStart = $usageReport['period_start'] ?? now()->startOfMonth();
     $periodEnd = $usageReport['period_end'] ?? now()->endOfMonth();
     $retentionDays = (int) ($plan?->event_retention_days ?? 30);
@@ -45,7 +45,7 @@
     $subscriptionEndsAt = $subscription?->current_period_ends_at;
     $subscriptionProviderReference = $subscription?->provider_reference ?: 'Ainda nao gerada';
     $canUseWebhooks = in_array($subscriptionStatus, ['trialing', 'active', 'pending'], true);
-    $healthStatus = $totalEvents === 0 ? 'Aguardando evento' : ($invalidEvents > 0 ? 'Atencao' : 'Saudavel');
+    $healthStatus = $totalEvents === 0 ? 'Aguardando evento' : ($invalidEvents > 0 ? 'Atenção' : 'Saudável');
     $healthClass = $invalidEvents > 0 ? 'status-warn' : 'status-ok';
     $usageWarning = $usagePercent >= 100
         ? 'Limite mensal atingido. Novos webhooks serao recusados ate upgrade ou renovacao.'
@@ -70,7 +70,7 @@
       <div class="cardx">
         <div class="kicker">Painel do workspace</div>
         <h1 class="dashboard-title">Controle dos webhooks do {{ $workspace->name }}</h1>
-        <p class="lead mt-3 mb-0">Monitore entregas do GitHub, valide assinatura, acompanhe payloads, registre notas e transforme eventos em tarefas de investigacao.</p>
+        <p class="lead mt-3 mb-0">Monitore entregas do GitHub, valide assinatura, acompanhe payloads, registre notas e transforme eventos em tarefas de investigação.</p>
         <div class="control-strip">
           <div class="control-card">
             <div class="control-label">Plano atual</div>
@@ -243,7 +243,7 @@
     <section class="cardx mb-3" id="billing">
       <div class="d-flex justify-content-between gap-3 flex-wrap align-items-start">
         <div>
-          <div class="kicker">Notificacoes do workspace</div>
+          <div class="kicker">Notificações do workspace</div>
           <h2 class="h4 mt-2 mb-1">{{ $unreadNotifications }} alerta(s) nao lido(s)</h2>
           <p class="muted mb-0">Acompanhe eventos importantes de billing, GitHub App, limite de uso e webhooks recebidos.</p>
         </div>
@@ -285,6 +285,23 @@
       </div>
     </section>
 
+
+    <section class="cardx mb-3" id="launch-checklist">
+      <div class="d-flex justify-content-between gap-3 flex-wrap align-items-start">
+        <div>
+          <div class="kicker">Checklist de ativação</div>
+          <h2 class="h4 mt-2 mb-1">O caminho mínimo para usar em produção com segurança</h2>
+          <p class="muted mb-0">Este bloco ajuda o dev a sair de “recebi um payload” para “posso confiar nesse fluxo no meu produto”.</p>
+        </div>
+        <span class="pill">Pré-lançamento</span>
+      </div>
+      <div class="row g-2 mt-2">
+        <div class="col-md-3"><div class="summary-cell h-100"><div class="summary-label">1. Conta e workspace</div><div class="summary-value">{{ $workspace ? 'Pronto' : 'Pendente' }}</div><div class="muted mt-1">Eventos ficam privados por workspace.</div></div></div>
+        <div class="col-md-3"><div class="summary-cell h-100"><div class="summary-label">2. GitHub conectado</div><div class="summary-value">{{ $totalEvents > 0 ? 'Validado' : 'Aguardando ping' }}</div><div class="muted mt-1">Configure webhook manual ou GitHub App.</div></div></div>
+        <div class="col-md-3"><div class="summary-cell h-100"><div class="summary-label">3. Segurança</div><div class="summary-value">{{ $validEvents > 0 ? 'Assinatura OK' : 'Sem evento validado' }}</div><div class="muted mt-1">Secret e HMAC protegem o endpoint.</div></div></div>
+        <div class="col-md-3"><div class="summary-cell h-100"><div class="summary-label">4. Operação</div><div class="summary-value">{{ $unreadNotifications > 0 ? $unreadNotifications.' alerta(s)' : 'Sem alertas' }}</div><div class="muted mt-1">Notas, tarefas, suporte e AI ficam no painel.</div></div></div>
+      </div>
+    </section>
     <section class="mini-board">
       <div class="insight-card">
         <div class="kicker">Distribuicao de eventos</div>
@@ -302,8 +319,8 @@
       </div>
 
       <div class="insight-card">
-        <div class="kicker">Proximas acoes</div>
-        <h2 class="h4">Operacao guiada</h2>
+        <div class="kicker">Próximas ações</div>
+        <h2 class="h4">Operação guiada</h2>
         <div class="quick-actions">
           <a class="quick-action" href="#setup"><span>Configurar webhook no GitHub</span><span>?</span></a>
           <a class="quick-action" href="#eventos"><span>Investigar eventos recebidos</span><span>></span></a>
@@ -355,12 +372,12 @@
       <div class="summary-cell mt-2">
         <div class="d-flex justify-content-between gap-3 flex-wrap align-items-center">
           <div>
-            <div class="summary-label">Referencia de assinatura</div>
+            <div class="summary-label">Referência de assinatura</div>
             <div class="summary-value" style="font-size:14px;word-break:break-all">{{ $subscriptionProviderReference }}</div>
             <div class="muted mt-1">Periodo atual: {{ $subscriptionEndsAt ? $subscriptionEndsAt->format('d/m/Y') : 'sem vencimento definido' }}.</div>
           </div>
           @if ($canManageBilling)
-            <a class="btnx" href="#upgrade">Ver opcoes internas de upgrade</a>
+            <a class="btnx" href="#upgrade">Ver opções internas de upgrade</a>
           @endif
         </div>
       </div>
@@ -370,8 +387,8 @@
       <section class="cardx mb-3" style="border-color: {{ $usagePercent >= 100 ? 'rgba(255,107,107,.5)' : 'rgba(255,209,102,.5)' }}; background: linear-gradient(135deg, rgba(255,209,102,.08), rgba(80,184,255,.05));">
         <div class="d-flex justify-content-between gap-3 flex-wrap align-items-center">
           <div>
-            <div class="kicker">Uso e cobranca</div>
-            <h2 class="h4 mt-2 mb-1">{{ $usagePercent >= 100 ? 'Limite do plano atingido' : 'Atencao ao consumo mensal' }}</h2>
+            <div class="kicker">Uso e cobrança</div>
+            <h2 class="h4 mt-2 mb-1">{{ $usagePercent >= 100 ? 'Limite do plano atingido' : 'Atenção ao consumo mensal' }}</h2>
             <p class="muted mb-0">{{ $usageWarning }}</p>
           </div>
           <a class="btnx primary" href="{{ route('support') }}">Falar com suporte</a>
@@ -412,7 +429,7 @@
     <section class="dashboard-grid">
       <aside id="setup" class="config-card">
         <div class="cardx mb-3">
-          <div class="kicker">Configuracao GitHub</div>
+          <div class="kicker">Configuração GitHub</div>
           <h2 class="h4 mt-2">Endpoint privado do workspace</h2>
           <p class="muted">Use estes dados em <strong>Settings -> Webhooks -> Add webhook</strong> no repositorio GitHub.</p>
           <div class="summary-cell mb-3">
@@ -459,7 +476,7 @@
         <div class="cardx event-feed-head">
           <div>
             <div class="kicker">Eventos recebidos</div>
-            <h2 class="h3 mt-2 mb-0">Historico privado do workspace</h2>
+            <h2 class="h3 mt-2 mb-0">Histórico privado do workspace</h2>
           </div>
           <span class="pill">{{ $totalEvents }} evento(s)</span>
         </div>

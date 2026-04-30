@@ -8,7 +8,7 @@
     <span class="eyebrow">GitHub-first webhook intelligence</span>
     <h1>Conecte o GitHub e transforme webhooks em sinais acionáveis.</h1>
     <p class="lead">
-      O DevLog AI recebe eventos do GitHub, valida assinatura, isola cada workspace e organiza payloads em uma timeline legível para debugging, auditoria e colaboração. Projeto criado por {{ $creatorName }}, com foco em resolver uma dor real de devs que integram produtos ao GitHub.
+      O DevLog AI recebe eventos do GitHub, valida assinatura, isola cada workspace e organiza payloads em uma timeline legível para debugging, auditoria, colaboração e análise AI. Projeto criado por {{ $creatorName }}, com foco em resolver uma dor real de devs que integram produtos ao GitHub.
     </p>
     <div class="d-flex gap-2 flex-wrap mt-4">
       <a class="btnx primary" href="{{ route('register') }}">Criar workspace</a>
@@ -22,7 +22,7 @@
     <div class="row g-3 mt-2">
       <div class="col-md-4"><div class="cardx"><h3>1. Configure o endpoint</h3><p>Use o Payload URL do workspace no GitHub em Settings → Webhooks → Add webhook.</p></div></div>
       <div class="col-md-4"><div class="cardx"><h3>2. Valide o secret</h3><p>O DevLog AI confere a assinatura <code>X-Hub-Signature-256</code> antes de aceitar o evento.</p></div></div>
-      <div class="col-md-4"><div class="cardx"><h3>3. Investigue no painel</h3><p>Veja repositório, branch, autor, commits, delivery id, payload e tarefas relacionadas.</p></div></div>
+      <div class="col-md-4"><div class="cardx"><h3>3. Investigue no painel</h3><p>Veja repositório, branch, autor, commits, delivery id, payload sanitizado, notas, tarefas e análise AI.</p></div></div>
     </div>
   </section>
 
