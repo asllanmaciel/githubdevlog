@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use App\Models\WebhookEvent;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 
 class AiProductReadiness
@@ -20,7 +21,7 @@ class AiProductReadiness
         $checks = collect([
             self::check('Campos persistidos', $schemaReady, 'Resumo, risco, sinais, ações e provider ficam salvos no evento.'),
             self::check('Analisador local', class_exists(WebhookEventAiAnalyzer::class), 'Provider local-devlog-ai-v1 gera valor sem depender de chave externa.'),
-            self::check('Ação no dashboard', route('events.ai-analysis.generate', ['event' => 1], false) !== '', 'Usuário pode gerar análise AI a partir do card do webhook.'),
+            self::check('Ação no dashboard', Route::has('events.ai-analysis.generate'), 'Usuário pode gerar análise AI a partir do card do webhook.'),
             self::check('Auditoria da geração', class_exists(AuditTrail::class), 'Toda análise gerada registra trilha para governança.'),
             self::check('Documentação AI', file_exists(base_path('docs/ai-event-analysis.md')), 'Há documentação do recurso e caminho de evolução para LLM.'),
         ]);

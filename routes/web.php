@@ -458,6 +458,28 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
         return redirect()->route('dashboard')->with('status', 'Nota adicionada ao evento.');
     })->name('events.notes.store');
 
+    Route::post('/events/{event}/ai-analysis', function (WebhookEvent $event, WebhookEventAiAnalyzer $analyzer) {
+        $workspace = Auth::user()->workspaces()->firstOrFail();
+        abort_unless($event->workspace_id === $workspace->id, 403);
+
+        $analysis = $analyzer->analyze($event);
+
+        $event->update([
+            'ai_summary' => $analysis['summary'],
+            'ai_risk_level' => $analysis['risk_level'],
+            'ai_action_items' => $analysis['action_items'],
+            'ai_signals' => $analysis['signals'],
+            'ai_provider' => $analysis['provider'],
+            'ai_generated_at' => $analysis['generated_at'],
+        ]);
+
+        AuditTrail::record('webhook.ai_analysis.generated', $event, $workspace, [
+            'risk_level' => $analysis['risk_level'],
+            'provider' => $analysis['provider'],
+        ]);
+
+        return redirect()->route('dashboard')->with('status', 'Análise AI gerada para o evento.');
+    })->name('events.ai-analysis.generate');
     Route::post('/events/{event}/tasks', function (WebhookEvent $event, Request $request) {
         $workspace = Auth::user()->workspaces()->firstOrFail();
         abort_unless($event->workspace_id === $workspace->id, 403);
