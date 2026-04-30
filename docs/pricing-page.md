@@ -1,14 +1,13 @@
-# Pagina publica de planos
+# Planos e uso interno
 
-A pagina `/pricing` apresenta o modelo comercial do GitHub DevLog AI antes do cadastro.
+A rota `/pricing` pode existir como apoio, mas a estrategia atual e nao dar destaque publico para precos antes de validar melhor o uso real.
 
 ## Objetivo
 
-- Explicar que o SaaS cobra por uso.
-- Mostrar limites mensais de eventos.
-- Mostrar retencao por plano.
-- Dar contexto para devs escolherem um perfil.
-- Apoiar go-live, demos e submissao ao GitHub Developer Program.
+- Manter a estrutura de planos preparada.
+- Priorizar valor na landing publica.
+- Explicar consumo, limites e upgrade dentro do painel autenticado.
+- Apoiar demos controladas e validacao de modelo comercial.
 
 ## Origem dos dados
 
@@ -26,8 +25,9 @@ Campos usados:
 
 ## Antes do live
 
-- Revisar precos finais.
+- Revisar precos finais antes de expor publicamente.
 - Definir se havera plano gratis.
 - Definir regra de trial.
 - Definir politica de excedente.
-- Conectar CTA de plano pago diretamente ao checkout quando fizer sentido.
+- Fortalecer o bloco de uso/plano no dashboard.
+- Decidir depois se pricing publico sera aberto ou se ficara como "fale conosco".

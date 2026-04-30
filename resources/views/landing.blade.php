@@ -120,7 +120,7 @@ X-Hub-Signature-256: sha256=...
       <div class="col-6 col-lg-2">
         <div class="kicker">Produto</div>
         <div class="d-grid gap-2">
-          <a href="{{ route('pricing') }}">Planos</a>
+          <a href="{{ route('docs.api') }}">API</a>
           <a href="{{ route('docs.api') }}">API</a>
           <a href="{{ route('changelog') }}">Changelog</a>
         </div>

@@ -6,7 +6,6 @@ O GitHub DevLog AI agora possui ativos basicos para operar como produto publico.
 
 - `/sitemap.xml`
 - `/robots.txt`
-- `/pricing`
 - `/security`
 - `/privacy`
 - `/terms`

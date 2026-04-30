@@ -7,7 +7,7 @@
     </p>
     <div class="d-flex gap-2 flex-wrap mt-4">
       <a class="btnx primary" href="{{ route('register') }}">Criar workspace</a>
-      <a class="btnx" href="{{ route('pricing') }}">Ver planos</a>
+      <a class="btnx" href="{{ route('docs.api') }}">Ver API</a>
     </div>
   </main>
 
