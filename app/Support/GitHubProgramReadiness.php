@@ -19,7 +19,7 @@ class GitHubProgramReadiness
             self::check('Onboarding utilizavel', Route::has('register') && Route::has('login'), 'Cadastro, login e painel existem para uso real.', 'UX'),
             self::check('Planos e modelo SaaS', Schema::hasTable('billing_plans') && BillingPlan::count() > 0, 'Modelo comercial por uso pode ser demonstrado.', 'SaaS'),
             self::check('Pagina publica de precos', Route::has('pricing'), 'Modelo comercial fica visivel para devs antes da criacao do workspace.', 'SaaS'),
-            self::check('Docs para usuarios', view()->exists('docs.users'), 'Guia de uso orientado ao dev existe.', 'Docs'),
+            self::check('Docs para usuarios', view()->exists('docs.users') && view()->exists('docs.api'), 'Guia de uso e referencia tecnica para devs existem.', 'Docs'),
             self::check('Base de conhecimento', Schema::hasTable('knowledge_base_articles') && KnowledgeBaseArticle::where('published', true)->count() >= 3, 'Artigos publicados ajudam suporte e onboarding.', 'Docs'),
             self::check('Status e confianca', Route::has('status'), 'Pagina publica de status existe para operacao.', 'Confianca'),
             self::check('Suporte operacional', Schema::hasTable('support_tickets'), 'Sistema de chamados permite receber feedback e problemas.', 'Suporte'),
