@@ -25,8 +25,14 @@
     $plan = $usageReport['plan'] ?? BillingPlan::where('slug', 'free')->first();
     $monthlyEvents = $usageReport['usage'] ?? 0;
     $monthlyLimit = $usageReport['limit'] ?? 1000;
+    $remainingEvents = $usageReport['remaining'] ?? max($monthlyLimit - $monthlyEvents, 0);
     $usagePercent = $usageReport['percent'] ?? 0;
+    $usageStateClass = $usagePercent >= 100 ? 'danger' : ($usagePercent >= 80 ? 'warn' : '');
+    $usageStateLabel = $usagePercent >= 100 ? 'Limite atingido' : ($usagePercent >= 80 ? 'Perto do limite' : 'Uso saudavel');
+    $periodStart = $usageReport['period_start'] ?? now()->startOfMonth();
+    $periodEnd = $usageReport['period_end'] ?? now()->endOfMonth();
     $retentionDays = (int) ($plan?->event_retention_days ?? 30);
+    $overagePrice = ((int) ($plan?->overage_price_cents ?? 0)) / 100;
     $planName = $plan?->name ?? 'Free';
     $subscriptionStatus = $subscription?->status ?? 'trialing';
     $subscriptionStatusLabel = [
@@ -72,6 +78,10 @@
             <div class="control-value">{{ number_format($monthlyEvents, 0, ',', '.') }} / {{ number_format($monthlyLimit, 0, ',', '.') }}</div>
           </div>
           <div class="control-card">
+            <div class="control-label">Restantes</div>
+            <div class="control-value">{{ number_format($remainingEvents, 0, ',', '.') }}</div>
+          </div>
+          <div class="control-card">
             <div class="control-label">Retencao</div>
             <div class="control-value">{{ $retentionDays }} dias</div>
           </div>
@@ -93,8 +103,8 @@
         </div>
         <div class="mt-4">
           <div class="d-flex justify-content-between mb-2"><span class="muted">Limite mensal usado</span><strong>{{ $usagePercent }}%</strong></div>
-          <div class="bar-track"><span class="bar-fill" style="width: {{ $usagePercent }}%"></span></div>
-          <div class="muted mt-2">Status da assinatura: {{ $subscriptionStatusLabel }}</div>
+          <div class="bar-track"><span class="bar-fill {{ $usageStateClass }}" style="width: {{ $usagePercent }}%"></span></div>
+          <div class="muted mt-2">{{ $usageStateLabel }} · {{ number_format($remainingEvents, 0, ',', '.') }} evento(s) restantes · assinatura {{ $subscriptionStatusLabel }}</div>
         </div>
       </aside>
     </section>
@@ -285,9 +295,9 @@
     <section class="cardx mb-3">
       <div class="d-flex justify-content-between gap-3 flex-wrap align-items-start">
         <div>
-          <div class="kicker">Central da assinatura</div>
-          <h2 class="h4 mt-2 mb-1">{{ $canUseWebhooks ? 'Seu workspace esta apto a receber eventos' : 'Assinatura precisa de atencao' }}</h2>
-          <p class="muted mb-0">Aqui ficam os dados essenciais para acompanhar limite, periodo atual e referencia do pagamento.</p>
+          <div class="kicker">Uso e plano do workspace</div>
+          <h2 class="h4 mt-2 mb-1">{{ $canUseWebhooks ? 'Seu limite de webhooks esta sob controle' : 'Assinatura precisa de atencao' }}</h2>
+          <p class="muted mb-0">Como o pricing nao e protagonista publico nesta fase, o consumo fica claro aqui: plano atual, janela mensal, eventos restantes, retencao e upgrade quando fizer sentido.</p>
         </div>
         <span class="pill {{ $subscriptionStatus === 'active' ? 'status-ok' : ($subscriptionStatus === 'canceled' ? 'status-warn' : '') }}">{{ $subscriptionStatusLabel }}</span>
       </div>
@@ -302,23 +312,36 @@
         <div class="col-md-3">
           <div class="summary-cell h-100">
             <div class="summary-label">Uso no mes</div>
-            <div class="summary-value">{{ $usagePercent }}%</div>
-            <div class="bar-track mt-2"><span class="bar-fill" style="width: {{ $usagePercent }}%"></span></div>
+            <div class="summary-value">{{ number_format($monthlyEvents, 0, ',', '.') }} usados</div>
+            <div class="bar-track mt-2"><span class="bar-fill {{ $usageStateClass }}" style="width: {{ $usagePercent }}%"></span></div>
+            <div class="muted mt-1">{{ $usageStateLabel }} · {{ $usagePercent }}% do limite mensal</div>
           </div>
         </div>
         <div class="col-md-3">
           <div class="summary-cell h-100">
-            <div class="summary-label">Periodo atual</div>
-            <div class="summary-value">{{ $subscriptionEndsAt ? $subscriptionEndsAt->format('d/m/Y') : 'Sem vencimento' }}</div>
-            <div class="muted mt-1">Renovacao ou rechecagem do ciclo.</div>
+            <div class="summary-label">Eventos restantes</div>
+            <div class="summary-value">{{ number_format($remainingEvents, 0, ',', '.') }}</div>
+            <div class="muted mt-1">Janela: {{ $periodStart->format('d/m') }} a {{ $periodEnd->format('d/m') }}</div>
           </div>
         </div>
         <div class="col-md-3">
           <div class="summary-cell h-100">
-            <div class="summary-label">Referencia Mercado Pago</div>
+            <div class="summary-label">Retencao e excedente</div>
+            <div class="summary-value">{{ $retentionDays }} dias</div>
+            <div class="muted mt-1">{{ $overagePrice > 0 ? 'Excedente configurado: R$ '.number_format($overagePrice, 2, ',', '.') : 'Sem excedente publico nesta fase.' }}</div>
+          </div>
+        </div>
+      </div>
+      <div class="summary-cell mt-2">
+        <div class="d-flex justify-content-between gap-3 flex-wrap align-items-center">
+          <div>
+            <div class="summary-label">Referencia de assinatura</div>
             <div class="summary-value" style="font-size:14px;word-break:break-all">{{ $subscriptionProviderReference }}</div>
-            <div class="muted mt-1">Usada para suporte e conciliacao.</div>
+            <div class="muted mt-1">Periodo atual: {{ $subscriptionEndsAt ? $subscriptionEndsAt->format('d/m/Y') : 'sem vencimento definido' }}.</div>
           </div>
+          @if ($canManageBilling)
+            <a class="btnx" href="#upgrade">Ver opcoes internas de upgrade</a>
+          @endif
         </div>
       </div>
     </section>
@@ -336,12 +359,12 @@
       </section>
     @endif
 
-    <section class="cardx mb-3">
+    <section class="cardx mb-3" id="upgrade">
       <div class="d-flex justify-content-between gap-3 flex-wrap align-items-start">
         <div>
-          <div class="kicker">Planos e billing</div>
-          <h2 class="h4 mt-2 mb-1">Upgrade via Mercado Pago</h2>
-          <p class="muted mb-0">Ambiente: {{ $mercadoPagoStatus['environment'] }} - SDK: {{ $mercadoPagoStatus['sdk'] }} - Configurado: {{ $mercadoPagoStatus['configured'] ? 'sim' : 'nao' }}</p>
+          <div class="kicker">Upgrade interno</div>
+          <h2 class="h4 mt-2 mb-1">Aumente limite quando o uso justificar</h2>
+          <p class="muted mb-0">Este bloco fica dentro do workspace para o usuario decidir upgrade com base no consumo real. Ambiente Mercado Pago: {{ $mercadoPagoStatus['environment'] }} - SDK: {{ $mercadoPagoStatus['sdk'] }} - Configurado: {{ $mercadoPagoStatus['configured'] ? 'sim' : 'nao' }}</p>
         </div>
         <span class="pill">Plano atual: {{ $planName }}</span>
       </div>
