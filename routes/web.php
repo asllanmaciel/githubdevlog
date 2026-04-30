@@ -21,6 +21,7 @@ use App\Support\AuditTrail;
 use App\Support\SystemHealth;
 use App\Support\SupportSla;
 use App\Support\SubscriptionLifecycle;
+use App\Support\WebhookEventAiAnalyzer;
 use App\Support\WebhookSanitizer;
 use App\Support\WorkspaceAccess;
 use App\Support\WorkspaceInviteDelivery;

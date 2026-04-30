@@ -1,7 +1,7 @@
-﻿@props(['event'])
+@props(['event'])
 
 @php
-  $repo = data_get($event->payload, 'repository.full_name', 'Repositorio nao informado');
+  $repo = data_get($event->payload, 'repository.full_name', 'Repositório não informado');
   $sender = data_get($event->payload, 'sender.login', data_get($event->payload, 'pusher.name', 'GitHub'));
   $branch = str_replace('refs/heads/', '', (string) data_get($event->payload, 'ref', '')) ?: data_get($event->payload, 'pull_request.head.ref', 'n/a');
   $commitCount = is_array(data_get($event->payload, 'commits')) ? count(data_get($event->payload, 'commits')) : 0;
@@ -46,8 +46,40 @@
   </div>
 
   <div class="event-diagnostic">
-    <strong>Leitura rapida</strong>
+    <strong>Leitura rápida</strong>
     <span>{{ $diagnostic }}</span>
+  </div>
+
+
+  <div class="event-diagnostic ai-diagnostic">
+    <div class="d-flex justify-content-between gap-2 flex-wrap align-items-start">
+      <div>
+        <strong>Análise AI do evento</strong>
+        <span>{{ $event->ai_summary ?: 'Gere uma leitura inteligente para transformar este payload em resumo, risco e próximos passos.' }}</span>
+      </div>
+      <span class="pill {{ $riskClass }}">{{ $riskLabel }}</span>
+    </div>
+    @if($event->ai_generated_at)
+      <div class="muted mt-2">Gerada em {{ $event->ai_generated_at->format('d/m/Y H:i') }} · {{ $event->ai_provider }}</div>
+    @endif
+    @if(is_array($event->ai_signals) && count($event->ai_signals) > 0)
+      <div class="file-strip mt-2">
+        @foreach($event->ai_signals as $signal)
+          <code>{{ $signal }}</code>
+        @endforeach
+      </div>
+    @endif
+    @if(is_array($event->ai_action_items) && count($event->ai_action_items) > 0)
+      <ul class="muted mt-2 mb-0">
+        @foreach($event->ai_action_items as $item)
+          <li>{{ $item }}</li>
+        @endforeach
+      </ul>
+    @endif
+    <form method="POST" action="{{ route('events.ai-analysis.generate', $event) }}" class="mt-2">
+      @csrf
+      <button class="btnx primary" type="submit">{{ $event->ai_summary ? 'Regerar análise AI' : 'Gerar análise AI' }}</button>
+    </form>
   </div>
 
   @if($files->isNotEmpty())
