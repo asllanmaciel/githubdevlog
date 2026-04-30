@@ -199,31 +199,33 @@
       width: 100%;
       min-height: 100vh;
       padding: 0;
-      display: grid;
-      grid-template-columns: 292px minmax(0, 1fr);
+      display: block;
     }
     body.app-dashboard .topbar {
       position: sticky;
       top: 0;
-      align-self: start;
-      min-height: 100vh;
-      padding: 22px;
-      border-right: 1px solid rgba(39, 53, 68, .92);
+      min-height: auto;
+      padding: 14px clamp(18px, 3vw, 44px);
+      border-right: 0;
+      border-bottom: 1px solid rgba(39, 53, 68, .92);
       background:
-        linear-gradient(180deg, rgba(8, 16, 25, .98), rgba(7, 15, 22, .94)),
-        radial-gradient(circle at 30% 0%, rgba(80,184,255,.14), transparent 34%);
-      box-shadow: 18px 0 70px rgba(0,0,0,.24);
+        linear-gradient(90deg, rgba(8, 16, 25, .98), rgba(7, 20, 18, .96)),
+        radial-gradient(circle at 18% 0%, rgba(80,184,255,.14), transparent 34%);
+      box-shadow: 0 18px 70px rgba(0,0,0,.24);
       display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      gap: 26px;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
       z-index: 5;
+      backdrop-filter: blur(12px);
     }
     body.app-dashboard .brand {
-      align-items: flex-start;
-      padding-bottom: 20px;
-      border-bottom: 1px solid rgba(39, 53, 68, .9);
-      width: 100%;
+      align-items: center;
+      padding-bottom: 0;
+      border-bottom: 0;
+      width: auto;
+      min-width: 240px;
     }
     body.app-dashboard .brand img {
       width: 44px;
@@ -239,27 +241,19 @@
       line-height: 1.45;
     }
     body.app-dashboard .nav {
-      width: 100%;
-      flex-direction: column;
-      align-items: stretch;
-      justify-content: flex-start;
-      gap: 10px;
-    }
-    body.app-dashboard .nav:before {
-      content: "Operação";
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: .16em;
-      font-size: 11px;
-      font-weight: 950;
-      margin: 0 0 2px;
+      width: auto;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
     }
     body.app-dashboard .btnx {
-      width: 100%;
-      justify-content: flex-start;
-      min-height: 43px;
-      border-radius: 12px;
+      width: auto;
+      justify-content: center;
+      min-height: 40px;
+      border-radius: 999px;
       background: rgba(11, 17, 24, .72);
+      padding: 9px 13px;
     }
     body.app-dashboard .btnx.primary {
       background: linear-gradient(135deg, var(--blue), var(--green));
@@ -268,14 +262,14 @@
       box-shadow: 0 14px 34px rgba(80, 184, 255, .18);
     }
     body.app-dashboard form {
-      width: 100%;
-      margin-top: 8px;
-      padding-top: 12px;
-      border-top: 1px solid rgba(39, 53, 68, .9);
+      width: auto;
+      margin-top: 0;
+      padding-top: 0;
+      border-top: 0;
     }
     body.app-dashboard main {
-      width: min(100%, 1500px);
-      padding: 28px clamp(18px, 3vw, 44px) 54px;
+      width: min(100% - 36px, 1420px);
+      padding: 28px 0 54px;
       margin: 0 auto;
     }
     body.app-dashboard .dashboard-hero {
@@ -317,7 +311,6 @@
       border: 1px solid rgba(56, 77, 96, .8);
     }
     body.app-dashboard .alert {
-      grid-column: 2;
       width: min(100% - 36px, 1500px);
       margin: 18px auto 0;
       border-radius: 14px;
@@ -328,16 +321,12 @@
       }
       body.app-dashboard .topbar {
         position: static;
-        min-height: auto;
         padding: 16px;
-        border-right: 0;
-        border-bottom: 1px solid rgba(39, 53, 68, .92);
+        align-items: flex-start;
+        flex-direction: column;
       }
       body.app-dashboard .nav {
         flex-direction: row;
-      }
-      body.app-dashboard .nav:before {
-        width: 100%;
       }
       body.app-dashboard .btnx,
       body.app-dashboard form {
