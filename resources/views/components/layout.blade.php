@@ -318,7 +318,7 @@
         $initials = collect(explode(' ', trim((string) ($dashboardUser?->name ?: $dashboardUser?->email))))
           ->filter()
           ->take(2)
-          ->map(fn ($part) => mb_substr($part, 0, 1))
+          ->map(fn ($part) => strtoupper(substr($part, 0, 1)))
           ->join('');
       @endphp
       <div class="app-shell">
