@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Support;
 
@@ -59,3 +59,4 @@ class GitHubProgramReadiness
         return compact('title', 'done', 'detail', 'area');
     }
 }
+

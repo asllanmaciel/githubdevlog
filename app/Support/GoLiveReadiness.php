@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Support;
 
@@ -52,3 +52,4 @@ class GoLiveReadiness
         return compact('title', 'done', 'detail', 'area', 'nextAction');
     }
 }
+

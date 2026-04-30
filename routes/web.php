@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 use App\Models\BillingPlan;
 use App\Models\BillingEvent;
@@ -62,9 +62,7 @@ Route::get('/terms', fn () => view('legal.terms'))->name('terms');
 Route::get('/security', fn () => view('legal.security'))->name('security');
 Route::get('/sitemap.xml', function () {
     $urls = collect([
-        route('home'),
-        route('pricing'),
-        route('changelog'),
+        route('home'),        route('changelog'),
         route('contact'),
         route('github'),
         route('docs.users'),
@@ -394,7 +392,7 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
 
         if (! filled($setupUrl) || str_contains($setupUrl, 'your-github-app-slug')) {
             return redirect()->route('dashboard')->withErrors([
-                'github' => 'Configure GITHUB_APP_SETUP_URL com a URL oficial de instalação do GitHub App.',
+                'github' => 'Configure GITHUB_APP_SETUP_URL com a URL oficial de instalaÃ§Ã£o do GitHub App.',
             ]);
         }
 
@@ -416,13 +414,13 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
 
         if ($sessionWorkspaceId !== $workspace->id || $sessionState === '' || ! hash_equals($sessionState, $state)) {
             return redirect()->route('dashboard')->withErrors([
-                'github' => 'Não foi possível validar o retorno da instalação GitHub. Tente iniciar a instalação novamente.',
+                'github' => 'NÃ£o foi possÃ­vel validar o retorno da instalaÃ§Ã£o GitHub. Tente iniciar a instalaÃ§Ã£o novamente.',
             ]);
         }
 
         if ($installationId === '') {
             return redirect()->route('dashboard')->withErrors([
-                'github' => 'O GitHub não retornou installation_id. Confirme se a instalação foi concluída.',
+                'github' => 'O GitHub nÃ£o retornou installation_id. Confirme se a instalaÃ§Ã£o foi concluÃ­da.',
             ]);
         }
 
@@ -442,7 +440,7 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
         Notification::create([
             'workspace_id' => $workspace->id,
             'title' => 'GitHub App instalado',
-            'body' => 'A instalação '.$installationId.' foi vinculada ao workspace.',
+            'body' => 'A instalaÃ§Ã£o '.$installationId.' foi vinculada ao workspace.',
             'type' => 'github',
         ]);
 
@@ -876,5 +874,6 @@ Route::post('/webhooks/mercado-pago', function (Request $request, MercadoPagoBil
         'billing_event_id' => $billingEvent->id,
     ]);
 })->name('webhooks.mercado-pago');
+
 
 

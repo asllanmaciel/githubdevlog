@@ -196,7 +196,6 @@
       </a>
       <nav class="nav" aria-label="Menu principal">
         <a class="btnx" href="{{ route('home') }}#produto">Produto</a>
-        <a class="btnx" href="{{ route('pricing') }}">Planos</a>
         <a class="btnx" href="{{ route('docs.api') }}">API</a>
         @auth
           @if(Auth::user()->is_super_admin)
@@ -229,6 +228,7 @@
   </div>
 </body>
 </html>
+
 
 
 
