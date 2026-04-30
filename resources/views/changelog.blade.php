@@ -42,7 +42,7 @@
   <section class="band">
     <div class="kicker">Por que isso importa</div>
     <div class="row g-3">
-      <div class="col-md-4"><div class="cardx"><h3>ConfianÃ§a</h3><p>Devs conseguem ver que o produto tem manutenção ativa e direcao clara.</p></div></div>
+      <div class="col-md-4"><div class="cardx"><h3>Confiança</h3><p>Devs conseguem ver que o produto tem manutenção ativa e direção clara.</p></div></div>
       <div class="col-md-4"><div class="cardx"><h3>Produto</h3><p>Cada entrega mostra progresso concreto rumo ao uso real, não apenas promêssa de roadmap.</p></div></div>
       <div class="col-md-4"><div class="cardx"><h3>Launch</h3><p>Facilita comunicacao durante beta, demos, submissao ao GitHub e abertura pública.</p></div></div>
     </div>

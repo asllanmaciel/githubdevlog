@@ -51,7 +51,7 @@ X-Hub-Signature-256: sha256=...
       Quando um webhook falha, o problema raramente é só código. É contexto: qual evento chegou, qual repositório disparou, qual payload veio, se a assinatura bateu e quem consegue ver aquilo. O DevLog AI organiza esse fluxo em um workspace seguro para cada dev ou time.
     </p>
     <div class="row g-3 mt-3">
-      <div class="col-md-4"><div class="cardx"><h3>Para devs</h3><p>Teste integraÃ§Ãµes GitHub sem depender de log local, print de terminal ou payload perdido.</p></div></div>
+      <div class="col-md-4"><div class="cardx"><h3>Para devs</h3><p>Teste integrações GitHub sem depender de log local, print de terminal ou payload perdido.</p></div></div>
       <div class="col-md-4"><div class="cardx"><h3>Para timês</h3><p>Compartilhe um workspace de debug com histórico comum e eventos separados por origem.</p></div></div>
       <div class="col-md-4"><div class="cardx"><h3>Para demos</h3><p>Mostre o fluxo de ponta a ponta: GitHub envia, o DevLog valida e o painel explica.</p></div></div>
     </div>

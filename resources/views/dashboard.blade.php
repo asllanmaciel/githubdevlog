@@ -231,7 +231,7 @@
             <div class="summary-cell h-100" style="{{ $notification->read_at ? 'opacity:.72' : 'border-color:rgba(80,184,255,.55)' }}">
               <div class="d-flex justify-content-between gap-2 align-items-start">
                 <div>
-                  <div class="summary-label">{{ $notification->type }} Â· {{ $notification->created_at?->format('d/m/Y H:i') }}</div>
+                  <div class="summary-label">{{ $notification->type }} · {{ $notification->created_at?->format('d/m/Y H:i') }}</div>
                   <div class="summary-value">{{ $notification->title }}</div>
                 </div>
                 <span class="pill">{{ $notification->read_at ? 'Lida' : 'Nova' }}</span>
