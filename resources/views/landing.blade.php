@@ -46,37 +46,37 @@ X-Hub-Signature-256: sha256=...
 
   <section class="band" id="produto">
     <div class="kicker">A proposta</div>
-    <h2>Um RequestBin privado, pensado para GitHub e para times de produto.</h2>
+    <h2>Um RequestBin privado, pensado para GitHub e para timês de produto.</h2>
     <p class="lead">
       Quando um webhook falha, o problema raramente Ã© sÃ³ cÃ³digo. Ã‰ contexto: qual evento chegou, qual repositÃ³rio disparou, qual payload veio, se a assinatura bateu e quem consegue ver aquilo. O DevLog AI organiza esse fluxo em um workspace seguro para cada dev ou time.
     </p>
     <div class="row g-3 mt-3">
       <div class="col-md-4"><div class="cardx"><h3>Para devs</h3><p>Teste integraÃ§Ãµes GitHub sem depender de log local, print de terminal ou payload perdido.</p></div></div>
-      <div class="col-md-4"><div class="cardx"><h3>Para times</h3><p>Compartilhe um workspace de debug com histÃ³rico comum e eventos separados por origem.</p></div></div>
+      <div class="col-md-4"><div class="cardx"><h3>Para timês</h3><p>Compartilhe um workspace de debug com histÃ³rico comum e eventos separados por origem.</p></div></div>
       <div class="col-md-4"><div class="cardx"><h3>Para demos</h3><p>Mostre o fluxo de ponta a ponta: GitHub envia, o DevLog valida e o painel explica.</p></div></div>
     </div>
   </section>
 
   <section class="band" id="criador">
-    <div class="kicker">Criador</div>
+    <div class="kicker">Por trás do produto</div>
     <div class="creator-profile">
       <div>
         <img class="creator-photo" src="{{ $creatorAvatarUrl }}" alt="{{ $creatorName }}">
       </div>
       <div>
-        <h2>Construido por {{ $creatorName }} para resolver uma dor real de integracao.</h2>
+        <h2>Oi, eu sou {{ $creatorName }}. Criei o DevLog AI para transformar webhooks em clareza.</h2>
         <p class="lead">
-          O DevLog AI nasceu de uma necessidade pratica: entender, validar e demonstrar webhooks do GitHub sem depender de logs soltos, payloads perdidos ou ferramentas genericas demais. A proposta e transformar eventos tecnicos em historico privado, legivel e util para devs.
+          A ideia nasceu de uma dor bem prática: integrar GitHub, testar eventos, provar que um webhook chegou e explicar o que aconteceu sem depender de terminal aberto, prints ou logs perdidos. O DevLog AI organiza esse fluxo em um workspace privado, auditável e pronto para timês.
         </p>
         <div class="creator-badges">
+          <span class="pill">Criado por dev</span>
           <span class="pill">GitHub-first</span>
-          <span class="pill">SaaS para devs</span>
-          <span class="pill">Webhooks privados</span>
-          <span class="pill">Produto criado por {{ $creatorName }}</span>
+          <span class="pill">SaaS em evolução</span>
+          <span class="pill">Foco em webhooks reais</span>
         </div>
         <p class="muted">{{ $creatorRole }}</p>
         @if ($creatorUrl)
-          <div class="mt-3"><a class="btnx" href="{{ $creatorUrl }}" target="_blank" rel="noopener">Ver GitHub do criador</a></div>
+          <div class="mt-3"><a class="btnx" href="{{ $creatorUrl }}" target="_blank" rel="noopener">Ver meu GitHub</a></div>
         @endif
       </div>
     </div>
@@ -91,7 +91,7 @@ X-Hub-Signature-256: sha256=...
     </div>
   </section>
 
-  <section class="band" id="seguranca">
+  <section class="band" id="segurança">
     <div class="kicker">SeguranÃ§a e isolamento</div>
     <h2>Webhook sem conta vira vazamento. Aqui o padrÃ£o Ã© privado.</h2>
     <div class="row g-3">
@@ -118,4 +118,6 @@ X-Hub-Signature-256: sha256=...
     </div>
   </footer>
 </x-layout>
+
+
 

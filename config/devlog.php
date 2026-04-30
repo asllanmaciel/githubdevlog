@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 return [
     'creator_name' => env('DEVLOG_CREATOR_NAME', 'Asllan Maciel'),
@@ -8,3 +8,4 @@ return [
     'company_name' => env('DEVLOG_COMPANY_NAME', 'GitHub DevLog AI'),
     'support_email' => env('DEVLOG_SUPPORT_EMAIL', 'suporte@githubdevlog.ai'),
 ];
+
