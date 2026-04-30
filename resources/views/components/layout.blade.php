@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
@@ -66,7 +66,9 @@
     .band .cardx { height: 100%; }
     .cardx h3 { font-size: 18px; font-weight: 950; margin-bottom: 8px; }
     .cardx p { color: var(--muted); line-height: 1.65; margin: 0; }
-    .steps { counter-reset: step; }
+    .creator-profile { display:grid; grid-template-columns:220px 1fr; gap:24px; align-items:center; border:1px solid var(--line); border-radius:18px; background:linear-gradient(135deg, rgba(80,184,255,.1), rgba(105,227,154,.07) 42%, rgba(16,23,32,.86)); padding:22px; box-shadow:0 24px 70px rgba(0,0,0,.24); }
+    .creator-photo { width:190px; height:190px; border-radius:38px; object-fit:cover; border:1px solid rgba(80,184,255,.34); box-shadow:0 24px 80px rgba(80,184,255,.16); background:#0b1118; }
+    .creator-badges { display:flex; flex-wrap:wrap; gap:8px; margin:16px 0; }    .steps { counter-reset: step; }
     .step { position: relative; padding-left: 54px; }
     .step:before { counter-increment: step; content: counter(step); position: absolute; left: 18px; top: 18px; width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; background: var(--blue); color: #071018; font-weight: 950; }
     .footer { border-top: 1px solid var(--line); padding: 30px 0; color: var(--muted); }
@@ -157,6 +159,8 @@
       .hero-grid { grid-template-columns: 1fr; }
       .nav { justify-content: flex-start; }
       .event-summary { grid-template-columns:1fr; }
+      .creator-profile { grid-template-columns:1fr; }
+      .creator-photo { width:140px; height:140px; border-radius:30px; }
       .control-strip { grid-template-columns:1fr; }
     }
       .event-control-panel { position:relative; overflow:hidden; }
@@ -193,11 +197,7 @@
       <nav class="nav" aria-label="Menu principal">
         <a class="btnx" href="{{ route('home') }}#produto">Produto</a>
         <a class="btnx" href="{{ route('pricing') }}">Planos</a>
-        <a class="btnx" href="{{ route('home') }}#uso">Como usar</a>
         <a class="btnx" href="{{ route('docs.api') }}">API</a>
-        <a class="btnx" href="{{ route('changelog') }}">Changelog</a>
-        <a class="btnx" href="{{ route('home') }}#criador">Criador</a>
-        <a class="btnx" href="{{ route('home') }}#seguranca">Segurança</a>
         @auth
           @if(Auth::user()->is_super_admin)
             <a class="btnx primary" href="{{ url('/admin') }}">Admin</a>
@@ -229,5 +229,6 @@
   </div>
 </body>
 </html>
+
 
 
