@@ -1,4 +1,6 @@
 *.log
+*.pem
+*.private-key.pem
 .DS_Store
 .env
 .env.backup

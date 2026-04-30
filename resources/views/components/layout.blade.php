@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ $title ?? 'GitHub DevLog AI' }}</title>
+  @php($isDashboardShell = request()->routeIs('dashboard'))
   <meta name="description" content="Capture, valide e acompanhe webhooks do GitHub em workspaces privados, com segredo por conta e painel para debugging.">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -187,9 +188,168 @@
     .mini-panel { border:1px solid var(--line); border-radius:8px; background:#0b121a; padding:12px; }
     .mini-panel p { color:var(--muted); margin:8px 0; }
     @media (max-width: 900px) { .event-insights, .event-actions-grid { grid-template-columns:1fr; } }
+    body.app-dashboard {
+      background:
+        radial-gradient(circle at 0% 0%, rgba(80, 184, 255, .12), transparent 34%),
+        radial-gradient(circle at 100% 0%, rgba(105, 227, 154, .1), transparent 28%),
+        linear-gradient(120deg, #071018 0%, #09131b 48%, #07150f 100%);
+    }
+    body.app-dashboard .wrap {
+      max-width: none;
+      width: 100%;
+      min-height: 100vh;
+      padding: 0;
+      display: grid;
+      grid-template-columns: 292px minmax(0, 1fr);
+    }
+    body.app-dashboard .topbar {
+      position: sticky;
+      top: 0;
+      align-self: start;
+      min-height: 100vh;
+      padding: 22px;
+      border-right: 1px solid rgba(39, 53, 68, .92);
+      background:
+        linear-gradient(180deg, rgba(8, 16, 25, .98), rgba(7, 15, 22, .94)),
+        radial-gradient(circle at 30% 0%, rgba(80,184,255,.14), transparent 34%);
+      box-shadow: 18px 0 70px rgba(0,0,0,.24);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 26px;
+      z-index: 5;
+    }
+    body.app-dashboard .brand {
+      align-items: flex-start;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(39, 53, 68, .9);
+      width: 100%;
+    }
+    body.app-dashboard .brand img {
+      width: 44px;
+      height: 44px;
+      filter: drop-shadow(0 14px 28px rgba(80,184,255,.2));
+    }
+    body.app-dashboard .brand strong {
+      font-size: 18px;
+    }
+    body.app-dashboard .brand span span {
+      display: block;
+      max-width: 180px;
+      line-height: 1.45;
+    }
+    body.app-dashboard .nav {
+      width: 100%;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      gap: 10px;
+    }
+    body.app-dashboard .nav:before {
+      content: "Operação";
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .16em;
+      font-size: 11px;
+      font-weight: 950;
+      margin: 0 0 2px;
+    }
+    body.app-dashboard .btnx {
+      width: 100%;
+      justify-content: flex-start;
+      min-height: 43px;
+      border-radius: 12px;
+      background: rgba(11, 17, 24, .72);
+    }
+    body.app-dashboard .btnx.primary {
+      background: linear-gradient(135deg, var(--blue), var(--green));
+      border-color: transparent;
+      color: #061018;
+      box-shadow: 0 14px 34px rgba(80, 184, 255, .18);
+    }
+    body.app-dashboard form {
+      width: 100%;
+      margin-top: 8px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(39, 53, 68, .9);
+    }
+    body.app-dashboard main {
+      width: min(100%, 1500px);
+      padding: 28px clamp(18px, 3vw, 44px) 54px;
+      margin: 0 auto;
+    }
+    body.app-dashboard .dashboard-hero {
+      grid-template-columns: minmax(0, 1.45fr) minmax(340px, .72fr);
+      gap: 18px;
+    }
+    body.app-dashboard .dashboard-title {
+      max-width: 980px;
+      font-size: clamp(42px, 4.2vw, 72px);
+    }
+    body.app-dashboard .cardx,
+    body.app-dashboard .metric,
+    body.app-dashboard .event-card,
+    body.app-dashboard .control-card,
+    body.app-dashboard .insight-card {
+      border-radius: 16px;
+      background:
+        linear-gradient(180deg, rgba(15, 25, 35, .94), rgba(8, 15, 22, .9));
+      border-color: rgba(56, 77, 96, .92);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, .22);
+    }
+    body.app-dashboard .metric-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+    body.app-dashboard .dashboard-grid {
+      grid-template-columns: 410px minmax(0, 1fr);
+      gap: 18px;
+    }
+    body.app-dashboard .config-card {
+      top: 28px;
+    }
+    body.app-dashboard .event-feed-head {
+      border-radius: 16px;
+      padding: 18px;
+      background:
+        linear-gradient(135deg, rgba(80,184,255,.08), rgba(105,227,154,.05)),
+        rgba(8, 15, 22, .74);
+      border: 1px solid rgba(56, 77, 96, .8);
+    }
+    body.app-dashboard .alert {
+      grid-column: 2;
+      width: min(100% - 36px, 1500px);
+      margin: 18px auto 0;
+      border-radius: 14px;
+    }
+    @media (max-width: 1100px) {
+      body.app-dashboard .wrap {
+        display: block;
+      }
+      body.app-dashboard .topbar {
+        position: static;
+        min-height: auto;
+        padding: 16px;
+        border-right: 0;
+        border-bottom: 1px solid rgba(39, 53, 68, .92);
+      }
+      body.app-dashboard .nav {
+        flex-direction: row;
+      }
+      body.app-dashboard .nav:before {
+        width: 100%;
+      }
+      body.app-dashboard .btnx,
+      body.app-dashboard form {
+        width: auto;
+      }
+      body.app-dashboard main {
+        padding: 20px 14px 42px;
+      }
+    }
   </style>
 </head>
-<body>
+<body class="{{ $isDashboardShell ? 'app-dashboard' : '' }}">
   <div class="wrap">
     <header class="topbar">
       <a class="brand" href="{{ route('home') }}">

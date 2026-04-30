@@ -1,10 +1,7 @@
 <x-layout title="Dashboard | GitHub DevLog AI">
 @php
-    use App\Models\BillingPlan;
-    use App\Support\WorkspaceUsage;
-
     $endpoint = $workspace ? url('/webhooks/github/'.$workspace->uuid) : null;
-    $availablePlans = BillingPlan::where('active', true)->orderBy('price_cents')->get();
+    $availablePlans = \App\Models\BillingPlan::where('active', true)->orderBy('price_cents')->get();
     $mercadoPagoStatus = app(\App\Services\MercadoPagoBillingService::class)->checkoutStatus();
     $totalEvents = $events->count();
     $validEvents = $events->where('signature_valid', true)->count();
@@ -21,8 +18,8 @@
     $openTasks = \App\Models\WebhookEventTask::whereIn('webhook_event_id', $eventIds)->where('status', 'open')->count();
     $notesCount = \App\Models\WebhookEventNote::whereIn('webhook_event_id', $eventIds)->count();
     $subscription = $workspace?->subscription()->with('plan')->first();
-    $usageReport = $workspace ? WorkspaceUsage::report($workspace) : null;
-    $plan = $usageReport['plan'] ?? BillingPlan::where('slug', 'free')->first();
+    $usageReport = $workspace ? \App\Support\WorkspaceUsage::report($workspace) : null;
+    $plan = $usageReport['plan'] ?? \App\Models\BillingPlan::where('slug', 'free')->first();
     $monthlyEvents = $usageReport['usage'] ?? 0;
     $monthlyLimit = $usageReport['limit'] ?? 1000;
     $remainingEvents = $usageReport['remaining'] ?? max($monthlyLimit - $monthlyEvents, 0);

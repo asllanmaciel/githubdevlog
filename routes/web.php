@@ -440,8 +440,8 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
         GithubInstallation::updateOrCreate(
             ['workspace_id' => $workspace->id, 'installation_id' => $installationId],
             [
-                'account_login' => $request->query('account_login'),
-                'account_type' => $request->query('account_type'),
+                'account_login' => $request->query('account_login') ?: 'pending-installation-'.$installationId,
+                'account_type' => $request->query('account_type') ?: 'unknown',
                 'permissions' => [],
                 'events' => [],
                 'installed_at' => now(),
