@@ -8,6 +8,49 @@
     $isDashboardShell = request()->routeIs('dashboard');
   @endphp
   <meta name="description" content="Capture, valide e acompanhe webhooks do GitHub em workspaces privados, com segredo por conta e painel para debugging.">
+  @php
+    $analytics = config('devlog.analytics', []);
+    $gtmId = $analytics['google_tag_manager_id'] ?? null;
+    $gaId = $analytics['google_analytics_id'] ?? null;
+    $metaPixelId = $analytics['meta_pixel_id'] ?? null;
+    $hotjarId = $analytics['hotjar_id'] ?? null;
+    $clarityId = $analytics['clarity_id'] ?? null;
+    $plausibleDomain = $analytics['plausible_domain'] ?? null;
+  @endphp
+  @if (filled($gtmId))
+    <script>
+      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','{{ $gtmId }}');
+    </script>
+  @endif
+  @if (filled($gaId))
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ $gaId }}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', '{{ $gaId }}');
+    </script>
+  @endif
+  @if (filled($metaPixelId))
+    <script>
+      !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', '{{ $metaPixelId }}');
+      fbq('track', 'PageView');
+    </script>
+  @endif
+  @if (filled($hotjarId))
+    <script>
+      (function(h,o,t,j,a,r){h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};h._hjSettings={hjid:{{ $hotjarId }},hjsv:6};a=o.getElementsByTagName('head')[0];r=o.createElement('script');r.async=1;r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;a.appendChild(r);})(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+    </script>
+  @endif
+  @if (filled($clarityId))
+    <script>
+      (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src='https://www.clarity.ms/tag/'+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,'clarity','script','{{ $clarityId }}');
+    </script>
+  @endif
+  @if (filled($plausibleDomain))
+    <script defer data-domain="{{ $plausibleDomain }}" src="https://plausible.io/js/script.js"></script>
+  @endif
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <style>
@@ -311,6 +354,12 @@
   </style>
 </head>
 <body class="{{ $isDashboardShell ? 'app-dashboard' : '' }}">
+  @if (filled($gtmId))
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ $gtmId }}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  @endif
+  @if (filled($metaPixelId))
+    <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id={{ $metaPixelId }}&ev=PageView&noscript=1" alt=""></noscript>
+  @endif
   <div class="wrap">
     @if ($isDashboardShell)
       @php
@@ -346,12 +395,12 @@
 
           <div class="app-menu-label">Operação</div>
           <nav class="app-menu">
-            <a class="active" href="{{ route('dashboard') }}"><span>Visão geral</span><span class="hint">Home</span></a>
-            <a href="#eventos"><span>Eventos</span><span class="hint">Webhook</span></a>
-            <a href="#setup"><span>GitHub App e endpoint</span><span class="hint">Setup</span></a>
-            <a href="#ai"><span>AI do workspace</span><span class="hint">Análise</span></a>
-            <a href="#equipe"><span>Equipe e permissões</span><span class="hint">Acesso</span></a>
-            <a href="#billing"><span>Uso, plano e alertas</span><span class="hint">Billing</span></a>
+            <a class="{{ request()->route('section') === null || request()->route('section') === 'overview' ? 'active' : '' }}" href="{{ route('dashboard') }}"><span>Visão geral</span><span class="hint">Home</span></a>
+            <a class="{{ request()->route('section') === 'events' ? 'active' : '' }}" href="{{ route('dashboard', ['section' => 'events']) }}"><span>Eventos</span><span class="hint">Webhook</span></a>
+            <a class="{{ request()->route('section') === 'github' ? 'active' : '' }}" href="{{ route('dashboard', ['section' => 'github']) }}"><span>GitHub App e endpoint</span><span class="hint">Setup</span></a>
+            <a class="{{ request()->route('section') === 'ai' ? 'active' : '' }}" href="{{ route('dashboard', ['section' => 'ai']) }}"><span>AI do workspace</span><span class="hint">Análise</span></a>
+            <a class="{{ request()->route('section') === 'team' ? 'active' : '' }}" href="{{ route('dashboard', ['section' => 'team']) }}"><span>Equipe e permissões</span><span class="hint">Acesso</span></a>
+            <a class="{{ request()->route('section') === 'billing' ? 'active' : '' }}" href="{{ route('dashboard', ['section' => 'billing']) }}"><span>Uso, plano e alertas</span><span class="hint">Billing</span></a>
             <a href="{{ route('support') }}"><span>Suporte</span><span class="hint">SLA</span></a>
           </nav>
 

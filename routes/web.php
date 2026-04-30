@@ -158,10 +158,13 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
-    Route::get('/dashboard', function () {
+    Route::get('/dashboard/{section?}', function (?string $section = null) {
         if (Auth::user()->is_super_admin) {
             return redirect('/admin');
         }
+
+        $dashboardPage = $section ?: 'overview';
+        abort_unless(in_array($dashboardPage, ['overview', 'events', 'github', 'ai', 'team', 'billing'], true), 404);
 
         $workspace = Auth::user()->workspaces()->first();
         $events = $workspace ? $workspace->webhookEvents()->latest()->limit(50)->get() : collect();
@@ -179,8 +182,8 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
         $permissionMatrix = WorkspaceAccess::roleMatrix();
         $permissionLabels = WorkspaceAccess::labels();
 
-        return view('dashboard', compact('workspace', 'events', 'notifications', 'githubInstallation', 'members', 'invites', 'canManageWorkspace', 'canManageBilling', 'canManageSecrets', 'canManageGitHub', 'canCreateTestEvents', 'canAnnotateEvents', 'workspaceRole', 'permissionMatrix', 'permissionLabels'));
-    })->name('dashboard');
+        return view('dashboard', compact('dashboardPage', 'workspace', 'events', 'notifications', 'githubInstallation', 'members', 'invites', 'canManageWorkspace', 'canManageBilling', 'canManageSecrets', 'canManageGitHub', 'canCreateTestEvents', 'canAnnotateEvents', 'workspaceRole', 'permissionMatrix', 'permissionLabels'));
+    })->where('section', 'overview|events|github|ai|team|billing')->name('dashboard');
 
 
     Route::post('/invites/{token}/accept', function (string $token) {

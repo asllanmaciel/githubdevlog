@@ -3,12 +3,16 @@
     $endpoint = $workspace ? url('/webhooks/github/'.$workspace->uuid) : null;
     $availablePlans = \App\Models\BillingPlan::where('active', true)->orderBy('price_cents')->get();
     $mercadoPagoStatus = app(\App\Services\MercadoPagoBillingService::class)->checkoutStatus();
+    $visiblePage = $dashboardPage ?? 'overview';
     $totalEvents = $events->count();
     $validEvents = $events->where('signature_valid', true)->count();
     $invalidEvents = $events->where('signature_valid', false)->count();
     $validationRate = $totalEvents > 0 ? round(($validEvents / $totalEvents) * 100) : 0;
     $repos = $events->map(fn ($event) => data_get($event->payload, 'repository.full_name'))->filter()->unique()->count();
-    $pushes = $events->where('event_name', 'push')->count();
+    $pushes = $events
+        ->filter(fn ($event) => $event->event_name === 'push' || ($event->event_name === 'workflow_run' && data_get($event->payload, 'workflow_run.event') === 'push'))
+        ->count();
+    $workflowRuns = $events->where('event_name', 'workflow_run')->count();
     $lastEvent = $events->first();
     $latestRepo = $lastEvent ? data_get($lastEvent->payload, 'repository.full_name', 'Aguardando primeiro evento') : 'Aguardando primeiro evento';
     $latestSender = $lastEvent ? data_get($lastEvent->payload, 'sender.login', data_get($lastEvent->payload, 'pusher.name', 'GitHub')) : 'GitHub';
@@ -63,6 +67,7 @@
   </main>
 @else
   <main>
+    @if ($visiblePage === 'overview')
     <section class="dashboard-hero">
       <div class="cardx">
         <div class="kicker">Painel do workspace</div>
@@ -112,11 +117,13 @@
     <section class="metric-grid">
       <div class="metric"><div class="metric-label">Eventos recentes</div><div class="metric-value">{{ $totalEvents }}</div><div class="spark"><span style="height:40%"></span><span style="height:70%"></span><span style="height:55%"></span><span style="height:90%"></span></div></div>
       <div class="metric"><div class="metric-label">Repositorios vistos</div><div class="metric-value">{{ $repos }}</div><div class="muted mt-2">Origem mais recente: {{ $latestRepo }}</div></div>
-      <div class="metric"><div class="metric-label">Push recebidos</div><div class="metric-value">{{ $pushes }}</div><div class="muted mt-2">Sender recente: {{ $latestSender }}</div></div>
+      <div class="metric"><div class="metric-label">Push de origem</div><div class="metric-value">{{ $pushes }}</div><div class="muted mt-2">{{ $workflowRuns }} workflow run(s) · sender recente: {{ $latestSender }}</div></div>
       <div class="metric"><div class="metric-label">Notas e tarefas</div><div class="metric-value">{{ $notesCount + $openTasks }}</div><div class="muted mt-2">{{ $openTasks }} tarefa(s) aberta(s)</div></div>
     </section>
+    @endif
 
 
+    @if ($visiblePage === 'ai')
     <section class="cardx mb-3" id="ai">
       <div class="d-flex justify-content-between gap-3 flex-wrap align-items-start">
         <div>
@@ -133,6 +140,9 @@
         <div class="col-md-3"><div class="summary-cell h-100"><div class="summary-label">Custo excedente</div><div class="summary-value">{{ $advancedAiPrice > 0 ? 'R$ '.number_format($advancedAiPrice, 2, ',', '.') : 'Sem excedente' }}</div><div class="muted mt-1">Custo estimado por análise avançada</div></div></div>
       </div>
     </section>
+    @endif
+
+    @if ($visiblePage === 'team')
     <section class="cardx mb-3" id="equipe">
       <div class="d-flex justify-content-between gap-3 flex-wrap align-items-start">
         <div>
@@ -226,7 +236,9 @@
         </div>
       @endif
     </section>
+    @endif
 
+    @if ($visiblePage === 'overview')
     <x-workspace-onboarding
       :workspace="$workspace"
       :endpoint="$endpoint"
@@ -236,7 +248,9 @@
       :subscription-status-label="$subscriptionStatusLabel"
       :can-use-webhooks="$canUseWebhooks"
     />
+    @endif
 
+    @if ($visiblePage === 'billing')
     <section class="cardx mb-3" id="billing">
       <div class="d-flex justify-content-between gap-3 flex-wrap align-items-start">
         <div>
@@ -281,8 +295,10 @@
         @endforelse
       </div>
     </section>
+    @endif
 
 
+    @if ($visiblePage === 'overview')
     <section class="cardx mb-3" id="launch-checklist">
       <div class="d-flex justify-content-between gap-3 flex-wrap align-items-start">
         <div>
@@ -299,6 +315,9 @@
         <div class="col-md-3"><div class="summary-cell h-100"><div class="summary-label">4. Operação</div><div class="summary-value">{{ $unreadNotifications > 0 ? $unreadNotifications.' alerta(s)' : 'Sem alertas' }}</div><div class="muted mt-1">Notas, tarefas, suporte e AI ficam no painel.</div></div></div>
       </div>
     </section>
+    @endif
+
+    @if ($visiblePage === 'overview')
     <section class="mini-board">
       <div class="insight-card">
         <div class="kicker">Distribuição de eventos</div>
@@ -319,13 +338,15 @@
         <div class="kicker">Próximas ações</div>
         <h2 class="h4">Operação guiada</h2>
         <div class="quick-actions">
-          <a class="quick-action" href="#setup"><span>Configurar webhook no GitHub</span><span>?</span></a>
-          <a class="quick-action" href="#eventos"><span>Investigar eventos recebidos</span><span>></span></a>
+          <a class="quick-action" href="{{ route('dashboard', ['section' => 'github']) }}"><span>Configurar GitHub App</span><span>?</span></a>
+          <a class="quick-action" href="{{ route('dashboard', ['section' => 'events']) }}"><span>Investigar eventos recebidos</span><span>></span></a>
           <a class="quick-action" href="{{ route('support') }}"><span>Abrir chamado de suporte</span><span>></span></a>
         </div>
       </div>
     </section>
+    @endif
 
+    @if ($visiblePage === 'billing')
     <section class="cardx mb-3">
       <div class="d-flex justify-content-between gap-3 flex-wrap align-items-start">
         <div>
@@ -379,7 +400,9 @@
         </div>
       </div>
     </section>
+    @endif
 
+    @if ($visiblePage === 'billing')
     @if ($usageWarning)
       <section class="cardx mb-3" style="border-color: {{ $usagePercent >= 100 ? 'rgba(255,107,107,.5)' : 'rgba(255,209,102,.5)' }}; background: linear-gradient(135deg, rgba(255,209,102,.08), rgba(80,184,255,.05));">
         <div class="d-flex justify-content-between gap-3 flex-wrap align-items-center">
@@ -392,7 +415,9 @@
         </div>
       </section>
     @endif
+    @endif
 
+    @if ($visiblePage === 'billing')
     <section class="cardx mb-3" id="upgrade">
       <div class="d-flex justify-content-between gap-3 flex-wrap align-items-start">
         <div>
@@ -422,13 +447,16 @@
         @endforeach
       </div>
     </section>
+    @endif
 
-    <section class="dashboard-grid">
+    @if (in_array($visiblePage, ['github', 'events'], true))
+    <section class="{{ $visiblePage === 'github' ? '' : 'event-feed-full' }}">
+      @if ($visiblePage === 'github')
       <aside id="setup" class="config-card">
         <div class="cardx mb-3">
           <div class="kicker">Configuração GitHub</div>
-          <h2 class="h4 mt-2">Endpoint privado do workspace</h2>
-          <p class="muted">Use estes dados em <strong>Settings -> Webhooks -> Add webhook</strong> no repositório GitHub.</p>
+          <h2 class="h4 mt-2">{{ $githubInstallation ? 'GitHub App conectado ao workspace' : 'Conecte o GitHub App ao workspace' }}</h2>
+          <p class="muted">{{ $githubInstallation ? 'O caminho recomendado é manter o GitHub App como entrada principal. O webhook manual fica disponível abaixo apenas como fallback técnico.' : 'Vincule o app oficial para receber eventos com assinatura validada e contexto de instalação.' }}</p>
           <div class="summary-cell mb-3">
             <div class="summary-label">GitHub App</div>
             <div class="summary-value">{{ $githubInstallation ? 'Instalação '.$githubInstallation->installation_id.' vinculada' : 'GitHub App ainda não vinculado a este workspace' }}</div>
@@ -441,20 +469,24 @@
               <div class="muted mt-2">Seu papel atual não permite conectar GitHub App.</div>
             @endif
           </div>
-          <label>Payload URL</label>
-          <div class="endpoint-box mb-3">{{ $endpoint }}</div>
-          <label>Content type</label>
-          <pre>application/json</pre>
-          <label>Secret</label>
-          <pre>{{ $workspace->webhook_secret }}</pre>
-          @if ($canManageSecrets)
-            <form method="POST" action="{{ route('workspace.secret.rotate') }}">
-              @csrf
-              <button class="btnx w-100" type="submit">Rotacionar secret</button>
-            </form>
-          @else
-            <div class="muted">Somente owner/admin pode rotacionar o secret.</div>
-          @endif
+          <details class="payload" {{ $githubInstallation ? '' : 'open' }}>
+            <summary>Webhook manual e secret do workspace</summary>
+            <div class="muted mt-2 mb-2">Use este modo quando quiser configurar um webhook direto em Settings -> Webhooks -> Add webhook, sem passar pelo GitHub App.</div>
+            <label>Payload URL</label>
+            <div class="endpoint-box mb-3">{{ $endpoint }}</div>
+            <label>Content type</label>
+            <pre>application/json</pre>
+            <label>Secret</label>
+            <pre>{{ $workspace->webhook_secret }}</pre>
+            @if ($canManageSecrets)
+              <form method="POST" action="{{ route('workspace.secret.rotate') }}">
+                @csrf
+                <button class="btnx w-100" type="submit">Rotacionar secret</button>
+              </form>
+            @else
+              <div class="muted">Somente owner/admin pode rotacionar o secret.</div>
+            @endif
+          </details>
         </div>
 
         <div class="cardx">
@@ -471,7 +503,9 @@
           @endif
         </div>
       </aside>
+      @endif
 
+      @if ($visiblePage === 'events')
       <section id="eventos">
         <div class="cardx event-feed-head">
           <div>
@@ -511,7 +545,9 @@
           </div>
         @endforelse
       </section>
+      @endif
     </section>
+    @endif
   </main>
 @endif
 <script>
