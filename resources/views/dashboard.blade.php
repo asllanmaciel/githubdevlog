@@ -40,15 +40,15 @@
         'canceled' => 'Cancelada',
     ][$subscriptionStatus] ?? ucfirst($subscriptionStatus);
     $subscriptionEndsAt = $subscription?->current_period_ends_at;
-    $subscriptionProviderReference = $subscription?->provider_reference ?: 'Ainda nao gerada';
+    $subscriptionProviderReference = $subscription?->provider_reference ?: 'Ainda não gerada';
     $canUseWebhooks = in_array($subscriptionStatus, ['trialing', 'active', 'pending'], true);
     $healthStatus = $totalEvents === 0 ? 'Aguardando evento' : ($invalidEvents > 0 ? 'Atenção' : 'Saudável');
     $healthClass = $invalidEvents > 0 ? 'status-warn' : 'status-ok';
     $usageWarning = $usagePercent >= 100
-        ? 'Limite mensal atingido. Novos webhooks serao recusados ate upgrade ou renovacao.'
+        ? 'Limite mensal atingido. Novos webhooks serão recusados até upgrade ou renovação.'
         : ($usagePercent >= 95
-            ? 'Uso mensal em nivel critico. Faca upgrade antes de perder eventos importantes.'
-            : ($usagePercent >= 80 ? 'Uso mensal proximo do limite. Considere upgrade antes de perder eventos importantes.' : null));
+            ? 'Uso mensal em nível crítico. Faça upgrade antes de perder eventos importantes.'
+            : ($usagePercent >= 80 ? 'Uso mensal próximo do limite. Considere upgrade antes de perder eventos importantes.' : null));
     $unreadNotifications = $notifications->whereNull('read_at')->count();
     $aiUsage = $workspace ? \App\Support\AiAnalysisBilling::report($workspace) : null;
     $openAiConfigured = filled(config('services.openai.api_key'));
@@ -58,8 +58,8 @@
 @if (! $workspace)
   <main class="hero">
     <span class="eyebrow">Workspace pendente</span>
-    <h1>Seu usuario ainda nao esta vinculado a um workspace.</h1>
-    <p class="lead">Crie um workspace ou peca acesso ao responsavel para comecar a receber webhooks privados do GitHub.</p>
+    <h1>Seu usuário ainda não está vinculado a um workspace.</h1>
+    <p class="lead">Crie um workspace ou peça acesso ao responsável para começar a receber webhooks privados do GitHub.</p>
   </main>
 @else
   <main>
@@ -82,7 +82,7 @@
             <div class="control-value">{{ number_format($remainingEvents, 0, ',', '.') }}</div>
           </div>
           <div class="control-card">
-            <div class="control-label">Retencao</div>
+            <div class="control-label">Retenção</div>
             <div class="control-value">{{ $retentionDays }} dias</div>
           </div>
           <div class="control-card">
@@ -95,9 +95,9 @@
       <aside class="cardx health-panel">
         <div class="d-flex justify-content-between gap-3 align-items-start">
           <div>
-            <div class="kicker">Saude do workspace</div>
+            <div class="kicker">Saúde do workspace</div>
             <h2 class="h3 mt-2 mb-1 {{ $healthClass }}">{{ $healthStatus }}</h2>
-            <p class="muted mb-0">{{ $validationRate }}% dos eventos recentes chegaram com assinatura valida.</p>
+            <p class="muted mb-0">{{ $validationRate }}% dos eventos recentes chegaram com assinatura válida.</p>
           </div>
           <div class="health-orb">{{ $validationRate }}%</div>
         </div>
@@ -150,7 +150,7 @@
             @forelse ($members as $member)
               <div class="d-flex justify-content-between gap-2 align-items-center mt-2">
                 <div>
-                  <strong>{{ $member->user?->name ?? 'Usuario removido' }}</strong>
+                  <strong>{{ $member->user?->name ?? 'Usuário removido' }}</strong>
                   <div class="muted">{{ $member->user?->email ?? 'sem email' }} · {{ $member->role }}</div>
                 </div>
                 @if ($canManageWorkspace && $member->role !== 'owner' && $member->user_id !== auth()->id())
@@ -188,7 +188,7 @@
         </div>
       </div>
       <details class="payload mt-3">
-        <summary>Ver matriz de permissoes</summary>
+        <summary>Ver matriz de permissões</summary>
         <div class="row g-2 mt-2">
           @foreach ($permissionMatrix as $role => $matrix)
             <div class="col-md-3">
@@ -241,7 +241,7 @@
       <div class="d-flex justify-content-between gap-3 flex-wrap align-items-start">
         <div>
           <div class="kicker">Notificações do workspace</div>
-          <h2 class="h4 mt-2 mb-1">{{ $unreadNotifications }} alerta(s) nao lido(s)</h2>
+          <h2 class="h4 mt-2 mb-1">{{ $unreadNotifications }} alerta(s) não lido(s)</h2>
           <p class="muted mb-0">Acompanhe eventos importantes de billing, GitHub App, limite de uso e webhooks recebidos.</p>
         </div>
         @if ($unreadNotifications > 0)
@@ -276,7 +276,7 @@
           </div>
         @empty
           <div class="col-12">
-            <div class="summary-cell">Nenhuma notificacao recente. Quando algo importante acontecer, aparece aqui.</div>
+            <div class="summary-cell">Nenhuma notificação recente. Quando algo importante acontecer, aparece aqui.</div>
           </div>
         @endforelse
       </div>
@@ -301,8 +301,8 @@
     </section>
     <section class="mini-board">
       <div class="insight-card">
-        <div class="kicker">Distribuicao de eventos</div>
-        <h2 class="h4">O que o GitHub esta enviando</h2>
+        <div class="kicker">Distribuição de eventos</div>
+        <h2 class="h4">O que o GitHub está enviando</h2>
         <div class="insight-list">
           @forelse ($eventTypes as $type => $count)
             <div>
@@ -330,8 +330,8 @@
       <div class="d-flex justify-content-between gap-3 flex-wrap align-items-start">
         <div>
           <div class="kicker">Uso e plano do workspace</div>
-          <h2 class="h4 mt-2 mb-1">{{ $canUseWebhooks ? 'Seu limite de webhooks esta sob controle' : 'Assinatura precisa de atencao' }}</h2>
-          <p class="muted mb-0">Como o pricing nao e protagonista publico nesta fase, o consumo fica claro aqui: plano atual, janela mensal, eventos restantes, retencao e upgrade quando fizer sentido.</p>
+          <h2 class="h4 mt-2 mb-1">{{ $canUseWebhooks ? 'Seu limite de webhooks está sob controle' : 'Assinatura precisa de atenção' }}</h2>
+          <p class="muted mb-0">Como o pricing não é protagonista público nesta fase, o consumo fica claro aqui: plano atual, janela mensal, eventos restantes, retenção e upgrade quando fizer sentido.</p>
         </div>
         <span class="pill {{ $subscriptionStatus === 'active' ? 'status-ok' : ($subscriptionStatus === 'canceled' ? 'status-warn' : '') }}">{{ $subscriptionStatusLabel }}</span>
       </div>
@@ -340,12 +340,12 @@
           <div class="summary-cell h-100">
             <div class="summary-label">Plano</div>
             <div class="summary-value">{{ $planName }}</div>
-            <div class="muted mt-1">{{ number_format($monthlyLimit, 0, ',', '.') }} eventos por mes</div>
+            <div class="muted mt-1">{{ number_format($monthlyLimit, 0, ',', '.') }} eventos por mês</div>
           </div>
         </div>
         <div class="col-md-3">
           <div class="summary-cell h-100">
-            <div class="summary-label">Uso no mes</div>
+            <div class="summary-label">Uso no mês</div>
             <div class="summary-value">{{ number_format($monthlyEvents, 0, ',', '.') }} usados</div>
             <div class="bar-track mt-2"><span class="bar-fill {{ $usageStateClass }}" style="width: {{ $usagePercent }}%"></span></div>
             <div class="muted mt-1">{{ $usageStateLabel }} · {{ $usagePercent }}% do limite mensal</div>
@@ -360,9 +360,9 @@
         </div>
         <div class="col-md-3">
           <div class="summary-cell h-100">
-            <div class="summary-label">Retencao e excedente</div>
+            <div class="summary-label">Retenção e excedente</div>
             <div class="summary-value">{{ $retentionDays }} dias</div>
-            <div class="muted mt-1">{{ $overagePrice > 0 ? 'Excedente configurado: R$ '.number_format($overagePrice, 2, ',', '.') : 'Sem excedente publico nesta fase.' }}</div>
+            <div class="muted mt-1">{{ $overagePrice > 0 ? 'Excedente configurado: R$ '.number_format($overagePrice, 2, ',', '.') : 'Sem excedente público nesta fase.' }}</div>
           </div>
         </div>
       </div>
@@ -398,7 +398,7 @@
         <div>
           <div class="kicker">Upgrade interno</div>
           <h2 class="h4 mt-2 mb-1">Aumente limite quando o uso justificar</h2>
-          <p class="muted mb-0">Este bloco fica dentro do workspace para o usuario decidir upgrade com base no consumo real. Ambiente Mercado Pago: {{ $mercadoPagoStatus['environment'] }} - SDK: {{ $mercadoPagoStatus['sdk'] }} - Configurado: {{ $mercadoPagoStatus['configured'] ? 'sim' : 'nao' }}</p>
+          <p class="muted mb-0">Este bloco fica dentro do workspace para o usuário decidir upgrade com base no consumo real. Ambiente Mercado Pago: {{ $mercadoPagoStatus['environment'] }} - SDK: {{ $mercadoPagoStatus['sdk'] }} - Configurado: {{ $mercadoPagoStatus['configured'] ? 'sim' : 'não' }}</p>
         </div>
         <span class="pill">Plano atual: {{ $planName }}</span>
       </div>
@@ -407,8 +407,8 @@
           <div class="col-md-4">
             <div class="summary-cell h-100">
               <div class="summary-label">{{ $availablePlan->name }}</div>
-              <div class="summary-value">R$ {{ number_format($availablePlan->price_cents / 100, 2, ',', '.') }}/mes</div>
-              <div class="muted mt-1">{{ number_format($availablePlan->monthly_event_limit, 0, ',', '.') }} eventos/mes - retencao {{ $availablePlan->event_retention_days }} dias</div>
+              <div class="summary-value">R$ {{ number_format($availablePlan->price_cents / 100, 2, ',', '.') }}/mês</div>
+              <div class="muted mt-1">{{ number_format($availablePlan->monthly_event_limit, 0, ',', '.') }} eventos/mês - retenção {{ $availablePlan->event_retention_days }} dias</div>
               @if ($availablePlan->price_cents > 0)
                 <form method="POST" action="{{ route('billing.checkout', $availablePlan) }}" class="mt-2">
                   @csrf
@@ -428,14 +428,17 @@
         <div class="cardx mb-3">
           <div class="kicker">Configuração GitHub</div>
           <h2 class="h4 mt-2">Endpoint privado do workspace</h2>
-          <p class="muted">Use estes dados em <strong>Settings -> Webhooks -> Add webhook</strong> no repositorio GitHub.</p>
+          <p class="muted">Use estes dados em <strong>Settings -> Webhooks -> Add webhook</strong> no repositório GitHub.</p>
           <div class="summary-cell mb-3">
             <div class="summary-label">GitHub App</div>
-            <div class="summary-value">{{ $githubInstallation ? 'Instalacao '.$githubInstallation->installation_id.' vinculada' : 'Nenhuma instalacao vinculada ainda' }}</div>
+            <div class="summary-value">{{ $githubInstallation ? 'Instalação '.$githubInstallation->installation_id.' vinculada' : 'GitHub App ainda não vinculado a este workspace' }}</div>
             @if ($canManageGitHub)
-              <a class="btnx primary w-100 mt-2" href="{{ route('github.install') }}">Conectar GitHub App</a>
+              <a class="btnx primary w-100 mt-2" href="{{ route('github.install') }}">Vincular GitHub App a este workspace</a>
+              @unless ($githubInstallation)
+                <div class="muted mt-2">Se o App já foi instalado no GitHub, clique aqui logado neste usuário para amarrar a instalação ao workspace atual.</div>
+              @endunless
             @else
-              <div class="muted mt-2">Seu papel atual nao permite conectar GitHub App.</div>
+              <div class="muted mt-2">Seu papel atual não permite conectar GitHub App.</div>
             @endif
           </div>
           <label>Payload URL</label>
@@ -464,7 +467,7 @@
               <button class="btnx success w-100 mt-2" type="submit">Salvar evento de teste</button>
             </form>
           @else
-            <div class="muted">Seu papel atual permite acompanhar eventos, mas nao criar eventos de teste.</div>
+            <div class="muted">Seu papel atual permite acompanhar eventos, mas não criar eventos de teste.</div>
           @endif
         </div>
       </aside>
@@ -483,13 +486,13 @@
         @empty
           <div class="cardx">
             <div class="kicker">Primeiro uso</div>
-            <h2 class="h3 mt-2">Conecte seu primeiro repositorio GitHub</h2>
-            <p class="muted">Este workspace ainda nao recebeu eventos. Siga o fluxo abaixo para validar tudo em poucos minutos.</p>
+            <h2 class="h3 mt-2">Conecte seu primeiro repositório GitHub</h2>
+            <p class="muted">Este workspace ainda não recebeu eventos. Siga o fluxo abaixo para validar tudo em poucos minutos.</p>
             <div class="row g-2 mt-2">
               <div class="col-md-4">
                 <div class="summary-cell h-100">
                   <div class="summary-label">1. Copie o endpoint</div>
-                  <div class="summary-value">Use o Payload URL e o Secret exibidos na coluna de configuracao.</div>
+                  <div class="summary-value">Use o Payload URL e o Secret exibidos na coluna de configuração.</div>
                 </div>
               </div>
               <div class="col-md-4">
@@ -501,7 +504,7 @@
               <div class="col-md-4">
                 <div class="summary-cell h-100">
                   <div class="summary-label">3. Envie um ping</div>
-                  <div class="summary-value">O evento aparecera aqui com assinatura, payload sanitizado e historico.</div>
+                  <div class="summary-value">O evento aparecerá aqui com assinatura, payload sanitizado e histórico.</div>
                 </div>
               </div>
             </div>
