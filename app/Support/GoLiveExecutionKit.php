@@ -46,7 +46,7 @@ class GoLiveExecutionKit
             ],
             [
                 'title' => 'Screenshots finais de submissão',
-                'status' => 'pendente',
+                'status' => self::externalStatus(file_exists(base_path('docs/github-submission-evidence.md')) && file_exists(base_path('docs/github-developer-program-submission.md'))),
                 'objective' => 'Gerar evidências visuais do ambiente live para GitHub Developer Program e apresentação comercial.',
                 'steps' => [
                     'Capturar landing pública com proposta e CTA.',

@@ -13,7 +13,7 @@ class ProductionEnvironmentReadiness
             self::check('MAIL_FROM_ADDRESS', config('mail.from.address'), fn ($value) => filled($value) && ! str_contains((string) $value, 'example.com'), 'Remetente real e autenticado'),
             self::check('DEVLOG_SUPPORT_EMAIL', config('devlog.support_email'), fn ($value) => filled($value) && ! str_contains((string) $value, 'githubdevlog.ai'), 'Contato público real de suporte'),
             self::check('GITHUB_APP_ID', config('services.github_app.app_id'), fn ($value) => filled($value), 'GitHub App oficial'),
-            self::check('GITHUB_APP_PRIVATE_KEY', config('services.github_app.private_key'), fn ($value) => filled($value), 'Chave privada do GitHub App'),
+            self::check('GITHUB_APP_PRIVATE_KEY_PATH', config('services.github_app.private_key_path'), fn ($value) => filled($value) && file_exists((string) $value), 'Chave privada do GitHub App'),
             self::check('GITHUB_APP_WEBHOOK_SECRET', config('services.github_app.webhook_secret'), fn ($value) => filled($value), 'Secret do webhook GitHub App'),
             self::check('GITHUB_APP_CLIENT_ID', config('services.github_app.client_id'), fn ($value) => filled($value), 'OAuth client id do GitHub App'),
             self::check('GITHUB_APP_CLIENT_SECRET', config('services.github_app.client_secret'), fn ($value) => filled($value), 'OAuth client secret do GitHub App'),

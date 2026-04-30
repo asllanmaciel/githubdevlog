@@ -215,7 +215,7 @@
                         <div class="ai-product-check">
                             <div class="ai-product-dot {{ $check['done'] ? '' : 'pending' }}">{{ $check['done'] ? '✓' : '!' }}</div>
                             <div>
-                                <strong style="font-size:16px;margin-bottom:4px;">{{ $check['label'] }}</strong>
+                                <strong style="font-size:16px;margin-bottom:4px;">{{ $check['title'] }}</strong>
                                 <p style="margin:0;">{{ $check['detail'] }}</p>
                             </div>
                         </div>
