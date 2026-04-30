@@ -44,6 +44,9 @@ Route::get('/health', function () {
 Route::get('/docs/usuarios', fn () => view('docs.users'))->name('docs.users');
 Route::get('/docs/admin', fn () => redirect('/admin/docs'))->name('docs.admin');
 Route::get('/github', fn () => view('github'))->name('github');
+Route::get('/changelog', fn () => view('changelog', [
+    'entries' => \App\Support\PublicChangelog::entries(),
+]))->name('changelog');
 Route::get('/pricing', function () {
     $plans = BillingPlan::where('active', true)
         ->orderBy('price_cents')
@@ -59,6 +62,7 @@ Route::get('/sitemap.xml', function () {
     $urls = collect([
         route('home'),
         route('pricing'),
+        route('changelog'),
         route('github'),
         route('docs.users'),
         route('status'),

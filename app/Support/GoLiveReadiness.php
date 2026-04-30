@@ -24,6 +24,7 @@ class GoLiveReadiness
             self::check('Ativos publicos de launch', Route::has('sitemap') && Route::has('robots'), 'Sitemap e robots ajudam indexacao, revisao publica e higiene de producao.', 'Launch', 'Revisar URLs finais apos dominio oficial.'),
             self::check('Suporte operacional', Schema::hasTable('support_tickets') && class_exists(SupportSla::class), 'Lancamento sem suporte vira gargalo assim que usuarios reais testarem.', 'Suporte', 'Definir SLA publico, triagem, respostas salvas e rotina diaria.'),
             self::check('Roadmap publico/admin atualizado', Schema::hasTable('roadmap_items') && RoadmapItem::whereIn('status', ['todo', 'doing', 'done'])->count() >= 10, 'Ajuda a explicar maturidade do produto e acompanhar progresso de launch.', 'Gestao', 'Manter prioridades, percentuais e bloqueadores atualizados.'),
+            self::check('Changelog publico', Route::has('changelog') && Schema::hasTable('roadmap_items') && RoadmapItem::where('status', 'done')->count() > 0, 'Dev quer ver evolucao do produto, releases e sinais de manutencao ativa.', 'Launch', 'Manter entradas relevantes e remover detalhes internos quando necessario.'),
             self::check('Status publico e trilha de auditoria', Route::has('status') && Schema::hasTable('audit_logs') && class_exists(AuditTrail::class), 'Dev confia mais quando ve saude do sistema e quando a plataforma registra acoes sensiveis.', 'Confianca', 'Publicar status, incidentes, auditoria e politicas operacionais.'),
         ]);
 

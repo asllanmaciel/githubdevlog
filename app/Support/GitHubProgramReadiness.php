@@ -25,6 +25,7 @@ class GitHubProgramReadiness
             self::check('Suporte operacional', Schema::hasTable('support_tickets'), 'Sistema de chamados permite receber feedback e problemas.', 'Suporte'),
             self::check('Politicas publicas', Route::has('privacy') && Route::has('terms') && Route::has('security'), 'Privacidade, termos e seguranca ficam publicados antes da submissao.', 'Confianca'),
             self::check('Ativos publicos de launch', Route::has('sitemap') && Route::has('robots'), 'Sitemap e robots ajudam a apresentar o produto como publico e navegavel.', 'Launch'),
+            self::check('Changelog publico', Route::has('changelog'), 'Historico publico demonstra evolucao, manutencao e maturidade do projeto.', 'Launch'),
         ]);
 
         $evidence = [
