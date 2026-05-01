@@ -262,21 +262,213 @@ class DevlogSeedDemo extends Command
 
     private function seedRoadmap(): void
     {
-        RoadmapItem::updateOrCreate(
-            ['title' => 'Cenario demo operacional'],
+        $items = [
             [
-                'area' => 'Lancamento',
+                'title' => 'Manifesto de produto e trilha de impacto',
+                'area' => 'Estratégia e posicionamento',
                 'status' => 'done',
                 'priority' => 'alta',
-                'description' => 'Seed demo cria usuario, workspace, plano, assinatura, eventos, suporte, notificacoes e artigos para apresentacao.',
+                'description' => 'Definir proposta de valor, ICP, critérios de sucesso e o que diferenciará a experiência do Devlog no mercado em 12 meses.',
                 'position' => 10,
                 'completed_at' => now(),
-            ]
-        );
+            ],
+            [
+                'title' => 'Arquitetura técnica de referência',
+                'area' => 'Fundação do sistema',
+                'status' => 'done',
+                'priority' => 'alta',
+                'description' => 'Padronizar camadas de domínio, serviços, observabilidade e contratos de integração para suportar evolução acelerada sem retrabalho.',
+                'position' => 20,
+                'completed_at' => now(),
+            ],
+            [
+                'title' => 'Roteiro de dados e privacidade por default',
+                'area' => 'Fundação do sistema',
+                'status' => 'done',
+                'priority' => 'alta',
+                'description' => 'Definir retention policy, LGPD-by-design, anonimização e trilha de auditoria para toda alteração de dados sensíveis.',
+                'position' => 30,
+                'completed_at' => now(),
+            ],
+            [
+                'title' => 'Roadmap visual e governança de prioridades',
+                'area' => 'Governança',
+                'status' => 'done',
+                'priority' => 'media',
+                'description' => 'Criar cadência mensal de revisão, critérios de entrada/saída de tarefas e dashboard único de progresso por iniciativa.',
+                'position' => 40,
+                'completed_at' => now(),
+            ],
+            [
+                'title' => 'Métricas de produto com decisões acionáveis',
+                'area' => 'Observabilidade e operação',
+                'status' => 'pending',
+                'priority' => 'alta',
+                'description' => 'Implementar eventos de negócio, funil de conversão e alertas de risco para identificar regressões antes dos usuários perceberem.',
+                'position' => 50,
+                'completed_at' => null,
+            ],
+            [
+                'title' => 'MVP administrativo com acessibilidade e clareza',
+                'area' => 'Produto e UX',
+                'status' => 'pending',
+                'priority' => 'alta',
+                'description' => 'Reforçar linguagem, contraste, estados vazios e mensagens de erro para reduzir atrito e aumentar confiança de uso por admins e times de operação.',
+                'position' => 60,
+                'completed_at' => null,
+            ],
+            [
+                'title' => 'Fluxo de autenticação robusto e proteção antifraude',
+                'area' => 'Segurança',
+                'status' => 'pending',
+                'priority' => 'alta',
+                'description' => 'Finalizar SSO opcional, harden de sessões, proteção contra abuso e trilha de eventos suspeitos com resposta guiada.',
+                'position' => 70,
+                'completed_at' => null,
+            ],
+            [
+                'title' => 'Hardening de webhooks e tolerância a falhas',
+                'area' => 'Confiabilidade',
+                'status' => 'pending',
+                'priority' => 'alta',
+                'description' => 'Adicionar retries com backoff, dead-letter, idempotência e reprocessamento controlado para entregas e eventos perdidos.',
+                'position' => 80,
+                'completed_at' => null,
+            ],
+            [
+                'title' => 'Catálogo de qualidade de código e revisão contínua',
+                'area' => 'Confiabilidade',
+                'status' => 'pending',
+                'priority' => 'media',
+                'description' => 'Implantar linters, regras de complexidade, critérios mínimos de PR e automação de segurança estática no pipeline.',
+                'position' => 90,
+                'completed_at' => null,
+            ],
+            [
+                'title' => 'Camada de eventos AI de baixa latência',
+                'area' => 'IA e inteligência',
+                'status' => 'pending',
+                'priority' => 'alta',
+                'description' => 'Entregar insights de risco e ação em tempo real sem impacto de performance nas rotas críticas do produto.',
+                'position' => 100,
+                'completed_at' => null,
+            ],
+            [
+                'title' => 'Roteiro de onboarding inteligente',
+                'area' => 'Produto e UX',
+                'status' => 'pending',
+                'priority' => 'alta',
+                'description' => 'Oferecer checklist adaptativo por perfil do usuário, com trilha de sucesso para instalação, primeiros eventos e análise.',
+                'position' => 110,
+                'completed_at' => null,
+            ],
+            [
+                'title' => 'Painel de incidentes e jogo de treino operacional',
+                'area' => 'Observabilidade e operação',
+                'status' => 'pending',
+                'priority' => 'media',
+                'description' => 'Implementar status page, runbooks e simulações mensais para reduzir tempo de resposta em incidentes reais.',
+                'position' => 120,
+                'completed_at' => null,
+            ],
+            [
+                'title' => 'Estratégia de APIs públicas para parceiros',
+                'area' => 'Evolução de plataforma',
+                'status' => 'pending',
+                'priority' => 'media',
+                'description' => 'Publicar contratos claros, autenticação por aplicativo e cota de uso para expansão B2B sem risco de abuso.',
+                'position' => 130,
+                'completed_at' => null,
+            ],
+            [
+                'title' => 'Plano de internacionalização e localização premium',
+                'area' => 'Produto e UX',
+                'status' => 'pending',
+                'priority' => 'media',
+                'description' => 'Suporte multiplataforma, tradução, fuso/localização de datas e suporte multilíngue com consistência de design.',
+                'position' => 140,
+                'completed_at' => null,
+            ],
+            [
+                'title' => 'Programa de sucesso do cliente e retenção',
+                'area' => 'Crescimento',
+                'status' => 'pending',
+                'priority' => 'media',
+                'description' => 'Mapear marcos críticos de retenção, campanhas de reativação e mecanismos de upgrade com valor percebido.',
+                'position' => 150,
+                'completed_at' => null,
+            ],
+            [
+                'title' => 'Escala de infraestrutura e custo previsível',
+                'area' => 'Escalabilidade',
+                'status' => 'pending',
+                'priority' => 'alta',
+                'description' => 'Separar workloads críticos, aplicar caching estratégico e criar alertas de custo por componente.',
+                'position' => 160,
+                'completed_at' => null,
+            ],
+            [
+                'title' => 'Modelo de assinatura com valor percebido por uso',
+                'area' => 'Monetização',
+                'status' => 'pending',
+                'priority' => 'alta',
+                'description' => 'Ajustar planos com teto claro de previsibilidade, limites justos e upsell transparente sem surpresas no checkout.',
+                'position' => 170,
+                'completed_at' => null,
+            ],
+            [
+                'title' => 'Certificação GitHub e prova de maturidade de produto',
+                'area' => 'Go-live',
+                'status' => 'pending',
+                'priority' => 'alta',
+                'description' => 'Completar dependências de lançamento, evidências e documentação final para submissão com chance máxima de aprovação.',
+                'position' => 180,
+                'completed_at' => null,
+            ],
+            [
+                'title' => 'Lançamento público com monitoramento 24/7',
+                'area' => 'Go-live',
+                'status' => 'pending',
+                'priority' => 'alta',
+                'description' => 'Ativar rotina de monitoria, guardrails de segurança e comunicação pública diária durante 30 dias de primeira semana.',
+                'position' => 190,
+                'completed_at' => null,
+            ],
+        ];
+
+        foreach ($items as $item) {
+            RoadmapItem::updateOrCreate(
+                ['title' => $item['title']],
+                $item
+            );
+        }
     }
 
     private function cleanDemoData(string $email): void
     {
+        $roadmapTitles = [
+            'Cenario demo operacional',
+            'Manifesto de produto e trilha de impacto',
+            'Arquitetura técnica de referência',
+            'Roteiro de dados e privacidade por default',
+            'Roadmap visual e governança de prioridades',
+            'Métricas de produto com decisões acionáveis',
+            'MVP administrativo com acessibilidade e clareza',
+            'Fluxo de autenticação robusto e proteção antifraude',
+            'Hardening de webhooks e tolerância a falhas',
+            'Catálogo de qualidade de código e revisão contínua',
+            'Camada de eventos AI de baixa latência',
+            'Roteiro de onboarding inteligente',
+            'Painel de incidentes e jogo de treino operacional',
+            'Estratégia de APIs públicas para parceiros',
+            'Plano de internacionalização e localização premium',
+            'Programa de sucesso do cliente e retenção',
+            'Escala de infraestrutura e custo previsível',
+            'Modelo de assinatura com valor percebido por uso',
+            'Certificação GitHub e prova de maturidade de produto',
+            'Lançamento público com monitoramento 24/7',
+        ];
+
         $workspace = Workspace::where('slug', 'workspace-demo')->first();
         if ($workspace) {
             $workspace->delete();
@@ -285,6 +477,6 @@ class DevlogSeedDemo extends Command
         User::where('email', $email)->delete();
         BillingPlan::where('slug', 'growth-demo')->delete();
         KnowledgeBaseArticle::whereIn('slug', ['conectar-repositorio-github', 'webhook-rejeitado'])->delete();
-        RoadmapItem::where('title', 'Cenario demo operacional')->delete();
+        RoadmapItem::whereIn('title', $roadmapTitles)->delete();
     }
 }

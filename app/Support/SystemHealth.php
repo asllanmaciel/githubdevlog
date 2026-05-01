@@ -109,6 +109,21 @@ class SystemHealth
         ];
     }
 
+    private static function communication(): array
+    {
+        try {
+            $report = CommunicationReadiness::report();
+
+            return [
+                'ok' => $report['ready'],
+                'label' => $report['ready'] ? 'Comunicacao pronta' : 'Comunicacao com pendencias',
+                'detail' => 'mailer '.$report['metrics']['mailer'].'; remetente '.$report['metrics']['from_address'].'; fila '.$report['metrics']['queue'],
+            ];
+        } catch (\Throwable $exception) {
+            return self::fail('Comunicacao nao verificavel', $exception->getMessage());
+        }
+    }
+
     private static function ok(string $label, string $detail): array
     {
         return ['ok' => true, 'label' => $label, 'detail' => $detail];

@@ -1,0 +1,136 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: github-devlog-local-app
+    volumes:
+      - .:/app
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      APP_URL: http://localhost:3000
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: devlog_ai
+      DB_USERNAME: devlog
+      DB_PASSWORD: devlog
+      SESSION_DRIVER: database
+      CACHE_STORE: database
+      QUEUE_CONNECTION: database
+      MAIL_MAILER: smtp
+      MAIL_HOST: mailpit
+      MAIL_PORT: 1025
+      MAIL_USERNAME: null
+      MAIL_PASSWORD: null
+      MAIL_ENCRYPTION: null
+      MAIL_FROM_ADDRESS: no-reply@localhost
+      MAIL_FROM_NAME: GitHub DevLog AI Local
+      MERCADO_PAGO_ENVIRONMENT: sandbox
+    depends_on:
+      mysql:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+    command: php-fpm
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: github-devlog-local-nginx
+    ports:
+      - "3000:80"
+    volumes:
+      - .:/app:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      app:
+        condition: service_started
+
+  queue:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: github-devlog-local-queue
+    volumes:
+      - .:/app
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      APP_URL: http://localhost:3000
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: devlog_ai
+      DB_USERNAME: devlog
+      DB_PASSWORD: devlog
+      SESSION_DRIVER: database
+      CACHE_STORE: database
+      QUEUE_CONNECTION: database
+      MAIL_MAILER: smtp
+      MAIL_HOST: mailpit
+      MAIL_PORT: 1025
+      MAIL_USERNAME: null
+      MAIL_PASSWORD: null
+      MAIL_ENCRYPTION: null
+      MERCADO_PAGO_ENVIRONMENT: sandbox
+    depends_on:
+      mysql:
+        condition: service_healthy
+    command: php artisan queue:work --tries=3 --sleep=2
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: github-devlog-local-scheduler
+    volumes:
+      - .:/app
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      APP_URL: http://localhost:3000
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: devlog_ai
+      DB_USERNAME: devlog
+      DB_PASSWORD: devlog
+      SESSION_DRIVER: database
+      CACHE_STORE: database
+      QUEUE_CONNECTION: database
+      MAIL_MAILER: smtp
+      MAIL_HOST: mailpit
+      MAIL_PORT: 1025
+      MERCADO_PAGO_ENVIRONMENT: sandbox
+    depends_on:
+      mysql:
+        condition: service_healthy
+    command: sh -lc "while true; do php artisan schedule:run --no-interaction; sleep 60; done"
+
+  mysql:
+    image: mysql:8.4
+    container_name: github-devlog-local-mysql
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_DATABASE: devlog_ai
+      MYSQL_USER: devlog
+      MYSQL_PASSWORD: devlog
+      MYSQL_ROOT_PASSWORD: devlog_root
+    volumes:
+      - github_devlog_mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-udevlog", "-pdevlog"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: github-devlog-local-mailpit
+    ports:
+      - "8029:8025"
+
+volumes:
+  github_devlog_mysql:
