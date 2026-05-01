@@ -13,13 +13,13 @@ class SystemHealth
     public static function report(): array
     {
         $checks = [
-            'database' => self::database(),
-            'storage' => self::storage(),
-            'queue' => self::queue(),
-            'billing' => self::billing(),
-            'github_webhooks' => self::githubWebhooks(),
-            'environment' => self::environment(),
-            'communication' => self::communication(),
+            'database' => self::safe('Banco nao verificavel', fn () => self::database()),
+            'storage' => self::safe('Storage nao verificavel', fn () => self::storage()),
+            'queue' => self::safe('Fila nao verificavel', fn () => self::queue()),
+            'billing' => self::safe('Billing nao verificavel', fn () => self::billing()),
+            'github_webhooks' => self::safe('Webhooks GitHub nao verificaveis', fn () => self::githubWebhooks()),
+            'environment' => self::safe('Ambiente nao verificavel', fn () => self::environment()),
+            'communication' => self::safe('Comunicacao nao verificavel', fn () => self::communication()),
         ];
 
         $ok = collect($checks)->every(fn ($check) => $check['ok']);
@@ -76,6 +76,10 @@ class SystemHealth
 
     private static function billing(): array
     {
+        if (! Schema::hasTable('billing_events')) {
+            return self::fail('Billing sem tabela de eventos', 'billing_events ausente');
+        }
+
         $attention = BillingEvent::whereIn('status', ['pending_lookup', 'unmatched'])->count();
         $today = BillingEvent::whereDate('created_at', now()->toDateString())->count();
 
@@ -88,6 +92,10 @@ class SystemHealth
 
     private static function githubWebhooks(): array
     {
+        if (! Schema::hasTable('webhook_events')) {
+            return self::fail('Webhooks sem tabela de eventos', 'webhook_events ausente');
+        }
+
         $valid = WebhookEvent::where('signature_valid', true)->count();
         $invalid = WebhookEvent::where('signature_valid', false)->count();
 
@@ -121,6 +129,15 @@ class SystemHealth
             ];
         } catch (\Throwable $exception) {
             return self::fail('Comunicacao nao verificavel', $exception->getMessage());
+        }
+    }
+
+    private static function safe(string $label, callable $check): array
+    {
+        try {
+            return $check();
+        } catch (\Throwable $exception) {
+            return self::fail($label, $exception->getMessage());
         }
     }
 
