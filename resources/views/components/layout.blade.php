@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ $title ?? 'GitHub DevLog AI' }}</title>
   @php
-    $isDashboardShell = request()->routeIs('dashboard');
+    $isDashboardShell = request()->routeIs('dashboard') || request()->routeIs('dashboard.event');
   @endphp
   <meta name="description" content="Capture, valide e acompanhe webhooks do GitHub em workspaces privados, com segredo por conta e painel para debugging.">
   @php
@@ -156,6 +156,7 @@
     .quick-actions { display:grid; gap:10px; }
     .quick-action { display:flex; justify-content:space-between; gap:12px; align-items:center; border:1px solid var(--line); border-radius:12px; padding:12px; background:#0b1118; }
     .event-feed-head { display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap; align-items:flex-start; margin-bottom:12px; }
+    .event-feed-actions { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; align-items:center; }
     .config-card { position:sticky; top:16px; }
     .endpoint-box { background:#081019; border:1px solid var(--line); border-radius:8px; padding:12px; color:#a8d7ff; word-break:break-all; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:13px; }
     .event-card { border:1px solid var(--line); border-radius:8px; background:linear-gradient(180deg, rgba(19,29,40,.92), rgba(13,19,26,.92)); padding:16px; margin-bottom:12px; box-shadow:0 20px 60px rgba(0,0,0,.18); }
@@ -220,6 +221,9 @@
     .filter-chip { border:1px solid var(--line); background:#0c141d; color:var(--muted); border-radius:999px; padding:8px 12px; font-weight:850; }
     .filter-chip.active, .filter-chip:hover { color:#071018; background:var(--green); border-color:var(--green); }
     .event-card { border-left:4px solid var(--blue); }
+    .event-card-compact { padding:14px; transition:transform .18s ease, border-color .18s ease, box-shadow .18s ease; }
+    .event-card-compact:hover { transform:translateY(-2px); border-color:rgba(80,184,255,.72); box-shadow:0 28px 90px rgba(80,184,255,.12), 0 24px 80px rgba(0,0,0,.24); }
+    .event-card-full { border-left-width:6px; }
     .event-topline { display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-bottom:14px; }
     .event-name { font-size:20px; letter-spacing:-.02em; }
     .pill.success { background:rgba(105,227,154,.14); color:var(--green); border-color:rgba(105,227,154,.38); }
@@ -231,12 +235,19 @@
     .insight strong { font-size:16px; }
     .event-diagnostic { border:1px solid rgba(80,184,255,.28); background:rgba(80,184,255,.08); border-radius:8px; padding:12px; display:flex; gap:10px; flex-wrap:wrap; }
     .event-diagnostic span { color:var(--muted); }
+    .event-compact-footer { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:center; margin-top:12px; padding-top:12px; border-top:1px solid rgba(39,53,68,.78); }
+    .event-mini-stack { display:flex; gap:8px; flex-wrap:wrap; }
+    .event-detail-shell { display:grid; gap:16px; }
+    .event-detail-hero { display:flex; justify-content:space-between; gap:20px; align-items:flex-end; overflow:hidden; position:relative; }
+    .event-detail-hero:before { content:""; position:absolute; right:-80px; top:-90px; width:240px; height:240px; border-radius:80px; background:radial-gradient(circle, rgba(80,184,255,.2), transparent 64%); pointer-events:none; }
+    .event-detail-hero > * { position:relative; }
+    .event-detail-actions { display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
     .file-strip { display:flex; gap:8px; flex-wrap:wrap; margin:12px 0; }
     .file-strip code { border:1px solid var(--line); border-radius:999px; background:#081018; padding:6px 9px; color:#b7e4ff; }
     .event-actions-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px; }
     .mini-panel { border:1px solid var(--line); border-radius:8px; background:#0b121a; padding:12px; }
     .mini-panel p { color:var(--muted); margin:8px 0; }
-    @media (max-width: 900px) { .event-insights, .event-actions-grid { grid-template-columns:1fr; } }
+    @media (max-width: 900px) { .event-insights, .event-actions-grid { grid-template-columns:1fr; } .event-detail-hero { align-items:flex-start; flex-direction:column; } .event-detail-actions, .event-detail-actions .btnx { width:100%; } }
     body.app-dashboard {
       background:
         radial-gradient(circle at 0% 0%, rgba(80, 184, 255, .12), transparent 34%),
@@ -399,8 +410,8 @@
 
           <div class="app-menu-label">Operação</div>
           <nav class="app-menu">
-            <a class="{{ request()->route('section') === null || request()->route('section') === 'overview' ? 'active' : '' }}" href="{{ route('dashboard') }}"><span>Visão geral</span><span class="hint">Home</span></a>
-            <a class="{{ request()->route('section') === 'events' ? 'active' : '' }}" href="{{ route('dashboard', ['section' => 'events']) }}"><span>Eventos</span><span class="hint">Webhook</span></a>
+            <a class="{{ request()->routeIs('dashboard') && (request()->route('section') === null || request()->route('section') === 'overview') ? 'active' : '' }}" href="{{ route('dashboard') }}"><span>Visão geral</span><span class="hint">Home</span></a>
+            <a class="{{ request()->route('section') === 'events' || request()->routeIs('dashboard.event') ? 'active' : '' }}" href="{{ route('dashboard', ['section' => 'events']) }}"><span>Eventos</span><span class="hint">Webhook</span></a>
             <a class="{{ request()->route('section') === 'github' ? 'active' : '' }}" href="{{ route('dashboard', ['section' => 'github']) }}"><span>GitHub App e endpoint</span><span class="hint">Setup</span></a>
             <a class="{{ request()->route('section') === 'ai' ? 'active' : '' }}" href="{{ route('dashboard', ['section' => 'ai']) }}"><span>AI do workspace</span><span class="hint">Análise</span></a>
             <a class="{{ request()->route('section') === 'team' ? 'active' : '' }}" href="{{ route('dashboard', ['section' => 'team']) }}"><span>Equipe e permissões</span><span class="hint">Acesso</span></a>
@@ -474,8 +485,6 @@
   </div>
 </body>
 </html>
-
-
 
 
 

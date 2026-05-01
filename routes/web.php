@@ -185,6 +185,17 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
         return view('dashboard', compact('dashboardPage', 'workspace', 'events', 'notifications', 'githubInstallation', 'members', 'invites', 'canManageWorkspace', 'canManageBilling', 'canManageSecrets', 'canManageGitHub', 'canCreateTestEvents', 'canAnnotateEvents', 'workspaceRole', 'permissionMatrix', 'permissionLabels'));
     })->where('section', 'overview|events|github|ai|team|billing')->name('dashboard');
 
+    Route::get('/dashboard/events/{event}', function (WebhookEvent $event) {
+        if (Auth::user()->is_super_admin) {
+            return redirect('/admin');
+        }
+
+        $workspace = Auth::user()->workspaces()->firstOrFail();
+        abort_unless($event->workspace_id === $workspace->id, 403);
+
+        return view('event-show', compact('event'));
+    })->name('dashboard.event');
+
 
     Route::post('/invites/{token}/accept', function (string $token) {
         $invite = WorkspaceInvite::where('token', $token)->with('workspace')->firstOrFail();
@@ -471,7 +482,7 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
         $note = WebhookEventNote::create(['webhook_event_id' => $event->id, 'user_id' => Auth::id(), 'body' => $data['body']]);
         AuditTrail::record('webhook.note.created', $event, $workspace, ['note_id' => $note->id]);
 
-        return redirect()->route('dashboard')->with('status', 'Nota adicionada ao evento.');
+        return redirect()->route('dashboard.event', $event)->with('status', 'Nota adicionada ao evento.');
     })->name('events.notes.store');
 
     Route::post('/events/{event}/ai-analysis', function (WebhookEvent $event, Request $request, WebhookEventAiAnalysisService $ai) {
@@ -485,7 +496,7 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
         } catch (\Throwable $exception) {
             $event->update(['ai_error' => $exception->getMessage()]);
 
-            return redirect()->route('dashboard')->withErrors([
+            return redirect()->route('dashboard.event', $event)->withErrors([
                 'ai' => $exception->getMessage(),
             ]);
         }
@@ -511,7 +522,7 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
             'estimated_cost_cents' => $analysis['estimated_cost_cents'],
         ]);
 
-        return redirect()->route('dashboard')->with('status', $mode === 'llm'
+        return redirect()->route('dashboard.event', $event)->with('status', $mode === 'llm'
             ? 'Análise AI avançada gerada para o evento.'
             : 'Análise AI gratuita gerada para o evento.');
     })->name('events.ai-analysis.generate');
@@ -523,7 +534,7 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
         $task = WebhookEventTask::create(['webhook_event_id' => $event->id, 'title' => $data['title'], 'status' => 'open']);
         AuditTrail::record('webhook.task.created', $event, $workspace, ['task_id' => $task->id]);
 
-        return redirect()->route('dashboard')->with('status', 'Tarefa criada a partir do webhook.');
+        return redirect()->route('dashboard.event', $event)->with('status', 'Tarefa criada a partir do webhook.');
     })->name('events.tasks.store');
 
     Route::get('/support', function () {

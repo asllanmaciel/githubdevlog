@@ -510,13 +510,27 @@
         <div class="cardx event-feed-head">
           <div>
             <div class="kicker">Eventos recebidos</div>
-            <h2 class="h3 mt-2 mb-0">Histórico privado do workspace</h2>
+            <h2 class="h3 mt-2 mb-0">Inbox de webhooks do workspace</h2>
+            <p class="muted mt-2 mb-0">Triagem rápida dos últimos eventos. Abra um item para ver AI, tarefas, notas e payload completo.</p>
           </div>
-          <span class="pill">{{ $totalEvents }} evento(s)</span>
+          <div class="event-feed-actions">
+            <span class="pill">{{ $totalEvents }} evento(s)</span>
+            <span class="pill success">{{ $validEvents }} válido(s)</span>
+            @if($invalidEvents > 0)<span class="pill warning">{{ $invalidEvents }} pendente(s)</span>@endif
+          </div>
+        </div>
+
+        <div class="event-filters">
+          <button class="filter-chip active" type="button" data-filter="all">Todos</button>
+          <button class="filter-chip" type="button" data-filter="valid">Assinatura válida</button>
+          <button class="filter-chip" type="button" data-filter="pending">Pendentes</button>
+          @foreach($eventTypes->keys()->take(6) as $type)
+            <button class="filter-chip" type="button" data-filter="type:{{ $type }}">{{ $type }}</button>
+          @endforeach
         </div>
 
         @forelse ($events as $event)
-          <x-webhook-event-card :event="$event" />
+          <x-webhook-event-card :event="$event" mode="compact" />
         @empty
           <div class="cardx">
             <div class="kicker">Primeiro uso</div>
@@ -526,7 +540,7 @@
               <div class="col-md-4">
                 <div class="summary-cell h-100">
                   <div class="summary-label">1. Copie o endpoint</div>
-                  <div class="summary-value">Use o Payload URL e o Secret exibidos na coluna de configuração.</div>
+                  <div class="summary-value">Use o Payload URL e o Secret exibidos na área de configuração.</div>
                 </div>
               </div>
               <div class="col-md-4">
