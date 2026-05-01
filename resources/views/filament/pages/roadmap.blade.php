@@ -3,12 +3,14 @@
   $workspaces = \App\Models\Workspace::latest()->limit(20)->get();
   $eventsCount = \App\Models\WebhookEvent::count();
   $tickets = \App\Models\SupportTicket::latest()->limit(20)->get();
+  $expectedRoadmapTotal = \App\Support\RoadmapCatalog::expectedTotal();
   $roadmap = \App\Models\RoadmapItem::orderBy('position')->orderBy('id')->get();
   $plans = \App\Models\BillingPlan::orderBy('price_cents')->get();
   $doneCount = $roadmap->where('status', 'done')->count();
-  $totalCount = max($roadmap->count(), 1);
+  $totalCount = max($roadmap->count(), $expectedRoadmapTotal, 1);
   $generalPercent = round(($doneCount / $totalCount) * 100);
   $pendingCount = $roadmap->where('status', '!=', 'done')->count();
+  $missingCount = max($expectedRoadmapTotal - $roadmap->count(), 0);
 @endphp
 
 <x-filament-panels::page>
@@ -34,8 +36,8 @@
         <div>
           <div class="devlog-kicker">Progresso geral</div>
           <div class="devlog-value">{{ $generalPercent }}%</div>
-          <div class="devlog-label">{{ $doneCount }} de {{ $roadmap->count() }} item(ns) concluído(s)</div>
-          <div class="devlog-label">{{ $pendingCount }} pendência(s), todas ligadas ao go-live externo</div>
+          <div class="devlog-label">{{ $doneCount }} de {{ $totalCount }} item(ns) concluído(s)</div>
+          <div class="devlog-label">{{ $pendingCount + $missingCount }} pendência(s) acompanhada(s)</div>
           <div class="devlog-progress" style="margin-top:18px"><span style="width: {{ $generalPercent }}%"></span></div>
         </div>
         <div class="devlog-orb">{{ $generalPercent }}%</div>

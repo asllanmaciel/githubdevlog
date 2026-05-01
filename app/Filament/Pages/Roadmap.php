@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Support\RoadmapCatalog;
 use BackedEnum;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
@@ -22,4 +23,9 @@ class Roadmap extends Page
     protected static ?int $navigationSort = 60;
 
     protected string $view = 'filament.pages.roadmap';
+
+    public function mount(): void
+    {
+        RoadmapCatalog::sync();
+    }
 }
