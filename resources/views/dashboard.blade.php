@@ -57,6 +57,7 @@
     $aiUsage = $workspace ? \App\Support\AiAnalysisBilling::report($workspace) : null;
     $openAiConfigured = filled(config('services.openai.api_key'));
     $advancedAiPrice = (($aiUsage['overage_price_cents'] ?? 0) / 100);
+    $activationReady = $workspace && $totalEvents > 0 && $validEvents > 0;
 @endphp
 
 @if (! $workspace)
@@ -298,7 +299,7 @@
     @endif
 
 
-    @if ($visiblePage === 'overview')
+    @if ($visiblePage === 'overview' && ! $activationReady)
     <section class="cardx mb-3" id="launch-checklist">
       <div class="d-flex justify-content-between gap-3 flex-wrap align-items-start">
         <div>

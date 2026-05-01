@@ -26,9 +26,31 @@
 
 <section class="cardx mb-3 onboarding-card" id="onboarding">
   <style>
-    .onboarding-card{background:linear-gradient(135deg,rgba(80,184,255,.08),rgba(105,227,154,.06),rgba(16,23,32,.92))}.onboarding-grid{display:grid;grid-template-columns:300px 1fr;gap:18px;align-items:start}.launch-ring{width:164px;height:164px;border-radius:44px;display:grid;place-items:center;background:radial-gradient(circle at 35% 25%,rgba(105,227,154,.28),rgba(80,184,255,.14) 46%,rgba(8,16,25,.96) 74%);border:1px solid rgba(105,227,154,.32);box-shadow:0 24px 70px rgba(0,0,0,.22)}.launch-ring strong{font-size:40px;letter-spacing:-.06em}.launch-ring span{display:block;color:var(--muted);font-size:12px;text-align:center;margin-top:-14px}.step-list{display:grid;gap:10px}.step-item{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;border:1px solid var(--line);border-radius:14px;background:#0b1118;padding:12px}.step-item.done{border-color:rgba(105,227,154,.4);background:rgba(105,227,154,.07)}.step-mark{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;border:1px solid var(--line);color:var(--muted);font-weight:950}.step-item.done .step-mark{background:var(--green);border-color:var(--green);color:#071018}.step-action{color:var(--blue);text-decoration:none;font-weight:850;font-size:13px}.step-action.muted-link{color:var(--muted)}.setup-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}.setup-box{border:1px solid var(--line);border-radius:14px;background:#07101a;padding:12px}.setup-box strong{display:block;margin-bottom:6px}.copyline{word-break:break-all;color:#b7e4ff}.event-chip{display:inline-flex;margin:4px 5px 0 0;border:1px solid rgba(80,184,255,.35);border-radius:999px;padding:5px 9px;color:#b7e4ff;font-size:12px}.curl-box{border:1px solid var(--line);border-radius:14px;background:#050a10;color:#b7e4ff;padding:14px;white-space:pre-wrap;overflow:auto;margin-top:12px}@media(max-width:1000px){.onboarding-grid,.setup-grid{grid-template-columns:1fr}.launch-ring{width:132px;height:132px;border-radius:34px}}
+    .onboarding-card{background:linear-gradient(135deg,rgba(80,184,255,.08),rgba(105,227,154,.06),rgba(16,23,32,.92))}.onboarding-grid{display:grid;grid-template-columns:300px 1fr;gap:18px;align-items:start}.launch-ring{width:164px;height:164px;border-radius:44px;display:grid;place-items:center;background:radial-gradient(circle at 35% 25%,rgba(105,227,154,.28),rgba(80,184,255,.14) 46%,rgba(8,16,25,.96) 74%);border:1px solid rgba(105,227,154,.32);box-shadow:0 24px 70px rgba(0,0,0,.22)}.launch-ring strong{font-size:40px;letter-spacing:-.06em}.launch-ring span{display:block;color:var(--muted);font-size:12px;text-align:center;margin-top:-14px}.step-list{display:grid;gap:10px}.step-item{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;border:1px solid var(--line);border-radius:14px;background:#0b1118;padding:12px}.step-item.done{border-color:rgba(105,227,154,.4);background:rgba(105,227,154,.07)}.step-mark{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;border:1px solid var(--line);color:var(--muted);font-weight:950}.step-item.done .step-mark{background:var(--green);border-color:var(--green);color:#071018}.step-action{color:var(--blue);text-decoration:none;font-weight:850;font-size:13px}.step-action.muted-link{color:var(--muted)}.setup-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}.setup-box{border:1px solid var(--line);border-radius:14px;background:#07101a;padding:12px}.setup-box strong{display:block;margin-bottom:6px}.copyline{word-break:break-all;color:#b7e4ff}.event-chip{display:inline-flex;margin:4px 5px 0 0;border:1px solid rgba(80,184,255,.35);border-radius:999px;padding:5px 9px;color:#b7e4ff;font-size:12px}.curl-box{border:1px solid var(--line);border-radius:14px;background:#050a10;color:#b7e4ff;padding:14px;white-space:pre-wrap;overflow:auto;margin-top:12px}.onboarding-complete{display:flex;justify-content:space-between;gap:18px;align-items:center}.onboarding-complete-badge{width:76px;height:76px;border-radius:24px;display:grid;place-items:center;background:linear-gradient(135deg,var(--green),var(--blue));color:#061018;font-size:28px;font-weight:950;box-shadow:0 20px 60px rgba(105,227,154,.18)}.onboarding-complete-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}.onboarding-complete-metrics{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}@media(max-width:1000px){.onboarding-grid,.setup-grid{grid-template-columns:1fr}.launch-ring{width:132px;height:132px;border-radius:34px}.onboarding-complete{align-items:flex-start;flex-direction:column}.onboarding-complete-actions,.onboarding-complete-actions .btnx{width:100%}}
   </style>
 
+  @if ($percent >= 100)
+    <div class="onboarding-complete">
+      <div class="d-flex gap-3 align-items-center">
+        <div class="onboarding-complete-badge">ok</div>
+        <div>
+          <div class="kicker">Setup concluído</div>
+          <h2 class="h4 mt-2 mb-1">Webhook validado e pronto para operação.</h2>
+          <p class="muted mb-0">Ocultamos o passo a passo porque todos os requisitos foram atendidos. Agora o foco é acompanhar eventos, AI, tarefas e alertas.</p>
+          <div class="onboarding-complete-metrics">
+            <span class="pill success">{{ $percent }}% concluído</span>
+            <span class="pill">{{ $totalEvents }} evento(s)</span>
+            <span class="pill">{{ $validEvents }} validado(s)</span>
+            <span class="pill">{{ $manualMode ? 'Webhook manual' : 'GitHub App conectado' }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="onboarding-complete-actions">
+        <a class="btnx primary" href="{{ route('dashboard', ['section' => 'events']) }}">Ver eventos</a>
+        <a class="btnx quiet" href="{{ route('dashboard', ['section' => 'github']) }}">Configurações</a>
+      </div>
+    </div>
+  @else
   <div class="d-flex justify-content-between gap-3 flex-wrap align-items-start mb-3">
     <div>
       <div class="kicker">Webhook onboarding</div>
@@ -77,4 +99,5 @@ curl -X POST '{{ $endpoint }}' \
       </details>
     </div>
   </div>
+  @endif
 </section>
