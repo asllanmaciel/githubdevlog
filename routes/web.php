@@ -36,6 +36,12 @@ $workspaceUsage = fn (Workspace $workspace): int => WorkspaceUsage::usageThisMon
 $workspaceLimitReached = fn (Workspace $workspace): bool => WorkspaceUsage::limitReached($workspace);
 
 Route::get('/', fn () => view('landing'))->name('home');
+Route::get('/deploy-check', fn () => response()->json([
+    'ok' => true,
+    'marker' => 'deploy-check-2026-05-01-both-branches',
+    'branch_test' => 'master-and-main',
+    'checked_at' => now()->toIso8601String(),
+]))->name('deploy-check');
 Route::get('/status', fn () => view('status'))->name('status');
 Route::get('/health', function () {
     $report = SystemHealth::report();
