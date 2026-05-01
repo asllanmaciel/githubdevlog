@@ -72,15 +72,18 @@
   </div>
 
   <div class="event-insights">
-    <div class="insight"><span>Origem</span><strong>{{ $event->source }}</strong></div>
-    <div class="insight"><span>Commits</span><strong>{{ $commitCount }}</strong></div>
-    <div class="insight"><span>Arquivos</span><strong>{{ $files->count() }}</strong></div>
-    <div class="insight"><span>{{ $workflowName ? 'Workflow' : 'Status' }}</span><strong>{{ $workflowName ? \Illuminate\Support\Str::limit($workflowName, 24) : ($event->signature_valid ? 'validado' : 'revisar') }}</strong></div>
+    <div class="insight"><div class="insight-glyph">GH</div><div><span>Origem</span><strong>{{ $event->source }}</strong></div></div>
+    <div class="insight"><div class="insight-glyph">BR</div><div><span>Commits</span><strong>{{ $commitCount }}</strong></div></div>
+    <div class="insight"><div class="insight-glyph">FL</div><div><span>Arquivos</span><strong>{{ $files->count() }}</strong></div></div>
+    <div class="insight"><div class="insight-glyph">OK</div><div><span>{{ $workflowName ? 'Workflow' : 'Status' }}</span><strong>{{ $workflowName ? \Illuminate\Support\Str::limit($workflowName, 24) : ($event->signature_valid ? 'validado' : 'revisar') }}</strong></div></div>
   </div>
 
   <div class="event-diagnostic">
-    <strong>Leitura rápida</strong>
-    <span>{{ $event->ai_summary ?: $diagnostic }}</span>
+    <div class="section-orb">LR</div>
+    <div>
+      <strong>Leitura rápida</strong>
+      <span>{{ $event->ai_summary ?: $diagnostic }}</span>
+    </div>
   </div>
 
   @if($mode === 'compact')
@@ -100,8 +103,15 @@
         </div>
         <span class="pill {{ $riskClass }}">{{ $riskLabel }}</span>
       </div>
+      <div class="ai-meta-line">
+        <span class="pill {{ $riskClass }}">{{ $riskLabel }}</span>
+        @if($event->ai_generated_at)<span>Gerada em {{ $event->ai_generated_at->format('d/m/Y H:i') }}</span>@endif
+        @if($event->ai_provider)<span>{{ $event->ai_provider }}</span>@endif
+        @if($event->ai_analysis_type)<span>{{ $event->ai_analysis_type === 'llm' ? 'AI avançada' : 'AI grátis' }}</span>@endif
+        @if($event->ai_estimated_cost_cents > 0)<span>custo estimado R$ {{ number_format($event->ai_estimated_cost_cents / 100, 2, ',', '.') }}</span>@endif
+      </div>
       @if($event->ai_generated_at)
-        <div class="muted mt-2">Gerada em {{ $event->ai_generated_at->format('d/m/Y H:i') }} · {{ $event->ai_provider }} · {{ $event->ai_analysis_type === 'llm' ? 'AI avançada' : 'AI grátis' }} @if($event->ai_estimated_cost_cents > 0) · custo estimado R$ {{ number_format($event->ai_estimated_cost_cents / 100, 2, ',', '.') }} @endif</div>
+        <div class="muted mt-2 d-none">Gerada em {{ $event->ai_generated_at->format('d/m/Y H:i') }} · {{ $event->ai_provider }} · {{ $event->ai_analysis_type === 'llm' ? 'AI avançada' : 'AI grátis' }} @if($event->ai_estimated_cost_cents > 0) · custo estimado R$ {{ number_format($event->ai_estimated_cost_cents / 100, 2, ',', '.') }} @endif</div>
       @endif
       @if($event->ai_error)
         <div class="muted mt-2">Último erro AI: {{ $event->ai_error }}</div>
@@ -114,13 +124,13 @@
         </div>
       @endif
       @if(is_array($event->ai_action_items) && count($event->ai_action_items) > 0)
-        <ul class="muted mt-2 mb-0">
+        <ul class="ai-action-list muted mt-2 mb-0">
           @foreach($event->ai_action_items as $item)
             <li>{{ $item }}</li>
           @endforeach
         </ul>
       @endif
-      <div class="d-flex gap-2 flex-wrap mt-2">
+      <div class="ai-action-bar">
         <form method="POST" action="{{ route('events.ai-analysis.generate', $event) }}">
           @csrf
           <input type="hidden" name="mode" value="local">
@@ -145,7 +155,7 @@
 
     <div class="event-actions-grid">
       <div class="mini-panel">
-        <strong>Notas</strong>
+        <div class="mini-panel-head"><strong>Notas</strong><span class="pill">Adicionar nota abaixo</span></div>
         @forelse($notes as $note)
           <p>{{ $note->body }}</p>
         @empty
@@ -158,7 +168,7 @@
         </form>
       </div>
       <div class="mini-panel">
-        <strong>Tarefas</strong>
+        <div class="mini-panel-head"><strong>Tarefas</strong><span class="pill">Nova tarefa abaixo</span></div>
         @forelse($tasks as $task)
           <p><span class="pill soft">{{ $task->status }}</span> {{ $task->title }}</p>
         @empty

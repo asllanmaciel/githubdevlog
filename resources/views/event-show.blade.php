@@ -13,7 +13,7 @@
     <section class="event-detail-shell">
       <div class="event-detail-hero cardx">
         <div>
-          <div class="kicker">War room do webhook</div>
+          <a class="event-backlink" href="{{ route('dashboard', ['section' => 'events']) }}">← War room do webhook</a>
           <h1 class="dashboard-title">{{ $event->event_name }} #{{ $event->id }}</h1>
           <p class="lead mt-3 mb-0">{{ $repo }} · {{ $sender }} · branch {{ $branch }}</p>
           <div class="event-hero-pills">
@@ -24,8 +24,8 @@
           </div>
         </div>
         <div class="event-detail-actions">
-          <a class="btnx" href="{{ route('dashboard', ['section' => 'events']) }}">Voltar para eventos</a>
-          <a class="btnx primary" href="{{ route('dashboard', ['section' => 'ai']) }}">Ver uso de AI</a>
+          <a class="btnx quiet" href="{{ route('dashboard', ['section' => 'events']) }}"><span class="btn-icon">□</span> Eventos</a>
+          <a class="btnx primary" href="{{ route('dashboard', ['section' => 'ai']) }}"><span class="btn-icon">AI</span> Uso de AI</a>
         </div>
       </div>
 
