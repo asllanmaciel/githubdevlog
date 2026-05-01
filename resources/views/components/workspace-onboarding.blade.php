@@ -14,7 +14,7 @@
     $steps = collect([
         ['title' => 'Copiar Payload URL', 'description' => 'Use a URL privada do workspace no GitHub.', 'done' => filled($endpoint), 'action' => '#setup'],
         ['title' => 'Definir Content type', 'description' => 'Escolha application/json para receber payload estruturado.', 'done' => true, 'action' => '#setup'],
-        ['title' => 'Configurar Secret', 'description' => 'Cole o secret do workspace para validar X-Hub-Signature-256.', 'done' => filled($workspace?->webhook_secret), 'action' => '#setup'],
+        ['title' => 'Configurar Secret', 'description' => 'Cole o secret do workspace para validar X-Hub-Signature-256.', 'done' => filled($workspace->webhook_secret), 'action' => '#setup'],
         ['title' => 'Selecionar eventos', 'description' => 'Comece com push, pull_request, workflow_run e issues.', 'done' => $totalEvents > 0, 'action' => '#setup'],
         ['title' => 'Enviar ping ou push', 'description' => 'O primeiro evento deve aparecer no histórico privado.', 'done' => $totalEvents > 0, 'action' => '#eventos'],
         ['title' => 'Confirmar assinatura', 'description' => 'Ao menos um evento precisa chegar com assinatura válida.', 'done' => $validEvents > 0, 'action' => '#eventos'],
@@ -35,7 +35,7 @@
       <h2 class="h4 mt-2 mb-1">Configure, teste e valide seu primeiro webhook GitHub.</h2>
       <p class="muted mb-0">Este guia leva o dev de workspace criado para evento GitHub validado sem caçar configuração em documentação solta.</p>
     </div>
-    <span class="pill">Modo: {{ $manualMode ? 'Webhook manual' : 'GitHub App conectado' }}</span>
+    <span class="pill">Modo: {{ $manualMode 'Webhook manual' : 'GitHub App conectado' }}</span>
   </div>
 
   <div class="onboarding-grid">
@@ -50,14 +50,14 @@
       <div class="setup-grid">
         <div class="setup-box"><strong>Payload URL</strong><div class="copyline">{{ $endpoint }}</div></div>
         <div class="setup-box"><strong>Content type</strong><div class="copyline">application/json</div></div>
-        <div class="setup-box"><strong>Secret</strong><div class="copyline">{{ $workspace?->webhook_secret }}</div></div>
+        <div class="setup-box"><strong>Secret</strong><div class="copyline">{{ $workspace->webhook_secret }}</div></div>
         <div class="setup-box"><strong>Eventos recomendados</strong>@foreach($recommendedEvents as $event)<span class="event-chip">{{ $event }}</span>@endforeach</div>
       </div>
 
       <div class="step-list mt-3">
         @foreach ($steps as $step)
-          <div class="step-item {{ $step['done'] ? 'done' : '' }}">
-            <div class="step-mark">{{ $step['done'] ? 'ok' : $loop->iteration }}</div>
+          <div class="step-item {{ $step['done'] 'done' : '' }}">
+            <div class="step-mark">{{ $step['done'] 'ok' : $loop->iteration }}</div>
             <div><strong>{{ $step['title'] }}</strong><div class="muted">{{ $step['description'] }}</div></div>
             @if ($step['done'])<span class="step-action muted-link">pronto</span>@else<a class="step-action" href="{{ $step['action'] }}">resolver</a>@endif
           </div>
@@ -67,7 +67,7 @@
       <details class="mt-3">
         <summary class="step-action">Ver teste local com assinatura HMAC</summary>
         <pre class="curl-box">payload='{{ $curlPayload }}'
-signature="sha256=$(printf "$payload" | openssl dgst -sha256 -hmac '{{ $workspace?->webhook_secret }}' -binary | xxd -p -c 256)"
+signature="sha256=$(printf "$payload" | openssl dgst -sha256 -hmac '{{ $workspace->webhook_secret }}' -binary | xxd -p -c 256)"
 curl -X POST '{{ $endpoint }}' \
   -H "Content-Type: application/json" \
   -H "X-GitHub-Event: push" \
