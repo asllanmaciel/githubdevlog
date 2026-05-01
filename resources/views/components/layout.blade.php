@@ -165,6 +165,11 @@
     .event-top { display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap; align-items:flex-start; }
     .event-type { display:flex; gap:12px; align-items:center; }
     .event-icon { width:52px; height:52px; border-radius:14px; display:grid; place-items:center; background:rgba(80,184,255,.12); border:1px solid rgba(80,184,255,.28); color:var(--blue); font-weight:950; box-shadow:inset 0 0 0 1px rgba(255,255,255,.04); }
+    .event-icon svg,
+    .insight-glyph svg,
+    .section-orb svg,
+    .mini-panel-head svg { width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
+    .insight-glyph.github svg { fill:currentColor; stroke:none; }
     .event-title { font-size:18px; font-weight:950; }
     .event-subtitle { color:var(--muted); font-size:13px; margin-top:2px; }
     .event-summary { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:14px 0; }
@@ -440,7 +445,7 @@
       background:linear-gradient(135deg, rgba(80,184,255,.1), rgba(105,227,154,.04));
       margin-bottom:18px;
     }
-    body.app-dashboard .event-card-full .event-insights { gap:14px; margin:16px 0; }
+    body.app-dashboard .event-card-full .event-insights { gap:16px; margin:18px 0; }
     body.app-dashboard .event-card-full .insight {
       min-height:92px;
       border-radius:16px;
@@ -453,8 +458,9 @@
     body.app-dashboard .event-card-full .insight strong { font-size:22px; letter-spacing:-.035em; }
     body.app-dashboard .event-card-full .event-diagnostic {
       border-radius:18px;
-      padding:18px;
+      padding:20px;
       background:linear-gradient(135deg, rgba(80,184,255,.08), rgba(8,16,25,.84));
+      margin-top:12px;
     }
     body.app-dashboard .event-card-full .ai-diagnostic {
       display:block;
@@ -478,11 +484,28 @@
       padding:20px;
       background:rgba(3,9,14,.76);
       border-color:rgba(67,96,121,.82);
+      min-height:150px;
     }
     body.app-dashboard .mini-panel-head { display:flex; justify-content:space-between; gap:12px; align-items:center; margin-bottom:12px; }
-    body.app-dashboard .mini-panel-head strong { font-size:18px; }
+    body.app-dashboard .mini-panel-head strong { font-size:18px; display:flex; align-items:center; gap:8px; }
+    body.app-dashboard .empty-state { border:1px dashed rgba(80,184,255,.22); border-radius:12px; padding:14px; background:rgba(2,8,13,.45); }
     body.app-dashboard .event-card-full textarea,
     body.app-dashboard .event-card-full input { background:rgba(2,8,13,.78); border-color:rgba(67,96,121,.72); }
+    body.app-dashboard .devlog-modal {
+      width:min(560px, calc(100vw - 32px));
+      border:1px solid rgba(80,184,255,.34);
+      border-radius:22px;
+      padding:0;
+      color:var(--ink);
+      background:linear-gradient(145deg, rgba(13,24,34,.98), rgba(5,12,18,.98));
+      box-shadow:0 30px 120px rgba(0,0,0,.58);
+    }
+    body.app-dashboard .devlog-modal::backdrop { background:rgba(1,6,10,.72); backdrop-filter:blur(8px); }
+    body.app-dashboard .devlog-modal form { padding:22px; margin:0; }
+    body.app-dashboard .modal-head { display:flex; justify-content:space-between; gap:16px; align-items:flex-start; margin-bottom:18px; }
+    body.app-dashboard .modal-head h3 { margin:3px 0 0; font-size:28px; letter-spacing:-.04em; font-weight:950; }
+    body.app-dashboard .modal-close { width:38px; height:38px; border-radius:12px; border:1px solid rgba(80,184,255,.24); background:rgba(8,16,25,.72); color:var(--ink); font-size:24px; line-height:1; }
+    body.app-dashboard .modal-actions { display:flex; justify-content:flex-end; gap:10px; flex-wrap:wrap; margin-top:16px; }
     @media (max-width: 1100px) {
       .app-shell { display:block; }
       .app-sidebar { display:none; }
@@ -623,5 +646,21 @@
       </div>
     @endif
   </div>
+  <script>
+    document.querySelectorAll('[data-modal-target]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const modal = document.getElementById(button.dataset.modalTarget);
+        if (modal && typeof modal.showModal === 'function') modal.showModal();
+      });
+    });
+    document.querySelectorAll('[data-modal-close]').forEach((button) => {
+      button.addEventListener('click', () => button.closest('dialog')?.close());
+    });
+    document.querySelectorAll('dialog.devlog-modal').forEach((modal) => {
+      modal.addEventListener('click', (event) => {
+        if (event.target === modal) modal.close();
+      });
+    });
+  </script>
 </body>
 </html>

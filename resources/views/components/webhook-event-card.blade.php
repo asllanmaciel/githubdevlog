@@ -53,7 +53,9 @@
 <article class="event event-card {{ $mode === 'compact' ? 'event-card-compact' : 'event-card-full' }}" data-event-type="{{ $event->event_name }}" data-signature="{{ $event->signature_valid ? 'valid' : 'pending' }}">
   <div class="event-topline">
     <div class="event-type">
-      <div class="event-icon">{{ $eventIcon }}</div>
+      <div class="event-icon">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3v4a2 2 0 0 0 2 2h4"/><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9l6 6v10a2 2 0 0 1-2 2Z"/><path d="M9 17v-5"/><path d="M9 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/><path d="M15 17v-3"/><path d="M15 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/><path d="M9 15h6"/></svg>
+      </div>
       <div>
         <div class="d-flex align-items-center gap-2 flex-wrap">
           <strong class="event-name">{{ $event->event_name }}</strong>
@@ -72,14 +74,14 @@
   </div>
 
   <div class="event-insights">
-    <div class="insight"><div class="insight-glyph">GH</div><div><span>Origem</span><strong>{{ $event->source }}</strong></div></div>
-    <div class="insight"><div class="insight-glyph">BR</div><div><span>Commits</span><strong>{{ $commitCount }}</strong></div></div>
-    <div class="insight"><div class="insight-glyph">FL</div><div><span>Arquivos</span><strong>{{ $files->count() }}</strong></div></div>
-    <div class="insight"><div class="insight-glyph">OK</div><div><span>{{ $workflowName ? 'Workflow' : 'Status' }}</span><strong>{{ $workflowName ? \Illuminate\Support\Str::limit($workflowName, 24) : ($event->signature_valid ? 'validado' : 'revisar') }}</strong></div></div>
+    <div class="insight"><div class="insight-glyph github"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-3 19c.5.1.7-.2.7-.5v-2c-2.8.6-3.4-1.2-3.4-1.2-.5-1.1-1.1-1.4-1.1-1.4-.9-.6.1-.6.1-.6 1 0 1.6 1 1.6 1 .9 1.5 2.3 1.1 2.9.8.1-.7.4-1.1.7-1.4-2.2-.2-4.5-1.1-4.5-4.9 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.8 1a9.7 9.7 0 0 1 5 0c1.9-1.3 2.8-1 2.8-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.8-2.3 4.6-4.5 4.9.4.3.7.9.7 1.8v2.7c0 .3.2.6.7.5A10 10 0 0 0 12 2Z"/></svg></div><div><span>Origem</span><strong>{{ $event->source }}</strong></div></div>
+    <div class="insight"><div class="insight-glyph"><svg viewBox="0 0 24 24"><path d="M6 3v12"/><path d="M18 9v12"/><path d="M6 15a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/><path d="M18 3a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/><path d="M6 6h9"/></svg></div><div><span>Commits</span><strong>{{ $commitCount }}</strong></div></div>
+    <div class="insight"><div class="insight-glyph"><svg viewBox="0 0 24 24"><path d="M14 3v4a2 2 0 0 0 2 2h4"/><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9l6 6v10a2 2 0 0 1-2 2Z"/></svg></div><div><span>Arquivos</span><strong>{{ $files->count() }}</strong></div></div>
+    <div class="insight"><div class="insight-glyph status"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></div><div><span>{{ $workflowName ? 'Workflow' : 'Status' }}</span><strong>{{ $workflowName ? \Illuminate\Support\Str::limit($workflowName, 24) : ($event->signature_valid ? 'validado' : 'revisar') }}</strong></div></div>
   </div>
 
   <div class="event-diagnostic">
-    <div class="section-orb">LR</div>
+    <div class="section-orb"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4v15.5"/><path d="M20 22V6a2 2 0 0 0-2-2H6.5A2.5 2.5 0 0 0 4 6.5v13"/></svg></div>
     <div>
       <strong>Leitura rápida</strong>
       <span>{{ $event->ai_summary ?: $diagnostic }}</span>
@@ -155,30 +157,54 @@
 
     <div class="event-actions-grid">
       <div class="mini-panel">
-        <div class="mini-panel-head"><strong>Notas</strong><span class="pill">Adicionar nota abaixo</span></div>
+        <div class="mini-panel-head">
+          <strong><svg viewBox="0 0 24 24"><path d="M4 4h16v14H7l-3 3V4Z"/><path d="M8 9h8"/><path d="M8 13h5"/></svg> Notas</strong>
+          <button class="btnx quiet modal-trigger" type="button" data-modal-target="note-modal-{{ $event->id }}">Adicionar nota</button>
+        </div>
         @forelse($notes as $note)
           <p>{{ $note->body }}</p>
         @empty
-          <p class="muted">Sem notas ainda.</p>
+          <p class="muted empty-state">Sem notas ainda.</p>
         @endforelse
-        <form method="POST" action="{{ route('events.notes.store', $event) }}">
-          @csrf
-          <textarea name="body" rows="3" placeholder="Ex.: confirmar se o payload já pode acionar automação"></textarea>
-          <button class="btnx w-100 mt-2" type="submit">Adicionar nota</button>
-        </form>
+        <dialog class="devlog-modal" id="note-modal-{{ $event->id }}">
+          <form method="POST" action="{{ route('events.notes.store', $event) }}">
+            @csrf
+            <div class="modal-head">
+              <div><div class="kicker">Nota de investigação</div><h3>Adicionar nota</h3></div>
+              <button class="modal-close" type="button" data-modal-close>×</button>
+            </div>
+            <textarea name="body" rows="5" placeholder="Ex.: confirmar se o payload já pode acionar automação" required></textarea>
+            <div class="modal-actions">
+              <button class="btnx quiet" type="button" data-modal-close>Cancelar</button>
+              <button class="btnx primary" type="submit">Salvar nota</button>
+            </div>
+          </form>
+        </dialog>
       </div>
       <div class="mini-panel">
-        <div class="mini-panel-head"><strong>Tarefas</strong><span class="pill">Nova tarefa abaixo</span></div>
+        <div class="mini-panel-head">
+          <strong><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/><path d="M21 12a9 9 0 1 1-3-6.7"/></svg> Tarefas</strong>
+          <button class="btnx quiet modal-trigger" type="button" data-modal-target="task-modal-{{ $event->id }}">Nova tarefa</button>
+        </div>
         @forelse($tasks as $task)
           <p><span class="pill soft">{{ $task->status }}</span> {{ $task->title }}</p>
         @empty
-          <p class="muted">Nenhuma tarefa aberta.</p>
+          <p class="muted empty-state">Nenhuma tarefa aberta.</p>
         @endforelse
-        <form method="POST" action="{{ route('events.tasks.store', $event) }}">
-          @csrf
-          <input name="title" placeholder="Ex.: revisar parser deste evento">
-          <button class="btnx success w-100 mt-2" type="submit">Criar tarefa</button>
-        </form>
+        <dialog class="devlog-modal" id="task-modal-{{ $event->id }}">
+          <form method="POST" action="{{ route('events.tasks.store', $event) }}">
+            @csrf
+            <div class="modal-head">
+              <div><div class="kicker">Ação operacional</div><h3>Nova tarefa</h3></div>
+              <button class="modal-close" type="button" data-modal-close>×</button>
+            </div>
+            <input name="title" placeholder="Ex.: revisar parser deste evento" required>
+            <div class="modal-actions">
+              <button class="btnx quiet" type="button" data-modal-close>Cancelar</button>
+              <button class="btnx success" type="submit">Criar tarefa</button>
+            </div>
+          </form>
+        </dialog>
       </div>
     </div>
 
