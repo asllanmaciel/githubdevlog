@@ -31,6 +31,16 @@ class BillingPlanForm
                     ->required()
                     ->numeric()
                     ->default(1000),
+                TextInput::make('monthly_ai_analysis_limit')
+                    ->label('Limite mensal de AI avancada')
+                    ->required()
+                    ->numeric()
+                    ->default(0),
+                TextInput::make('ai_analysis_overage_price_cents')
+                    ->label('Preco por AI avancada excedente (centavos)')
+                    ->required()
+                    ->numeric()
+                    ->default(0),
                 TextInput::make('overage_price_cents')
                     ->label('Preco por excedente (centavos)')
                     ->required()

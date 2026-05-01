@@ -30,6 +30,14 @@ class BillingPlansTable
                 TextColumn::make('monthly_event_limit')
                     ->numeric()
                     ->sortable(),
+                TextColumn::make('monthly_ai_analysis_limit')
+                    ->label('AI avancada')
+                    ->numeric()
+                    ->sortable(),
+                TextColumn::make('ai_analysis_overage_price_cents')
+                    ->label('Excedente AI')
+                    ->money('BRL', divideBy: 100)
+                    ->sortable(),
                 TextColumn::make('overage_price_cents')
                     ->label('Excedente')
                     ->money('BRL', divideBy: 100)
