@@ -348,6 +348,120 @@
       border: 1px solid rgba(56, 77, 96, .8);
     }
     body.app-dashboard .alert { width: min(100% - 36px, 1420px); margin: 18px auto 0; border-radius: 14px; }
+    body.app-dashboard .event-detail-shell { display:grid; gap:16px; }
+    body.app-dashboard .event-detail-hero {
+      position:relative;
+      overflow:hidden;
+      min-height:260px;
+      padding:28px;
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-end;
+      gap:22px;
+      border-color:rgba(80,184,255,.34) !important;
+      background:
+        radial-gradient(circle at 88% 12%, rgba(80,184,255,.28), transparent 34%),
+        radial-gradient(circle at 8% 100%, rgba(105,227,154,.16), transparent 34%),
+        linear-gradient(135deg, rgba(9,18,28,.98), rgba(11,31,43,.9) 48%, rgba(6,16,18,.98)) !important;
+    }
+    body.app-dashboard .event-detail-hero:after {
+      content:"";
+      position:absolute;
+      left:28px;
+      bottom:0;
+      width:54%;
+      height:4px;
+      background:linear-gradient(90deg,var(--blue),var(--green),transparent);
+      border-radius:999px;
+    }
+    body.app-dashboard .event-detail-hero > * { position:relative; z-index:1; }
+    body.app-dashboard .event-detail-actions { display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+    body.app-dashboard .event-hero-pills { display:flex; gap:8px; flex-wrap:wrap; margin-top:18px; }
+    body.app-dashboard .event-command-strip { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+    body.app-dashboard .event-command-card {
+      border:1px solid rgba(67,96,121,.88);
+      border-radius:18px;
+      padding:16px;
+      background:linear-gradient(180deg, rgba(15,25,35,.9), rgba(5,11,17,.92));
+      box-shadow:0 18px 60px rgba(0,0,0,.18);
+    }
+    body.app-dashboard .event-command-card span {
+      display:block;
+      color:var(--muted);
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.13em;
+      font-weight:950;
+    }
+    body.app-dashboard .event-command-card strong {
+      display:block;
+      font-size:24px;
+      line-height:1.1;
+      letter-spacing:-.04em;
+      margin-top:8px;
+    }
+    body.app-dashboard .event-command-card small {
+      display:block;
+      color:var(--muted);
+      margin-top:8px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+    body.app-dashboard .event-card-full {
+      border-left-width:0;
+      padding:22px;
+      position:relative;
+      overflow:hidden;
+      background:linear-gradient(145deg, rgba(13,24,34,.98), rgba(5,12,18,.96)) !important;
+    }
+    body.app-dashboard .event-card-full:before {
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(80,184,255,.12), transparent 30%),
+        radial-gradient(circle at 100% 18%, rgba(105,227,154,.09), transparent 28%);
+      pointer-events:none;
+    }
+    body.app-dashboard .event-card-full > * { position:relative; z-index:1; }
+    body.app-dashboard .event-card-full .event-topline {
+      padding:16px;
+      border:1px solid rgba(80,184,255,.24);
+      border-radius:18px;
+      background:linear-gradient(135deg, rgba(80,184,255,.1), rgba(105,227,154,.04));
+    }
+    body.app-dashboard .event-card-full .event-insights { gap:14px; margin:16px 0; }
+    body.app-dashboard .event-card-full .insight {
+      min-height:92px;
+      border-radius:16px;
+      background:rgba(3,9,14,.72);
+      border-color:rgba(67,96,121,.88);
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+    }
+    body.app-dashboard .event-card-full .insight strong { font-size:22px; letter-spacing:-.035em; }
+    body.app-dashboard .event-card-full .event-diagnostic {
+      border-radius:18px;
+      padding:18px;
+      background:linear-gradient(135deg, rgba(80,184,255,.08), rgba(8,16,25,.84));
+    }
+    body.app-dashboard .event-card-full .ai-diagnostic {
+      display:block;
+      border-color:rgba(80,184,255,.48);
+      background:linear-gradient(145deg, rgba(80,184,255,.16), rgba(105,227,154,.06) 46%, rgba(6,13,20,.9));
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.025), 0 24px 70px rgba(80,184,255,.1);
+    }
+    body.app-dashboard .event-card-full .ai-diagnostic strong { font-size:20px; letter-spacing:-.02em; }
+    body.app-dashboard .event-card-full .ai-diagnostic ul { columns:2; column-gap:34px; padding-left:20px; }
+    body.app-dashboard .event-card-full .event-actions-grid { gap:16px; margin-top:16px; }
+    body.app-dashboard .event-card-full .mini-panel {
+      border-radius:18px;
+      padding:18px;
+      background:rgba(3,9,14,.76);
+      border-color:rgba(67,96,121,.82);
+    }
     @media (max-width: 1100px) {
       .app-shell { display:block; }
       .app-sidebar { display:none; }
@@ -365,6 +479,10 @@
         backdrop-filter:blur(12px);
       }
       body.app-dashboard main { padding:20px 14px 42px; width:100%; }
+      body.app-dashboard .event-detail-hero { align-items:flex-start; flex-direction:column; min-height:auto; }
+      body.app-dashboard .event-detail-actions, body.app-dashboard .event-detail-actions .btnx { width:100%; }
+      body.app-dashboard .event-command-strip { grid-template-columns:1fr; }
+      body.app-dashboard .event-card-full .ai-diagnostic ul { columns:1; }
     }
   </style>
 </head>
@@ -485,6 +603,5 @@
   </div>
 </body>
 </html>
-
 
 
