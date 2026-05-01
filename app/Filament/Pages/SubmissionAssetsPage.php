@@ -19,6 +19,8 @@ class SubmissionAssetsPage extends Page
 
     protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedPhoto;
 
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static ?int $navigationSort = 16;
 
     protected string $view = 'filament.pages.submission-assets';

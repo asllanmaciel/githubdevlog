@@ -19,6 +19,8 @@ class GitHubReadiness extends Page
 
     protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedRocketLaunch;
 
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static ?int $navigationSort = 10;
 
     protected string $view = 'filament.pages.github-readiness';

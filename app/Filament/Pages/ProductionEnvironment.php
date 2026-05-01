@@ -19,6 +19,8 @@ class ProductionEnvironment extends Page
 
     protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedServerStack;
 
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static ?int $navigationSort = 13;
 
     protected string $view = 'filament.pages.production-environment';

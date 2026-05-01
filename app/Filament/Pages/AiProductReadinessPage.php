@@ -19,6 +19,8 @@ class AiProductReadinessPage extends Page
 
     protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedChartBar;
 
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static ?int $navigationSort = 4;
 
     protected string $view = 'filament.pages.ai-product-readiness';

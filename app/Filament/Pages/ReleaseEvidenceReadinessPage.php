@@ -19,6 +19,8 @@ class ReleaseEvidenceReadinessPage extends Page
 
     protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedClipboardDocumentCheck;
 
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static ?int $navigationSort = 3;
 
     protected string $view = 'filament.pages.release-evidence-readiness';

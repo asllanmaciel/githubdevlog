@@ -19,6 +19,8 @@ class LaunchGate extends Page
 
     protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedShieldCheck;
 
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static ?int $navigationSort = 12;
 
     protected string $view = 'filament.pages.launch-gate';

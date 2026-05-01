@@ -19,6 +19,8 @@ class GoLiveExecutionKitPage extends Page
 
     protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedRocketLaunch;
 
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static ?int $navigationSort = 5;
 
     protected string $view = 'filament.pages.go-live-execution-kit';

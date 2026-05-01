@@ -19,6 +19,8 @@ class ProductionEnvironmentReadinessPage extends Page
 
     protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedCog6Tooth;
 
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static ?int $navigationSort = 4;
 
     protected string $view = 'filament.pages.production-environment-readiness';

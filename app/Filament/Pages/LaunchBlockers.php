@@ -19,6 +19,8 @@ class LaunchBlockers extends Page
 
     protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedExclamationTriangle;
 
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static ?int $navigationSort = 11;
 
     protected string $view = 'filament.pages.launch-blockers';
