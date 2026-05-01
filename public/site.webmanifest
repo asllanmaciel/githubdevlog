@@ -1,19 +1,19 @@
 {
-  "name": "DevLog AI",
+  "name": "GitHub DevLog AI",
   "short_name": "DevLog AI",
   "icons": [
     {
-      "src": "favicon-192x192.png",
+      "src": "/android-chrome-192x192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "favicon-512x512.png",
+      "src": "/android-chrome-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
   ],
-  "theme_color": "#0D1117",
-  "background_color": "#0D1117",
+  "theme_color": "#071018",
+  "background_color": "#071018",
   "display": "standalone"
 }

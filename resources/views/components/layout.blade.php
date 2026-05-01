@@ -53,6 +53,10 @@
   @endif
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon-32x32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="/favicon-16x16.png" sizes="16x16" type="image/png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
   <style>
     :root {
       --bg: #090d12;
@@ -375,7 +379,7 @@
       <div class="app-shell">
         <aside class="app-sidebar" aria-label="Menu do workspace">
           <a class="brand" href="{{ route('dashboard') }}">
-            <img src="/logo.svg" alt="GitHub DevLog AI">
+            <img src="/logo-mark.png" alt="GitHub DevLog AI">
             <span><strong>GitHub DevLog AI</strong><span>Painel do workspace</span></span>
           </a>
 
@@ -417,7 +421,7 @@
         <div class="app-content">
           <div class="app-mobilebar">
             <a class="brand" href="{{ route('dashboard') }}">
-              <img src="/logo.svg" alt="GitHub DevLog AI">
+              <img src="/logo-mark.png" alt="GitHub DevLog AI">
               <span><strong>GitHub DevLog AI</strong><span>{{ $dashboardUser?->email }}</span></span>
             </a>
             <form method="POST" action="{{ route('logout') }}">@csrf<button class="btnx" type="submit">Sair</button></form>
@@ -425,7 +429,7 @@
     @else
       <header class="topbar">
         <a class="brand" href="{{ route('home') }}">
-          <img src="/logo.svg" alt="GitHub DevLog AI">
+          <img src="/logo-mark.png" alt="GitHub DevLog AI">
           <span><strong>GitHub DevLog AI</strong><span>Webhook inbox privado para GitHub</span></span>
         </a>
         <nav class="nav" aria-label="Menu principal">
