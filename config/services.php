@@ -66,4 +66,12 @@ return [
         'setup_url' => env('GITHUB_APP_SETUP_URL'),
         'webhook_url' => env('GITHUB_APP_WEBHOOK_URL'),
     ],
+
+    'deploy_webhook' => [
+        'secret' => env('DEPLOY_WEBHOOK_SECRET'),
+        'branch' => env('DEPLOY_WEBHOOK_BRANCH', 'master'),
+        'path' => env('DEPLOY_WEBHOOK_PATH', base_path()),
+        'php' => env('DEPLOY_WEBHOOK_PHP_BINARY', PHP_BINARY ?: 'php'),
+        'timeout' => (int) env('DEPLOY_WEBHOOK_TIMEOUT', 180),
+    ],
 ];

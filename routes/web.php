@@ -16,6 +16,7 @@ use App\Models\Workspace;
 use App\Models\WorkspaceInvite;
 use App\Models\WorkspaceMember;
 use App\Models\WorkspaceSubscription;
+use App\Http\Controllers\DeployWebhookController;
 use App\Services\MercadoPagoBillingService;
 use App\Support\AuditTrail;
 use App\Support\SystemHealth;
@@ -728,6 +729,8 @@ Route::post('/webhooks/github-app', function (Request $request) use ($workspaceP
 
     return response()->json(['ok' => true, 'id' => $event->id]);
 })->name('webhooks.github-app');
+
+Route::post('/webhooks/deploy/github', DeployWebhookController::class)->name('webhooks.deploy.github');
 
 Route::get('/webhooks/mercado-pago', function () {
     return response()->json([

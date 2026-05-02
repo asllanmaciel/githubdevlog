@@ -138,6 +138,44 @@ Para webhooks manuais de repositorio:
 https://seudominio.com/webhooks/github/{workspace_uuid}
 ```
 
+## 8.1 Webhook de deploy GitHub
+
+Para atualizar a HostGator automaticamente após push na branch `master`, configure no `.env` de produção:
+
+```env
+DEPLOY_WEBHOOK_SECRET=gere_um_segredo_forte
+DEPLOY_WEBHOOK_BRANCH=master
+DEPLOY_WEBHOOK_PATH=/home/ghdevlog/app
+DEPLOY_WEBHOOK_PHP_BINARY=php
+DEPLOY_WEBHOOK_TIMEOUT=180
+```
+
+No GitHub, abra `Settings > Webhooks > Add webhook`:
+
+```text
+Payload URL: https://ghdevlog.com/webhooks/deploy/github
+Content type: application/json
+Secret: mesmo valor de DEPLOY_WEBHOOK_SECRET
+Events: Just the push event
+```
+
+O endpoint valida `X-Hub-Signature-256`, ignora branches diferentes da configurada e executa apenas o fluxo fixo:
+
+```bash
+git pull --ff-only origin master
+php artisan migrate --force
+php artisan optimize:clear
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+
+Os logs ficam em:
+
+```text
+storage/logs/deploy-webhook.log
+```
+
 ## 9. Teste de fumaca
 
 Depois do deploy:
