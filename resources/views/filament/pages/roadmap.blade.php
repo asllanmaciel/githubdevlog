@@ -3,6 +3,8 @@
   $workspaces = \App\Models\Workspace::latest()->limit(20)->get();
   $eventsCount = \App\Models\WebhookEvent::count();
   $tickets = \App\Models\SupportTicket::latest()->limit(20)->get();
+  $bugMonitorAvailable = \Illuminate\Support\Facades\Schema::hasTable('bug_reports');
+  $openBugsCount = $bugMonitorAvailable ? \App\Models\BugReport::whereNull('resolved_at')->count() : 0;
   $expectedRoadmapTotal = \App\Support\RoadmapCatalog::expectedTotal();
   $roadmap = \App\Models\RoadmapItem::orderBy('position')->orderBy('id')->get();
   $plans = \App\Models\BillingPlan::orderBy('price_cents')->get();
@@ -28,8 +30,9 @@
         <p class="devlog-lead">Cockpit do produto para acompanhar o que já foi entregue, o que ainda depende de go-live externo e quais frentes sustentam a candidatura no GitHub Developer Program.</p>
         <div class="devlog-actions">
           <a class="devlog-btn primary" href="{{ url('/admin/docs') }}">Docs admin</a>
-          <a class="devlog-btn" href="{{ url('/admin/launch-overview') }}">Launch overview</a>
-          <a class="devlog-btn" href="{{ url('/admin/go-live') }}">Go-live</a>
+          <a class="devlog-btn" href="{{ url('/admin/system-status') }}">Status sistema</a>
+          <a class="devlog-btn" href="{{ url('/admin/bug-monitor') }}">Monitor de bugs</a>
+          <a class="devlog-btn" href="{{ url('/admin/incident-center') }}">Incidentes</a>
         </div>
       </div>
       <div class="devlog-card" style="display:flex; align-items:center; justify-content:space-between; gap:18px">
@@ -48,7 +51,7 @@
       <div class="devlog-metric"><div class="devlog-value">{{ $eventsCount }}</div><div class="devlog-label">webhooks no ambiente</div></div>
       <div class="devlog-metric"><div class="devlog-value">{{ $users->count() }}</div><div class="devlog-label">usuários recentes</div></div>
       <div class="devlog-metric"><div class="devlog-value">{{ $workspaces->count() }}</div><div class="devlog-label">workspaces recentes</div></div>
-      <div class="devlog-metric"><div class="devlog-value">{{ $tickets->where('status', 'open')->count() }}</div><div class="devlog-label">chamados abertos</div></div>
+      <div class="devlog-metric"><div class="devlog-value">{{ $openBugsCount }}</div><div class="devlog-label">bugs abertos monitorados</div></div>
     </section>
 
     <div class="devlog-layout">

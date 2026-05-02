@@ -53,7 +53,7 @@ class RoadmapCatalog
             self::item('Catalogo de qualidade de codigo e revisao continua', 'Confiabilidade', 'pending', 'media', 'Implantar linters, criterios minimos de PR e automacao de seguranca estatica no pipeline.', 90),
             self::item('Camada de eventos AI de baixa latencia', 'IA e inteligencia', 'pending', 'alta', 'Entregar insights de risco e acao em tempo real sem impacto nas rotas criticas do produto.', 100),
             self::item('Roteiro de onboarding inteligente', 'Produto e UX', 'pending', 'alta', 'Oferecer checklist adaptativo por perfil para instalacao, primeiros eventos e analise.', 110),
-            self::item('Painel de incidentes e treino operacional', 'Observabilidade e operacao', 'pending', 'media', 'Operar status page, runbooks e simulacoes para reduzir tempo de resposta em incidentes reais.', 120),
+            self::item('Painel de incidentes e treino operacional', 'Observabilidade e operacao', 'done', 'media', 'Operar status do sistema, monitor interno de bugs, runbooks e deploy webhook para reduzir tempo de resposta em incidentes reais.', 120),
             self::item('Estrategia de APIs publicas para parceiros', 'Evolucao de plataforma', 'pending', 'media', 'Publicar contratos claros, autenticacao por aplicativo e cotas para expansao B2B.', 130),
             self::item('Plano de internacionalizacao e localizacao', 'Produto e UX', 'pending', 'media', 'Suportar fusos, datas, idioma e suporte multilingue sem perder consistencia de design.', 140),
             self::item('Programa de sucesso do cliente e retencao', 'Crescimento', 'pending', 'media', 'Mapear marcos de retencao, campanhas de reativacao e upgrade com valor percebido.', 150),
