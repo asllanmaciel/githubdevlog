@@ -164,6 +164,9 @@ O endpoint valida `X-Hub-Signature-256`, ignora branches diferentes da configura
 ```bash
 git pull --ff-only origin master
 php artisan migrate --force
+php artisan devlog:sync-plans
+php artisan devlog:sync-roadmap
+php artisan devlog:sync-knowledge-base
 php artisan optimize:clear
 php artisan config:cache
 php artisan route:cache

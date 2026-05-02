@@ -14,6 +14,7 @@ use App\Models\WebhookEventNote;
 use App\Models\WebhookEventTask;
 use App\Models\Workspace;
 use App\Models\WorkspaceSubscription;
+use App\Support\KnowledgeBaseCatalog;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -208,31 +209,7 @@ class DevlogSeedDemo extends Command
 
     private function seedKnowledgeBase(): void
     {
-        $articles = [
-            [
-                'title' => 'Como conectar um repositorio GitHub',
-                'slug' => 'conectar-repositorio-github',
-                'category' => 'Primeiros passos',
-                'summary' => 'Configure o Payload URL, secret e eventos recomendados no GitHub.',
-                'body' => "1. Abra Settings > Webhooks no repositorio.\n2. Cole o Payload URL do workspace.\n3. Escolha application/json.\n4. Cole o secret do workspace.\n5. Envie um ping e acompanhe no dashboard.",
-                'position' => 1,
-            ],
-            [
-                'title' => 'Por que meu webhook foi rejeitado?',
-                'slug' => 'webhook-rejeitado',
-                'category' => 'Troubleshooting',
-                'summary' => 'Entenda falhas comuns de assinatura, endpoint e content type.',
-                'body' => "Verifique se o secret no GitHub e no workspace sao iguais, se o content type e application/json e se a URL publica esta acessivel por HTTPS.",
-                'position' => 2,
-            ],
-        ];
-
-        foreach ($articles as $article) {
-            KnowledgeBaseArticle::updateOrCreate(
-                ['slug' => $article['slug']],
-                $article + ['published' => true]
-            );
-        }
+        KnowledgeBaseCatalog::sync();
     }
 
     private function seedSupport(Workspace $workspace, User $user): void
@@ -476,7 +453,7 @@ class DevlogSeedDemo extends Command
 
         User::where('email', $email)->delete();
         BillingPlan::where('slug', 'growth-demo')->delete();
-        KnowledgeBaseArticle::whereIn('slug', ['conectar-repositorio-github', 'webhook-rejeitado'])->delete();
+        KnowledgeBaseArticle::whereIn('slug', collect(KnowledgeBaseCatalog::articles())->pluck('slug'))->delete();
         RoadmapItem::whereIn('title', $roadmapTitles)->delete();
     }
 }

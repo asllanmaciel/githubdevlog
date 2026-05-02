@@ -65,6 +65,9 @@ class DeployWebhookController extends Controller
         $commands = [
             ['git', 'pull', '--ff-only', 'origin', $branch],
             [$php, 'artisan', 'migrate', '--force'],
+            [$php, 'artisan', 'devlog:sync-plans'],
+            [$php, 'artisan', 'devlog:sync-roadmap'],
+            [$php, 'artisan', 'devlog:sync-knowledge-base'],
             [$php, 'artisan', 'optimize:clear'],
             [$php, 'artisan', 'config:cache'],
             [$php, 'artisan', 'route:cache'],

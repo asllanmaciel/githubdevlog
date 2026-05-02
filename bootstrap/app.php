@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
         \App\Console\Commands\DevlogSnapshotUsage::class,
         \App\Console\Commands\DevlogGenerateUsageInvoices::class,
         \App\Console\Commands\DevlogBugMonitor::class,
+        \App\Console\Commands\DevlogSyncKnowledgeBase::class,
     ])
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
