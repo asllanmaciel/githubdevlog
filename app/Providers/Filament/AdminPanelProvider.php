@@ -41,6 +41,7 @@ class AdminPanelProvider extends PanelProvider
             ->pages([
                 \App\Filament\Pages\AdminDashboard::class,
                 \App\Filament\Pages\GitHubReadiness::class,
+                \App\Filament\Pages\MercadoPagoReadiness::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([

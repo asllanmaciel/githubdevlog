@@ -32,6 +32,7 @@
           <a class="devlog-btn primary" href="{{ url('/admin/docs') }}">Docs admin</a>
           <a class="devlog-btn" href="{{ url('/admin/system-status') }}">Status sistema</a>
           <a class="devlog-btn" href="{{ url('/admin/github-readiness') }}">Setup GitHub</a>
+          <a class="devlog-btn" href="{{ url('/admin/mercado-pago-readiness') }}">Mercado Pago</a>
           <a class="devlog-btn" href="{{ url('/admin/bug-monitor') }}">Monitor de bugs</a>
           <a class="devlog-btn" href="{{ url('/admin/incident-center') }}">Incidentes</a>
         </div>
