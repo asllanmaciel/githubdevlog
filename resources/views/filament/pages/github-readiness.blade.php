@@ -88,6 +88,10 @@
 
       <aside class="gh-card">
         <div class="kicker">Setup GitHub App</div>
+        <div class="metric" style="margin-bottom:14px">
+          <div class="value">{{ $setup['percent'] }}%</div>
+          <div class="label">setup oficial GitHub App</div>
+        </div>
         <div class="setup-list">
           @foreach ($setup['steps'] as $step)
             <div class="setup-item {{ $step['done'] ? 'done' : '' }}">
@@ -98,6 +102,11 @@
         </div>
 
         <div class="kicker" style="margin-top:18px">Valores para colar no GitHub</div>
+        <div class="copy-row">
+          <strong>Nome</strong>
+          <code>{{ $setup['app_profile']['name'] }}</code>
+          <div class="label">{{ $setup['app_profile']['description'] }}</div>
+        </div>
         <div class="copy-grid">
           @foreach ($setup['urls'] as $url)
             <div class="copy-row">
@@ -109,6 +118,10 @@
         </div>
 
         <div class="kicker" style="margin-top:18px">Variaveis .env</div>
+        <div class="copy-row">
+          <strong>Snippet sugerido</strong>
+          <code style="white-space:pre-wrap">{{ $setup['env_snippet'] }}</code>
+        </div>
         <div class="setup-list">
           @foreach ($setup['env'] as $env)
             <div class="setup-item {{ $env['done'] ? 'done' : '' }}">

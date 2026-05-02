@@ -21,7 +21,10 @@ class DevlogGithubAppCheck extends Command
             'ok' => $pendingEnv->isEmpty() && $pendingSteps->isEmpty(),
             'pending_env' => $pendingEnv,
             'pending_steps' => $pendingSteps,
+            'percent' => $setup['percent'],
             'urls' => $setup['urls'],
+            'app_profile' => $setup['app_profile'],
+            'env_snippet' => $setup['env_snippet'],
             'permissions' => $setup['permissions'],
             'events' => $setup['events'],
         ];
@@ -54,6 +57,10 @@ class DevlogGithubAppCheck extends Command
 
         $this->newLine();
         $this->line('Eventos recomendados: '.implode(', ', $setup['events']));
+
+        $this->newLine();
+        $this->line('Snippet .env sugerido:');
+        $this->line($setup['env_snippet']);
 
         if ($pendingSteps->isNotEmpty()) {
             $this->newLine();

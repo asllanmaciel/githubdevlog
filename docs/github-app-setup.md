@@ -19,6 +19,19 @@ Em producao, todas precisam usar HTTPS e dominio oficial.
 
 ## Variaveis obrigatorias
 
+O painel `Prontidao GitHub` tambem gera um snippet sugerido. Em producao, a estrutura esperada e:
+
+```env
+GITHUB_APP_ID=
+GITHUB_APP_CLIENT_ID=
+GITHUB_APP_CLIENT_SECRET=
+GITHUB_APP_WEBHOOK_SECRET=
+GITHUB_APP_PRIVATE_KEY_PATH=/home/ghdevlog/app/storage/app/private/github-app.pem
+GITHUB_APP_WEBHOOK_URL="https://ghdevlog.com/webhooks/github-app"
+GITHUB_APP_CALLBACK_URL="https://ghdevlog.com/github/callback"
+GITHUB_APP_SETUP_URL=
+```
+
 - `GITHUB_APP_ID`
 - `GITHUB_APP_CLIENT_ID`
 - `GITHUB_APP_CLIENT_SECRET`
@@ -53,8 +66,30 @@ O preflight strict so deve ficar sem bloqueadores quando:
 1. App ID estiver no `.env`.
 2. OAuth GitHub estiver configurado.
 3. Webhook secret do GitHub App estiver configurado.
-4. Houver ao menos uma instalacao vinculada a um workspace.
-5. Ambiente de producao estiver com `APP_ENV=production`, `APP_DEBUG=false`, Mercado Pago production e dominio HTTPS oficial.
+4. A chave privada `.pem` existir fora de `public_html`.
+5. Houver ao menos uma instalacao vinculada a um workspace.
+6. Ambiente de producao estiver com `APP_ENV=production`, `APP_DEBUG=false`, Mercado Pago production e dominio HTTPS oficial.
+
+## Onde salvar a chave privada
+
+Crie um diretorio fora da pasta publica:
+
+```bash
+mkdir -p /home/ghdevlog/app/storage/app/private
+chmod 700 /home/ghdevlog/app/storage/app/private
+```
+
+Depois salve a private key baixada do GitHub em:
+
+```text
+/home/ghdevlog/app/storage/app/private/github-app.pem
+```
+
+E ajuste permissoes:
+
+```bash
+chmod 600 /home/ghdevlog/app/storage/app/private/github-app.pem
+```
 
 ## Diagnostico via terminal
 
