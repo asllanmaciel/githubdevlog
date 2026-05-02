@@ -1,22 +1,3 @@
-@php
-  try {
-    $report = \App\Support\SystemHealth::report();
-  } catch (\Throwable $exception) {
-    $report = [
-      'ok' => false,
-      'app' => config('app.name'),
-      'checked_at' => now()->toIso8601String(),
-      'checks' => [
-        'system_status' => [
-          'ok' => false,
-          'label' => 'Status nao verificavel',
-          'detail' => $exception->getMessage(),
-        ],
-      ],
-    ];
-  }
-@endphp
-
 <x-filament-panels::page>
   <style>
     .status-page{--ink:#f3f7fb;--muted:#9aa9b5;--line:#273544;--blue:#50b8ff;--green:#69e39a;--red:#ff7b7b;color:var(--ink)}
