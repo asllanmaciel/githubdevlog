@@ -37,6 +37,17 @@ class DevlogSyncPlans extends Command
                 'features' => ['10.000 eventos/mes', '25 analises AI avancadas/mes', 'Retencao de 30 dias'],
             ],
             [
+                'slug' => 'teste-mp',
+                'name' => 'Teste Mercado Pago',
+                'price_cents' => 100,
+                'event_retention_days' => 7,
+                'monthly_event_limit' => 100,
+                'monthly_ai_analysis_limit' => 1,
+                'ai_analysis_overage_price_cents' => 0,
+                'overage_price_cents' => 0,
+                'features' => ['Checkout real de baixo valor', 'Plano temporario para validar webhook', 'Retencao de 7 dias'],
+            ],
+            [
                 'slug' => 'growth-demo',
                 'name' => 'Growth Demo',
                 'price_cents' => 4900,
