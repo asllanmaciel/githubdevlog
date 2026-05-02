@@ -17,11 +17,14 @@ return Application::configure(basePath: dirname(__DIR__))
         \App\Console\Commands\DevlogCheckUsageLimits::class,
         \App\Console\Commands\DevlogSnapshotUsage::class,
         \App\Console\Commands\DevlogGenerateUsageInvoices::class,
+        \App\Console\Commands\DevlogBugMonitor::class,
     ])
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
         $middleware->validateCsrfTokens(except: ['webhooks/*']);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->report(function (\Throwable $exception): void {
+            \App\Support\BugMonitor::capture($exception, request());
+        });
     })->create();
