@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use App\Support\GitHubAppSetup;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -33,5 +34,20 @@ class GitHubAppSetupTest extends TestCase
         $this->artisan('devlog:github-app-check --json')
             ->assertExitCode(1)
             ->expectsOutputToContain('env_snippet');
+    }
+
+    public function test_super_admin_can_open_github_readiness_page(): void
+    {
+        $admin = User::create([
+            'name' => 'Admin',
+            'email' => 'admin-github@example.com',
+            'password' => 'password',
+            'is_super_admin' => true,
+        ]);
+
+        $this->actingAs($admin)
+            ->get('/admin/github-readiness')
+            ->assertOk()
+            ->assertSee('Prontidao para lancamento oficial', false);
     }
 }

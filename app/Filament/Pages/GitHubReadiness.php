@@ -9,19 +9,19 @@ use UnitEnum;
 
 class GitHubReadiness extends Page
 {
+    protected static ?string $slug = 'github-readiness';
+
     protected static string $routePath = '/github-readiness';
 
     protected static ?string $title = 'Prontidao GitHub';
 
     protected static ?string $navigationLabel = 'Prontidao GitHub';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Lancamento';
+    protected static string | UnitEnum | null $navigationGroup = 'Operacao';
 
     protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedRocketLaunch;
 
-    protected static bool $shouldRegisterNavigation = false;
-
-    protected static ?int $navigationSort = 10;
+    protected static ?int $navigationSort = 3;
 
     protected string $view = 'filament.pages.github-readiness';
 }
