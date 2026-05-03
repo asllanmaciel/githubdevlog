@@ -278,6 +278,9 @@
         radial-gradient(circle at 100% 0%, rgba(105, 227, 154, .1), transparent 28%),
         linear-gradient(120deg, #071018 0%, #09131b 48%, #07150f 100%);
     }
+    body.theme-light.app-dashboard {
+      background:linear-gradient(180deg,#f6f9fc 0%,#edf3f8 100%);
+    }
     body.app-dashboard .wrap {
       max-width: none;
       width: 100%;
@@ -297,6 +300,11 @@
       box-shadow:22px 0 80px rgba(0,0,0,.26);
       overflow:auto;
       z-index:6;
+    }
+    body.theme-light .app-sidebar {
+      background:linear-gradient(180deg, rgba(255,255,255,.98), rgba(239,246,251,.98));
+      border-right-color:var(--line);
+      box-shadow:18px 0 70px rgba(31,58,78,.08);
     }
     .app-sidebar .brand { width:100%; padding-bottom:16px; margin-bottom:16px; border-bottom:1px solid rgba(39,53,68,.86); }
     .app-sidebar .brand img { width:42px; height:42px; filter:drop-shadow(0 14px 28px rgba(80,184,255,.22)); }
@@ -338,6 +346,12 @@
       font-weight:850;
       text-align:left;
     }
+    body.theme-light .app-user-card,
+    body.theme-light .app-menu a,
+    body.theme-light .app-menu button {
+      background:#fff;
+      border-color:var(--line);
+    }
     .app-menu a:hover,
     .app-menu button:hover { border-color:var(--blue); color:var(--ink); }
     .app-menu a.active { color:#061018; border-color:transparent; background:linear-gradient(135deg,var(--blue),var(--green)); }
@@ -362,6 +376,21 @@
     .app-topbar-title strong { display:block; font-size:18px; line-height:1.15; }
     .app-topbar-title span { color:var(--muted); font-size:13px; }
     .app-topbar-actions { display:flex; align-items:center; justify-content:flex-end; gap:10px; flex-wrap:wrap; }
+    .top-plan-chip {
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:7px 10px;
+      color:var(--muted);
+      background:rgba(11,17,24,.58);
+      font-size:12px;
+      font-weight:850;
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
+      max-width:240px;
+    }
+    .top-plan-chip strong { color:var(--ink); font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    body.theme-light .top-plan-chip { background:#fff; }
     .icon-btn {
       width:42px;
       height:42px;
@@ -429,6 +458,22 @@
       background: linear-gradient(180deg, rgba(15, 25, 35, .94), rgba(8, 15, 22, .9));
       border-color: rgba(56, 77, 96, .92);
       box-shadow: 0 24px 80px rgba(0, 0, 0, .22);
+    }
+    body.theme-light.app-dashboard .cardx,
+    body.theme-light.app-dashboard .metric,
+    body.theme-light.app-dashboard .event-card,
+    body.theme-light.app-dashboard .control-card,
+    body.theme-light.app-dashboard .insight-card,
+    body.theme-light.app-dashboard .summary-cell,
+    body.theme-light.app-dashboard .quick-action,
+    body.theme-light.app-dashboard .endpoint-box,
+    body.theme-light.app-dashboard pre,
+    body.theme-light.app-dashboard input,
+    body.theme-light.app-dashboard textarea {
+      background:#fff;
+      border-color:var(--line);
+      box-shadow:0 18px 60px rgba(31,58,78,.08);
+      color:var(--ink);
     }
     body.app-dashboard .metric-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
     body.app-dashboard .dashboard-grid { grid-template-columns: 410px minmax(0, 1fr); gap: 18px; }
@@ -722,7 +767,7 @@
               <span>{{ $dashboardWorkspace?->name ?? 'Workspace' }} · plano {{ $dashboardPlanName }} · {{ $dashboardSubscriptionStatus }}</span>
             </div>
             <div class="app-topbar-actions">
-              <a class="btnx primary" href="{{ route('dashboard', ['section' => 'billing']) }}">Plano {{ $dashboardPlanName }}</a>
+              <a class="top-plan-chip" href="{{ route('dashboard', ['section' => 'billing']) }}"><span>Plano</span><strong>{{ $dashboardPlanName }}</strong></a>
               <a class="btnx quiet" href="{{ route('dashboard', ['section' => 'github']) }}">Configurar GitHub</a>
               <details class="top-dropdown">
                 <summary class="icon-btn" title="Notificacoes">

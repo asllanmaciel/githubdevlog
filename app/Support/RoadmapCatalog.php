@@ -25,6 +25,11 @@ class RoadmapCatalog
                 $roadmapItem->completed_at = $item['completed_at'];
             }
 
+            if ($roadmapItem->exists && $item['status'] === 'done' && $roadmapItem->status !== 'done') {
+                $roadmapItem->status = 'done';
+                $roadmapItem->completed_at ??= now();
+            }
+
             if ($roadmapItem->isDirty()) {
                 $roadmapItem->save();
                 $synced++;
@@ -46,7 +51,7 @@ class RoadmapCatalog
             self::item('Arquitetura tecnica de referencia', 'Fundacao do sistema', 'done', 'alta', 'Padronizar camadas de dominio, servicos, observabilidade e contratos para evoluir sem retrabalho.', 20),
             self::item('Roteiro de dados e privacidade por default', 'Fundacao do sistema', 'done', 'alta', 'Definir retention policy, LGPD-by-design, anonimizacao e trilha de auditoria para dados sensiveis.', 30),
             self::item('Roadmap visual e governanca de prioridades', 'Governanca', 'done', 'media', 'Criar cadencia de revisao, criterios de entrada e saida e dashboard unico de progresso por iniciativa.', 40),
-            self::item('Metricas de produto com decisoes acionaveis', 'Observabilidade e operacao', 'pending', 'alta', 'Implementar eventos de negocio, funil de conversao e alertas de risco para identificar regressoes cedo.', 50),
+            self::item('Metricas de produto com decisoes acionaveis', 'Observabilidade e operacao', 'done', 'alta', 'Centralizar funil, ativacao, receita, webhooks, billing e riscos operacionais em um painel acionavel.', 50),
             self::item('MVP administrativo com acessibilidade e clareza', 'Produto e UX', 'pending', 'alta', 'Reforcar linguagem, contraste, estados vazios e mensagens de erro para reduzir atrito operacional.', 60),
             self::item('Fluxo de autenticacao robusto e protecao antifraude', 'Seguranca', 'pending', 'alta', 'Harden de sessoes, protecao contra abuso e trilha de eventos suspeitos com resposta guiada.', 70),
             self::item('Hardening de webhooks e tolerancia a falhas', 'Confiabilidade', 'pending', 'alta', 'Adicionar retries, idempotencia, dead-letter e reprocessamento controlado para eventos criticos.', 80),
@@ -58,7 +63,7 @@ class RoadmapCatalog
             self::item('Plano de internacionalizacao e localizacao', 'Produto e UX', 'pending', 'media', 'Suportar fusos, datas, idioma e suporte multilingue sem perder consistencia de design.', 140),
             self::item('Programa de sucesso do cliente e retencao', 'Crescimento', 'pending', 'media', 'Mapear marcos de retencao, campanhas de reativacao e upgrade com valor percebido.', 150),
             self::item('Escala de infraestrutura e custo previsivel', 'Escalabilidade', 'pending', 'alta', 'Separar workloads criticos, aplicar caching e criar alertas de custo por componente.', 160),
-            self::item('Modelo de assinatura com valor percebido por uso', 'Monetizacao', 'pending', 'alta', 'Ajustar planos com teto claro, limites justos e upsell transparente.', 170),
+            self::item('Modelo de assinatura com valor percebido por uso', 'Monetizacao', 'done', 'alta', 'Operar checkout Mercado Pago em producao, plano de teste, assinatura visivel no dashboard e historico de pagamento por workspace.', 170),
             self::item('Certificacao GitHub e prova de maturidade', 'Go-live', 'pending', 'alta', 'Completar dependencias de lancamento, evidencias e documentacao final para submissao.', 180),
             self::item('Lancamento publico com monitoramento 24/7', 'Go-live', 'pending', 'alta', 'Ativar monitoria, guardrails de seguranca e comunicacao publica durante o go-live.', 190),
         ];
