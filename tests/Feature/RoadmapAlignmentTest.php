@@ -21,7 +21,7 @@ class RoadmapAlignmentTest extends TestCase
 
         $this->assertGreaterThan(0, $report['local_pending']->count());
         $this->assertGreaterThan(0, $report['external_pending']->count());
-        $this->assertSame('Catalogo de qualidade de codigo e revisao continua', $report['next_focus']->first()['record']->title);
+        $this->assertSame('Estrategia de APIs publicas para parceiros', $report['next_focus']->first()['record']->title);
     }
 
     public function test_super_admin_can_see_aligned_roadmap_evidence(): void

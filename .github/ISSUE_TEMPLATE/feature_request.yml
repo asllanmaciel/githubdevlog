@@ -1,0 +1,42 @@
+name: Melhoria
+description: Proponha uma melhoria de produto, operação ou engenharia.
+title: "feat: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problema
+      description: Qual dor ou oportunidade esta melhoria resolve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposta
+      description: Descreva a solução esperada de forma objetiva.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Critérios de aceite
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Área
+      options:
+        - Produto
+        - Billing
+        - GitHub App
+        - Webhooks
+        - Segurança
+        - Operação
+        - Documentação
+    validations:
+      required: true

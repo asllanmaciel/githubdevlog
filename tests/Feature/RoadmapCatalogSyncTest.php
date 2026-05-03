@@ -29,6 +29,7 @@ class RoadmapCatalogSyncTest extends TestCase
         $this->assertSame('done', RoadmapItem::where('title', 'Fluxo de autenticacao robusto e protecao antifraude')->value('status'));
         $this->assertSame('done', RoadmapItem::where('title', 'Camada de eventos AI de baixa latencia')->value('status'));
         $this->assertSame('done', RoadmapItem::where('title', 'Roteiro de onboarding inteligente')->value('status'));
+        $this->assertSame('done', RoadmapItem::where('title', 'Catalogo de qualidade de codigo e revisao continua')->value('status'));
         $this->assertSame('done', RoadmapItem::where('title', 'Modelo de assinatura com valor percebido por uso')->value('status'));
         $this->assertSame('done', RoadmapItem::where('title', 'Hardening de webhooks e tolerancia a falhas')->value('status'));
     }

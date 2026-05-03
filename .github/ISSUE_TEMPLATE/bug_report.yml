@@ -1,0 +1,41 @@
+name: Bug
+description: Registre um problema reproduzível no produto.
+title: "bug: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: Contexto
+      description: Onde o problema acontece e qual era o comportamento esperado?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Passos para reproduzir
+      description: Liste os passos mínimos.
+      placeholder: |
+        1. Acesse ...
+        2. Clique em ...
+        3. Veja ...
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidências
+      description: Logs, prints, URL, status HTTP, stack trace ou payload sanitizado.
+    validations:
+      required: false
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severidade
+      options:
+        - baixa
+        - média
+        - alta
+        - crítica
+    validations:
+      required: true
