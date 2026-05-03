@@ -5,7 +5,7 @@ Use este checklist antes de divulgar uma mudança ou abrir o produto para novos 
 ## Código
 
 - [ ] PR revisado ou mudança pequena justificada.
-- [ ] Pint rodado nos arquivos PHP alterados, ou pendência de baseline registrada.
+- [ ] `vendor/bin/pint --test` passou.
 - [ ] `php artisan test` passou.
 - [ ] `php artisan route:cache` passou.
 - [ ] `php artisan view:cache` passou.

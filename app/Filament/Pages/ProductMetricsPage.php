@@ -17,9 +17,9 @@ class ProductMetricsPage extends Page
 
     protected static ?string $navigationLabel = 'Metricas de produto';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Operacao';
+    protected static string|UnitEnum|null $navigationGroup = 'Operacao';
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedChartBarSquare;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChartBarSquare;
 
     protected static ?int $navigationSort = 5;
 

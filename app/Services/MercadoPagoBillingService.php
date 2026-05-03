@@ -147,8 +147,8 @@ class MercadoPagoBillingService
         MercadoPagoConfig::setAccessToken((string) config('services.mercado_pago.access_token'));
         MercadoPagoConfig::setRuntimeEnviroment(MercadoPagoConfig::SERVER);
 
-        $client = new PreferenceClient();
-        $requestOptions = new RequestOptions();
+        $client = new PreferenceClient;
+        $requestOptions = new RequestOptions;
         $requestOptions->setCustomHeaders([
             'X-Idempotency-Key: '.(string) Str::uuid(),
         ]);
@@ -193,8 +193,8 @@ class MercadoPagoBillingService
         MercadoPagoConfig::setAccessToken((string) config('services.mercado_pago.access_token'));
         MercadoPagoConfig::setRuntimeEnviroment(MercadoPagoConfig::SERVER);
 
-        $client = new PreferenceClient();
-        $requestOptions = new RequestOptions();
+        $client = new PreferenceClient;
+        $requestOptions = new RequestOptions;
         $requestOptions->setCustomHeaders([
             'X-Idempotency-Key: usage-invoice-'.$invoice->id.'-'.$invoice->period,
         ]);
@@ -245,7 +245,7 @@ class MercadoPagoBillingService
         MercadoPagoConfig::setAccessToken((string) config('services.mercado_pago.access_token'));
         MercadoPagoConfig::setRuntimeEnviroment(MercadoPagoConfig::SERVER);
 
-        return (new PaymentClient())->get((int) $paymentId);
+        return (new PaymentClient)->get((int) $paymentId);
     }
 
     public function parseExternalReference(?string $externalReference): array

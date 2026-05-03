@@ -17,9 +17,9 @@ class AuthSecurityPage extends Page
 
     protected static ?string $navigationLabel = 'Seguranca de login';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Seguranca';
+    protected static string|UnitEnum|null $navigationGroup = 'Seguranca';
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedShieldCheck;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShieldCheck;
 
     protected static ?int $navigationSort = 4;
 

@@ -16,9 +16,9 @@ class Roadmap extends Page
 
     protected static ?string $navigationLabel = 'Roadmap visual';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Produto';
+    protected static string|UnitEnum|null $navigationGroup = 'Produto';
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedPresentationChartLine;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedPresentationChartLine;
 
     protected static ?int $navigationSort = 60;
 

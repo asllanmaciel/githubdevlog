@@ -15,9 +15,9 @@ class OverageBillingPreview extends Page
 
     protected static ?string $navigationLabel = 'Excedentes';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Financeiro';
+    protected static string|UnitEnum|null $navigationGroup = 'Financeiro';
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedBanknotes;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBanknotes;
 
     protected static ?int $navigationSort = 21;
 

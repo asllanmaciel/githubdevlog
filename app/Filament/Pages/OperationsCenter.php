@@ -17,9 +17,9 @@ class OperationsCenter extends Page
 
     protected static ?string $navigationLabel = 'Operação';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Operação';
+    protected static string|UnitEnum|null $navigationGroup = 'Operação';
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedCommandLine;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCommandLine;
 
     protected static ?int $navigationSort = 1;
 

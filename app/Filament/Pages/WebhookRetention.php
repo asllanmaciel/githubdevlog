@@ -15,9 +15,9 @@ class WebhookRetention extends Page
 
     protected static ?string $navigationLabel = 'Retencao de webhooks';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Operacao';
+    protected static string|UnitEnum|null $navigationGroup = 'Operacao';
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedArchiveBox;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedArchiveBox;
 
     protected static ?int $navigationSort = 31;
 

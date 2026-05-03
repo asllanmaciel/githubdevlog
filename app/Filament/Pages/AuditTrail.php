@@ -15,9 +15,9 @@ class AuditTrail extends Page
 
     protected static ?string $navigationLabel = 'Trilha de auditoria';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Operacao';
+    protected static string|UnitEnum|null $navigationGroup = 'Operacao';
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedClipboardDocumentCheck;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentCheck;
 
     protected static ?int $navigationSort = 34;
 

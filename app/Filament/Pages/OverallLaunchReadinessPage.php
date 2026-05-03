@@ -15,9 +15,9 @@ class OverallLaunchReadinessPage extends Page
 
     protected static ?string $navigationLabel = 'Launch Overview';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Launch';
+    protected static string|UnitEnum|null $navigationGroup = 'Launch';
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedChartBar;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChartBar;
 
     protected static bool $shouldRegisterNavigation = false;
 

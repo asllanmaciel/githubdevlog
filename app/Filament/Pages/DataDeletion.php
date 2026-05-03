@@ -15,9 +15,9 @@ class DataDeletion extends Page
 
     protected static ?string $navigationLabel = 'Exclusao de dados';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Operacao';
+    protected static string|UnitEnum|null $navigationGroup = 'Operacao';
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedTrash;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTrash;
 
     protected static ?int $navigationSort = 33;
 

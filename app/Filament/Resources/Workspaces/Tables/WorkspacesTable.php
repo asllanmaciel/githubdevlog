@@ -9,6 +9,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 
 class WorkspacesTable
 {
@@ -52,7 +53,7 @@ class WorkspacesTable
                     ->requiresConfirmation()
                     ->action(function ($record) {
                         $record->update([
-                            'webhook_secret' => 'dlog_'.\Illuminate\Support\Str::random(48),
+                            'webhook_secret' => 'dlog_'.Str::random(48),
                             'webhook_secret_rotated_at' => now(),
                         ]);
 

@@ -15,7 +15,7 @@
 - [ ] Rodei `php artisan test`
 - [ ] Rodei `php artisan route:cache`
 - [ ] Rodei `php artisan view:cache`
-- [ ] Rodei Pint nos arquivos PHP alterados ou justifiquei por que não se aplica
+- [ ] Rodei `vendor/bin/pint --test`
 - [ ] Verifiquei impacto em produção, migrações e cache
 - [ ] Atualizei docs/roadmap quando necessário
 

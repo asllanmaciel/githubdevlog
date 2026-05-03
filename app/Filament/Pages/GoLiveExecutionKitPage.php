@@ -15,9 +15,9 @@ class GoLiveExecutionKitPage extends Page
 
     protected static ?string $navigationLabel = 'Kit de Go-live';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Launch';
+    protected static string|UnitEnum|null $navigationGroup = 'Launch';
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedRocketLaunch;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRocketLaunch;
 
     protected static bool $shouldRegisterNavigation = false;
 

@@ -17,9 +17,9 @@ class WebhookHardeningPage extends Page
 
     protected static ?string $navigationLabel = 'Hardening de webhooks';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Operacao';
+    protected static string|UnitEnum|null $navigationGroup = 'Operacao';
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedShieldCheck;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShieldCheck;
 
     protected static ?int $navigationSort = 6;
 

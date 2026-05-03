@@ -15,9 +15,9 @@ class SecurityCenter extends Page
 
     protected static ?string $navigationLabel = 'Centro de seguranca';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Operacao';
+    protected static string|UnitEnum|null $navigationGroup = 'Operacao';
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedShieldCheck;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShieldCheck;
 
     protected static ?int $navigationSort = 2;
 

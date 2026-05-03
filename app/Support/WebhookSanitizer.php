@@ -28,6 +28,7 @@ class WebhookSanitizer
         foreach ($data as $key => $value) {
             if (self::isSensitiveKey((string) $key)) {
                 $data[$key] = '[redacted]';
+
                 continue;
             }
 

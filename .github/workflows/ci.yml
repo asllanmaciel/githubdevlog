@@ -50,6 +50,9 @@ jobs:
       - name: Build frontend assets
         run: npm run build
 
+      - name: Check PHP style
+        run: vendor/bin/pint --test
+
       - name: Run tests
         env:
           DB_CONNECTION: sqlite

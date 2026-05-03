@@ -15,9 +15,9 @@ class ReleaseEvidenceReadinessPage extends Page
 
     protected static ?string $navigationLabel = 'Evidências de release';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Launch';
+    protected static string|UnitEnum|null $navigationGroup = 'Launch';
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedClipboardDocumentCheck;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentCheck;
 
     protected static bool $shouldRegisterNavigation = false;
 

@@ -15,9 +15,9 @@ class IncidentCenter extends Page
 
     protected static ?string $navigationLabel = 'Centro de incidentes';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Operacao';
+    protected static string|UnitEnum|null $navigationGroup = 'Operacao';
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedExclamationTriangle;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedExclamationTriangle;
 
     protected static ?int $navigationSort = 35;
 

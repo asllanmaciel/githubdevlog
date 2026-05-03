@@ -15,9 +15,9 @@ class SupportOperations extends Page
 
     protected static ?string $navigationLabel = 'Operacao de suporte';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Operacao';
+    protected static string|UnitEnum|null $navigationGroup = 'Operacao';
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedLifebuoy;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedLifebuoy;
 
     protected static ?int $navigationSort = 34;
 

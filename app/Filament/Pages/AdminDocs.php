@@ -15,9 +15,9 @@ class AdminDocs extends Page
 
     protected static ?string $navigationLabel = 'Docs admin';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Produto';
+    protected static string|UnitEnum|null $navigationGroup = 'Produto';
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedDocumentText;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentText;
 
     protected static ?int $navigationSort = 70;
 

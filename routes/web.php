@@ -1,7 +1,8 @@
 <?php
 
-use App\Models\BillingPlan;
+use App\Http\Controllers\DeployWebhookController;
 use App\Models\BillingEvent;
+use App\Models\BillingPlan;
 use App\Models\GithubInstallation;
 use App\Models\KnowledgeBaseArticle;
 use App\Models\Notification;
@@ -9,6 +10,7 @@ use App\Models\RoadmapItem;
 use App\Models\SecretRotation;
 use App\Models\SupportTicket;
 use App\Models\UsageInvoice;
+use App\Models\User;
 use App\Models\WebhookEvent;
 use App\Models\WebhookEventNote;
 use App\Models\WebhookEventTask;
@@ -16,12 +18,12 @@ use App\Models\Workspace;
 use App\Models\WorkspaceInvite;
 use App\Models\WorkspaceMember;
 use App\Models\WorkspaceSubscription;
-use App\Http\Controllers\DeployWebhookController;
 use App\Services\MercadoPagoBillingService;
 use App\Support\AuditTrail;
-use App\Support\SystemHealth;
-use App\Support\SupportSla;
+use App\Support\PublicChangelog;
 use App\Support\SubscriptionLifecycle;
+use App\Support\SupportSla;
+use App\Support\SystemHealth;
 use App\Support\WebhookDeliveryHardening;
 use App\Support\WebhookEventAiAnalysisService;
 use App\Support\WebhookSanitizer;
@@ -58,7 +60,7 @@ Route::get('/docs/admin', fn () => redirect('/admin/docs'))->name('docs.admin');
 Route::get('/github', fn () => view('github'))->name('github');
 Route::get('/contact', fn () => view('contact'))->name('contact');
 Route::get('/changelog', fn () => view('changelog', [
-    'entries' => \App\Support\PublicChangelog::entries(),
+    'entries' => PublicChangelog::entries(),
 ]))->name('changelog');
 Route::get('/pricing', function () {
     $plans = BillingPlan::where('active', true)
@@ -101,7 +103,7 @@ Route::get('/robots.txt', function () {
         "Allow: /\n".
         "Disallow: /admin\n".
         "Disallow: /dashboard\n".
-        "Sitemap: ".route('sitemap')."\n",
+        'Sitemap: '.route('sitemap')."\n",
         200,
         ['Content-Type' => 'text/plain'],
     );
@@ -134,7 +136,7 @@ Route::middleware('guest')->group(function () {
             'workspace' => ['required', 'string', 'max:120'],
         ]);
 
-        $user = \App\Models\User::create([
+        $user = User::create([
             'name' => $data['name'],
             'email' => strtolower($data['email']),
             'password' => $data['password'],
@@ -250,7 +252,6 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
 
         return view('event-show', compact('event'));
     })->name('dashboard.event');
-
 
     Route::post('/invites/{token}/accept', function (string $token) {
         $invite = WorkspaceInvite::where('token', $token)->with('workspace')->firstOrFail();
@@ -374,7 +375,9 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
 
         $payload = json_decode($request->input('payload', '{}'), true);
 
-        if (! is_array($payload)) return back()->withErrors(['payload' => 'Payload JSON invalido.']);
+        if (! is_array($payload)) {
+            return back()->withErrors(['payload' => 'Payload JSON invalido.']);
+        }
 
         $event = $workspace->webhookEvents()->create([
             'source' => 'manual-test', 'event_name' => $payload['event'] ?? 'push', 'action' => $payload['action'] ?? null,
@@ -401,7 +404,7 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
         try {
             $preference = $billing->createCheckoutPreference($workspace, $plan, Auth::user()->email);
             $checkoutUrl = $billing->checkoutUrl($preference);
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             return redirect()->route('dashboard')->withErrors([
                 'billing' => $exception->getMessage(),
             ]);
@@ -437,7 +440,6 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
 
         return redirect()->away($checkoutUrl);
     })->name('billing.checkout');
-
 
     Route::post('/billing/subscription/cancel', function (Request $request) {
         $workspace = Auth::user()->workspaces()->firstOrFail();
@@ -548,7 +550,7 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
 
         try {
             $analysis = $ai->analyze($event, $workspace, $mode);
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             $event->update(['ai_error' => $exception->getMessage()]);
 
             return redirect()->route('dashboard.event', $event)->withErrors([
@@ -880,7 +882,7 @@ Route::post('/webhooks/mercado-pago', function (Request $request, MercadoPagoBil
             $workspaceId = $parsed['workspace_id'];
             $billingPlanId = $parsed['billing_plan_id'];
             $usageInvoiceId = $parsed['usage_invoice_id'];
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             $billingEvent->update([
                 'status' => 'pending_lookup',
                 'error_message' => app()->isLocal() ? $exception->getMessage() : 'Pagamento ainda nao pode ser consultado.',
@@ -1015,5 +1017,3 @@ Route::post('/webhooks/mercado-pago', function (Request $request, MercadoPagoBil
         'billing_event_id' => $billingEvent->id,
     ]);
 })->name('webhooks.mercado-pago');
-
-

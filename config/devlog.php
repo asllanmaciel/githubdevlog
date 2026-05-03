@@ -16,4 +16,3 @@ return [
         'plausible_domain' => env('DEVLOG_PLAUSIBLE_DOMAIN'),
     ],
 ];
-

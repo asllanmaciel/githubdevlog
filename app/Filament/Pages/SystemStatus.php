@@ -17,9 +17,9 @@ class SystemStatus extends Page
 
     protected static ?string $navigationLabel = 'Status do sistema';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Operacao';
+    protected static string|UnitEnum|null $navigationGroup = 'Operacao';
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedSignal;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedSignal;
 
     protected static ?int $navigationSort = 1;
 

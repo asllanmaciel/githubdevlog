@@ -33,18 +33,11 @@ Todo PR deve informar:
 Antes de mergear em `master`, validar:
 
 ```bash
+vendor/bin/pint --test
 php artisan test
 php artisan route:cache
 php artisan view:cache
 ```
-
-Para arquivos PHP novos ou alterados, rode Pint no escopo da mudança:
-
-```bash
-vendor/bin/pint app/Support/MeuArquivo.php tests/Feature/MeuTeste.php
-```
-
-O baseline geral de Pint ainda precisa ser normalizado em uma entrega separada antes de virar bloqueio obrigatório no CI.
 
 Quando o ambiente local usa cache em banco e o MySQL não está ativo, use:
 

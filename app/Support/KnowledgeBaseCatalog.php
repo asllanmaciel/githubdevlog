@@ -45,7 +45,7 @@ class KnowledgeBaseCatalog
                 'slug' => 'webhook-rejeitado',
                 'category' => 'webhooks',
                 'summary' => 'Entenda falhas comuns de assinatura, endpoint, content type e limite mensal.',
-                'body' => "Verifique se o secret no GitHub e no workspace são iguais, se o content type é application/json, se a URL pública usa HTTPS e se o workspace ainda tem limite mensal disponível.",
+                'body' => 'Verifique se o secret no GitHub e no workspace são iguais, se o content type é application/json, se a URL pública usa HTTPS e se o workspace ainda tem limite mensal disponível.',
                 'position' => 20,
             ],
             [
@@ -53,7 +53,7 @@ class KnowledgeBaseCatalog
                 'slug' => 'seguranca-dos-payloads',
                 'category' => 'security',
                 'summary' => 'Resumo de validação HMAC, isolamento por workspace, sanitização e retenção.',
-                'body' => "O DevLog valida assinaturas GitHub com HMAC SHA-256, isola eventos por workspace, sanitiza payloads sensíveis antes de armazenar e aplica retenção conforme o plano ativo.",
+                'body' => 'O DevLog valida assinaturas GitHub com HMAC SHA-256, isola eventos por workspace, sanitiza payloads sensíveis antes de armazenar e aplica retenção conforme o plano ativo.',
                 'position' => 30,
             ],
             [
@@ -61,7 +61,7 @@ class KnowledgeBaseCatalog
                 'slug' => 'planos-limites-uso-mensal',
                 'category' => 'billing',
                 'summary' => 'Como acompanhar eventos usados, limite mensal, AI avançada e retenção.',
-                'body' => "Cada plano define limite mensal de eventos, retenção e cota de análises AI avançadas. O dashboard mostra consumo, eventos restantes e sinais de upgrade antes de bloquear novos webhooks.",
+                'body' => 'Cada plano define limite mensal de eventos, retenção e cota de análises AI avançadas. O dashboard mostra consumo, eventos restantes e sinais de upgrade antes de bloquear novos webhooks.',
                 'position' => 40,
             ],
             [
@@ -69,7 +69,7 @@ class KnowledgeBaseCatalog
                 'slug' => 'checklist-github-app-oficial',
                 'category' => 'github-app',
                 'summary' => 'URLs, permissões e eventos recomendados para publicar a integração oficial.',
-                'body' => "Use callback /github/callback, webhook /webhooks/github-app, permissões read-only e eventos push, pull_request, workflow_run, issues, installation e installation_repositories.",
+                'body' => 'Use callback /github/callback, webhook /webhooks/github-app, permissões read-only e eventos push, pull_request, workflow_run, issues, installation e installation_repositories.',
                 'position' => 50,
             ],
         ];

@@ -58,4 +58,3 @@ class GitHubProgramReadiness
         return compact('title', 'done', 'detail', 'area');
     }
 }
-

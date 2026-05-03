@@ -31,12 +31,14 @@ class DevlogCheckUsageLimits extends Command
                 if ($report['limit_reached']) {
                     $summary['blocked']++;
                     $summary['notifications_created'] += $this->createAlert($workspace, 'usage_limit_reached', 'Limite mensal de webhooks atingido', $report) ? 1 : 0;
+
                     continue;
                 }
 
                 if ($report['percent'] >= 95) {
                     $summary['near_95']++;
                     $summary['notifications_created'] += $this->createAlert($workspace, 'usage_limit_95', 'Workspace chegou a 95% do limite mensal', $report) ? 1 : 0;
+
                     continue;
                 }
 

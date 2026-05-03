@@ -15,9 +15,9 @@ class DemoCenter extends Page
 
     protected static ?string $navigationLabel = 'Centro de demo';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Produto';
+    protected static string|UnitEnum|null $navigationGroup = 'Produto';
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedPlayCircle;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedPlayCircle;
 
     protected static ?int $navigationSort = 7;
 

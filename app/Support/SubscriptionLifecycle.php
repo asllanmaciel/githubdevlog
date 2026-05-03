@@ -3,9 +3,9 @@
 namespace App\Support;
 
 use App\Models\Notification;
+use App\Models\User;
 use App\Models\Workspace;
 use App\Models\WorkspaceSubscription;
-use App\Models\User;
 
 class SubscriptionLifecycle
 {

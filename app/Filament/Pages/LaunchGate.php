@@ -15,9 +15,9 @@ class LaunchGate extends Page
 
     protected static ?string $navigationLabel = 'Gate de lancamento';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Lancamento';
+    protected static string|UnitEnum|null $navigationGroup = 'Lancamento';
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedShieldCheck;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShieldCheck;
 
     protected static bool $shouldRegisterNavigation = false;
 

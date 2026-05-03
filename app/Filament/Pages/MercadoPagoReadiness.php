@@ -17,9 +17,9 @@ class MercadoPagoReadiness extends Page
 
     protected static ?string $navigationLabel = 'Mercado Pago';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Operacao';
+    protected static string|UnitEnum|null $navigationGroup = 'Operacao';
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedCreditCard;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCreditCard;
 
     protected static ?int $navigationSort = 4;
 

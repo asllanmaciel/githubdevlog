@@ -5,7 +5,6 @@ namespace App\Support;
 use App\Models\BillingPlan;
 use App\Models\WebhookEvent;
 use App\Models\Workspace;
-use Illuminate\Support\Collection;
 
 class WebhookRetention
 {
@@ -51,6 +50,7 @@ class WebhookRetention
 
             if ($dryRun) {
                 $deleted += $row['expired_events'];
+
                 continue;
             }
 

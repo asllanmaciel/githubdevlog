@@ -7,6 +7,7 @@ use App\Models\KnowledgeBaseArticle;
 use App\Models\RoadmapItem;
 use App\Models\User;
 use App\Models\Workspace;
+use App\Services\MercadoPagoBillingService;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 
@@ -20,7 +21,7 @@ class BetaReadiness
             self::check('Permissoes por papel', class_exists(WorkspaceAccess::class) && count(WorkspaceAccess::permissions()) >= 8, 'Owner/admin/developer/viewer definidos', 'Seguranca'),
             self::check('Webhook GitHub manual', Route::has('webhooks.github'), 'Endpoint por workspace disponivel', 'GitHub'),
             self::check('Webhook GitHub App', Route::has('webhooks.github-app'), 'Endpoint de GitHub App preparado', 'GitHub'),
-            self::check('Billing Mercado Pago', Route::has('webhooks.mercado-pago') && class_exists(\App\Services\MercadoPagoBillingService::class), 'Webhook e servico Mercado Pago preparados', 'Billing'),
+            self::check('Billing Mercado Pago', Route::has('webhooks.mercado-pago') && class_exists(MercadoPagoBillingService::class), 'Webhook e servico Mercado Pago preparados', 'Billing'),
             self::check('Planos cadastraveis', Schema::hasTable('billing_plans') && BillingPlan::count() > 0, 'Planos existem no banco', 'Billing'),
             self::check('Suporte com SLA', Schema::hasTable('support_tickets') && class_exists(SupportSla::class), 'Chamados e SLA disponiveis', 'Suporte'),
             self::check('Docs de usuario', view()->exists('docs.users'), 'Guia publico de uso existe', 'Documentacao'),

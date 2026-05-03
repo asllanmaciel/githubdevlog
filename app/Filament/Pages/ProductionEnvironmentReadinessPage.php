@@ -15,9 +15,9 @@ class ProductionEnvironmentReadinessPage extends Page
 
     protected static ?string $navigationLabel = 'Ambiente produção';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Launch';
+    protected static string|UnitEnum|null $navigationGroup = 'Launch';
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedCog6Tooth;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
 
     protected static bool $shouldRegisterNavigation = false;
 

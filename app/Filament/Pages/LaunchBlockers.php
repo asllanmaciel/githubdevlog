@@ -15,9 +15,9 @@ class LaunchBlockers extends Page
 
     protected static ?string $navigationLabel = 'Bloqueadores';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Lancamento';
+    protected static string|UnitEnum|null $navigationGroup = 'Lancamento';
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedExclamationTriangle;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedExclamationTriangle;
 
     protected static bool $shouldRegisterNavigation = false;
 

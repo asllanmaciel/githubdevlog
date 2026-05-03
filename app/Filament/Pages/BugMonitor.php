@@ -18,9 +18,9 @@ class BugMonitor extends Page
 
     protected static ?string $navigationLabel = 'Monitor de bugs';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Operacao';
+    protected static string|UnitEnum|null $navigationGroup = 'Operacao';
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedBugAnt;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBugAnt;
 
     protected static ?int $navigationSort = 2;
 

@@ -15,9 +15,9 @@ class GitHubSubmission extends Page
 
     protected static ?string $navigationLabel = 'Submissao GitHub';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Produto';
+    protected static string|UnitEnum|null $navigationGroup = 'Produto';
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedDocumentText;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentText;
 
     protected static ?int $navigationSort = 8;
 

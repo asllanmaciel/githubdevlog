@@ -15,9 +15,9 @@ class CommunicationCenter extends Page
 
     protected static ?string $navigationLabel = 'Comunicacao';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Operacao';
+    protected static string|UnitEnum|null $navigationGroup = 'Operacao';
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedEnvelope;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedEnvelope;
 
     protected static ?int $navigationSort = 33;
 

@@ -15,9 +15,9 @@ class GoLiveReadiness extends Page
 
     protected static ?string $navigationLabel = 'Go-live';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Launch';
+    protected static string|UnitEnum|null $navigationGroup = 'Launch';
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedShieldCheck;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShieldCheck;
 
     protected static bool $shouldRegisterNavigation = false;
 

@@ -15,9 +15,9 @@ class LaunchCenter extends Page
 
     protected static ?string $navigationLabel = 'Centro de lancamento';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Produto';
+    protected static string|UnitEnum|null $navigationGroup = 'Produto';
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedRocketLaunch;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRocketLaunch;
 
     protected static ?int $navigationSort = 5;
 

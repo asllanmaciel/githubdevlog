@@ -17,7 +17,6 @@ use App\Models\WorkspaceSubscription;
 use App\Support\KnowledgeBaseCatalog;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class DevlogSeedDemo extends Command
 {

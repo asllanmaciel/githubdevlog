@@ -15,9 +15,9 @@ class DataGovernance extends Page
 
     protected static ?string $navigationLabel = 'Governanca de dados';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Operacao';
+    protected static string|UnitEnum|null $navigationGroup = 'Operacao';
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedArchiveBox;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedArchiveBox;
 
     protected static ?int $navigationSort = 32;
 

@@ -17,9 +17,9 @@ class GitHubReadiness extends Page
 
     protected static ?string $navigationLabel = 'Prontidao GitHub';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Operacao';
+    protected static string|UnitEnum|null $navigationGroup = 'Operacao';
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedRocketLaunch;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRocketLaunch;
 
     protected static ?int $navigationSort = 3;
 

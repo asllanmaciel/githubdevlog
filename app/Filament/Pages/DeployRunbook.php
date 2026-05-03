@@ -15,9 +15,9 @@ class DeployRunbook extends Page
 
     protected static ?string $navigationLabel = 'Runbook de deploy';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Produto';
+    protected static string|UnitEnum|null $navigationGroup = 'Produto';
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedServerStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedServerStack;
 
     protected static ?int $navigationSort = 6;
 

@@ -14,7 +14,7 @@ class AdminDashboard extends Page
 
     protected static ?string $navigationLabel = 'Visao geral';
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedChartBarSquare;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChartBarSquare;
 
     protected static ?int $navigationSort = -2;
 
