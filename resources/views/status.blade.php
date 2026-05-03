@@ -34,6 +34,6 @@
     <div class="kicker">Precisa de ajuda?</div>
     <h2>Confira o status antes de abrir um chamado.</h2>
     <p class="lead">Se um componente estiver instavel, aguarde alguns minutos e consulte novamente. Para problemas especificos do seu workspace, abra suporte autenticado.</p>
-    <div class="d-flex gap-2 flex-wrap mt-3"><a class="btnx primary" href="/support">Abrir suporte</a><a class="btnx" href="/health">Health JSON</a></div>
+    <div class="d-flex gap-2 flex-wrap mt-3"><a class="btnx primary" href="/support">Abrir suporte</a><a class="btnx" href="/health">Health JSON</a><a class="btnx" href="/readiness">Readiness JSON</a></div>
   </section>
 </x-layout>

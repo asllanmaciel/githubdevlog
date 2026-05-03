@@ -14,7 +14,7 @@
       <div>
         <div class="kicker">Observabilidade</div>
         <h1 class="title">Status operacional do DevLog AI.</h1>
-        <p class="lead">Checks reutilizados pelo endpoint publico de health e pelo painel admin para acompanhar banco, storage, filas, billing, GitHub e ambiente.</p>
+        <p class="lead">Checks completos de readiness operacional. O endpoint publico /health fica reservado para vida basica da aplicacao; /readiness e este painel acompanham filas, billing, GitHub, comunicacao e ambiente.</p>
       </div>
       <div class="orb {{ $report['ok'] ? '' : 'fail' }}">{{ $report['ok'] ? 'OK' : 'ATENCAO' }}</div>
     </section>

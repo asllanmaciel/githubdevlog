@@ -24,6 +24,7 @@ Use este checklist antes de divulgar uma mudança ou abrir o produto para novos 
 - [ ] `php artisan optimize:clear` executado.
 - [ ] `php artisan config:cache`, `route:cache` e `view:cache` executados.
 - [ ] `/health` respondeu 200.
+- [ ] `/readiness` revisado para pendências operacionais conhecidas.
 - [ ] Painel admin principal abre sem 500.
 - [ ] Logs verificados após deploy.
 

@@ -186,7 +186,8 @@ Depois do deploy:
 - Rodar `php artisan devlog:preflight` para diagnostico.
 - Rodar `php artisan devlog:preflight --strict` antes de liberar o dominio para usuarios.
 - Rodar `php artisan devlog:mercado-pago-check` antes de ativar cobranca real.
-- Abrir `/health`.
+- Abrir `/health` para vida básica da aplicação.
+- Abrir `/readiness` para prontidão operacional completa.
 - Criar login.
 - Acessar `/dashboard`.
 - Criar workspace.

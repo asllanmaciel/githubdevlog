@@ -10,6 +10,26 @@ use Illuminate\Support\Facades\Storage;
 
 class SystemHealth
 {
+    public static function basic(): array
+    {
+        $checks = [
+            'application' => self::safe('Aplicacao nao verificavel', fn () => self::application()),
+            'database' => self::safe('Banco nao verificavel', fn () => self::database()),
+            'storage' => self::safe('Storage nao verificavel', fn () => self::storage()),
+        ];
+
+        $ok = collect($checks)->every(fn ($check) => $check['ok']);
+
+        return [
+            'ok' => $ok,
+            'mode' => 'health',
+            'app' => config('app.name'),
+            'environment' => app()->environment(),
+            'checked_at' => now()->toIso8601String(),
+            'checks' => $checks,
+        ];
+    }
+
     public static function report(): array
     {
         $checks = [
@@ -26,10 +46,17 @@ class SystemHealth
 
         return [
             'ok' => $ok,
+            'mode' => 'readiness',
             'app' => config('app.name'),
+            'environment' => app()->environment(),
             'checked_at' => now()->toIso8601String(),
             'checks' => $checks,
         ];
+    }
+
+    private static function application(): array
+    {
+        return self::ok('Aplicacao carregada', 'env '.app()->environment().'; debug '.(config('app.debug') ? 'on' : 'off'));
     }
 
     private static function database(): array
