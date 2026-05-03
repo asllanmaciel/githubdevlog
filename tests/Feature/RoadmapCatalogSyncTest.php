@@ -26,5 +26,6 @@ class RoadmapCatalogSyncTest extends TestCase
 
         $this->assertSame('done', RoadmapItem::where('title', 'Metricas de produto com decisoes acionaveis')->value('status'));
         $this->assertSame('done', RoadmapItem::where('title', 'Modelo de assinatura com valor percebido por uso')->value('status'));
+        $this->assertSame('done', RoadmapItem::where('title', 'Hardening de webhooks e tolerancia a falhas')->value('status'));
     }
 }

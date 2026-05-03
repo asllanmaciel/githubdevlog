@@ -25,14 +25,23 @@ class WebhookEventForm
                     ->required(),
                 TextInput::make('action'),
                 TextInput::make('delivery_id'),
+                TextInput::make('dedupe_key'),
                 Toggle::make('signature_valid')
                     ->required(),
+                TextInput::make('status')
+                    ->default('accepted'),
+                TextInput::make('failure_reason'),
+                TextInput::make('retry_count')
+                    ->numeric()
+                    ->default(0),
                 TextInput::make('validation_method'),
                 TextInput::make('headers'),
                 TextInput::make('payload'),
                 DateTimePicker::make('received_at')
                     ->required(),
                 DateTimePicker::make('processed_at'),
+                DateTimePicker::make('last_retried_at'),
+                DateTimePicker::make('reprocessed_at'),
             ]);
     }
 }

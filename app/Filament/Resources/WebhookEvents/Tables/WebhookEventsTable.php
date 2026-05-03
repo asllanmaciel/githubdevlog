@@ -29,8 +29,14 @@ class WebhookEventsTable
                     ->searchable(),
                 TextColumn::make('delivery_id')
                     ->searchable(),
+                TextColumn::make('status')
+                    ->badge()
+                    ->searchable(),
                 IconColumn::make('signature_valid')
                     ->boolean(),
+                TextColumn::make('failure_reason')
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('validation_method')
                     ->searchable(),
                 TextColumn::make('received_at')

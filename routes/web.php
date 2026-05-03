@@ -22,6 +22,7 @@ use App\Support\AuditTrail;
 use App\Support\SystemHealth;
 use App\Support\SupportSla;
 use App\Support\SubscriptionLifecycle;
+use App\Support\WebhookDeliveryHardening;
 use App\Support\WebhookEventAiAnalysisService;
 use App\Support\WebhookSanitizer;
 use App\Support\WorkspaceAccess;
@@ -622,7 +623,17 @@ Route::post('/webhooks/github/{workspaceUuid}', function (Request $request, stri
     $expected = 'sha256='.hash_hmac('sha256', $rawBody, $workspace->webhook_secret);
     $validSignature = $signature !== '' && hash_equals($expected, $signature);
 
-    if (! $validSignature) return response()->json(['error' => 'Assinatura GitHub invalida.'], 401);
+    if (! $validSignature) {
+        WebhookDeliveryHardening::recordRejected($workspace, $request, 'github', $rawBody, 'x-hub-signature-256', 'invalid_signature');
+
+        return response()->json(['error' => 'Assinatura GitHub invalida.'], 401);
+    }
+
+    $duplicate = WebhookDeliveryHardening::duplicate($workspace, 'github', $request->header('X-GitHub-Delivery'), $rawBody);
+
+    if ($duplicate) {
+        return response()->json(['ok' => true, 'duplicate' => true, 'id' => $duplicate->id]);
+    }
 
     if ($workspaceLimitReached($workspace)) {
         $plan = $workspacePlan($workspace);
@@ -639,13 +650,9 @@ Route::post('/webhooks/github/{workspaceUuid}', function (Request $request, stri
     }
 
     $payload = json_decode($rawBody, true) ?: [];
-    $event = $workspace->webhookEvents()->create([
-        'source' => 'github', 'event_name' => (string) $request->header('X-GitHub-Event', 'github'),
-        'action' => $payload['action'] ?? null, 'delivery_id' => $request->header('X-GitHub-Delivery'),
-        'signature_valid' => true, 'validation_method' => 'x-hub-signature-256',
-        'headers' => WebhookSanitizer::clean(collect($request->headers->all())->map(fn ($value) => $value[0] ?? null)->all()),
-        'payload' => WebhookSanitizer::clean($payload), 'received_at' => now(),
-    ]);
+    $event = $workspace->webhookEvents()->create(
+        WebhookDeliveryHardening::acceptedAttributes($workspace, $request, 'github', $payload, $rawBody, 'x-hub-signature-256')
+    );
 
     Notification::create([
         'workspace_id' => $workspace->id,
@@ -669,6 +676,16 @@ Route::post('/webhooks/github-app', function (Request $request) use ($workspaceP
     $expected = 'sha256='.hash_hmac('sha256', $rawBody, $secret);
 
     if ($signature === '' || ! hash_equals($expected, $signature)) {
+        $unsafePayload = json_decode($rawBody, true) ?: [];
+        $unsafeInstallationId = (string) data_get($unsafePayload, 'installation.id', '');
+        $unsafeWorkspace = $unsafeInstallationId !== ''
+            ? GithubInstallation::where('installation_id', $unsafeInstallationId)->first()?->workspace
+            : null;
+
+        if ($unsafeWorkspace) {
+            WebhookDeliveryHardening::recordRejected($unsafeWorkspace, $request, 'github-app', $rawBody, 'github-app-x-hub-signature-256', 'invalid_signature');
+        }
+
         return response()->json(['error' => 'Assinatura GitHub App invalida.'], 401);
     }
 
@@ -705,17 +722,15 @@ Route::post('/webhooks/github-app', function (Request $request) use ($workspaceP
         ], 429);
     }
 
-    $event = $workspace->webhookEvents()->create([
-        'source' => 'github-app',
-        'event_name' => (string) $request->header('X-GitHub-Event', 'github_app'),
-        'action' => $payload['action'] ?? null,
-        'delivery_id' => $request->header('X-GitHub-Delivery'),
-        'signature_valid' => true,
-        'validation_method' => 'github-app-x-hub-signature-256',
-        'headers' => WebhookSanitizer::clean(collect($request->headers->all())->map(fn ($value) => $value[0] ?? null)->all()),
-        'payload' => WebhookSanitizer::clean($payload),
-        'received_at' => now(),
-    ]);
+    $duplicate = WebhookDeliveryHardening::duplicate($workspace, 'github-app', $request->header('X-GitHub-Delivery'), $rawBody);
+
+    if ($duplicate) {
+        return response()->json(['ok' => true, 'duplicate' => true, 'id' => $duplicate->id]);
+    }
+
+    $event = $workspace->webhookEvents()->create(
+        WebhookDeliveryHardening::acceptedAttributes($workspace, $request, 'github-app', $payload, $rawBody, 'github-app-x-hub-signature-256')
+    );
 
     $installation->update([
         'account_login' => data_get($payload, 'installation.account.login', $installation->account_login),
