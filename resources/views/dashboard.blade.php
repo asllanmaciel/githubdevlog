@@ -25,6 +25,12 @@
     $openTasks = \App\Models\WebhookEventTask::whereIn('webhook_event_id', $eventIds)->where('status', 'open')->count();
     $notesCount = \App\Models\WebhookEventNote::whereIn('webhook_event_id', $eventIds)->count();
     $subscription = $workspace?->subscription()->with('plan')->first();
+    $billingEvents = $workspace
+        ? \App\Models\BillingEvent::where('workspace_id', $workspace->id)->latest()->limit(8)->get()
+        : collect();
+    $usageInvoices = $workspace
+        ? \App\Models\UsageInvoice::where('workspace_id', $workspace->id)->latest()->limit(5)->get()
+        : collect();
     $usageReport = $workspace ? \App\Support\WorkspaceUsage::report($workspace) : null;
     $plan = $usageReport['plan'] ?? \App\Models\BillingPlan::where('slug', 'free')->first();
     $monthlyEvents = $usageReport['usage'] ?? 0;
@@ -48,6 +54,8 @@
     ][$subscriptionStatus] ?? ucfirst($subscriptionStatus);
     $subscriptionEndsAt = $subscription?->current_period_ends_at;
     $subscriptionProviderReference = $subscription?->provider_reference ?: 'Ainda não gerada';
+    $subscriptionAmount = ((int) ($subscription?->plan?->price_cents ?? 0)) / 100;
+    $latestBillingEvent = $billingEvents->first();
     $canUseWebhooks = in_array($subscriptionStatus, ['trialing', 'active', 'pending'], true);
     $healthStatus = $totalEvents === 0 ? 'Aguardando evento' : ($invalidEvents > 0 ? 'Atenção' : 'Saudável');
     $healthClass = $invalidEvents > 0 ? 'status-warn' : 'status-ok';
@@ -255,6 +263,37 @@
     @endif
 
     @if ($visiblePage === 'billing')
+    <section class="billing-hero">
+      <div class="cardx plan-status-card">
+        <div class="d-flex justify-content-between gap-3 flex-wrap align-items-start">
+          <div>
+            <div class="kicker">Plano assinado</div>
+            <h2 class="h3 mt-2 mb-1">{{ $planName }}</h2>
+            <p class="muted mb-0">Status {{ $subscriptionStatusLabel }} · {{ number_format($monthlyLimit, 0, ',', '.') }} eventos por mês · retenção de {{ $retentionDays }} dias.</p>
+          </div>
+          <span class="status-pill {{ $subscriptionStatus }}">{{ $subscriptionStatusLabel }}</span>
+        </div>
+        <div class="row g-2 mt-3">
+          <div class="col-md-4"><div class="summary-cell h-100"><div class="summary-label">Valor mensal</div><div class="summary-value">{{ $subscriptionAmount > 0 ? 'R$ '.number_format($subscriptionAmount, 2, ',', '.') : 'Gratis' }}</div></div></div>
+          <div class="col-md-4"><div class="summary-cell h-100"><div class="summary-label">Renovação / período</div><div class="summary-value">{{ $subscriptionEndsAt ? $subscriptionEndsAt->format('d/m/Y') : 'Sem vencimento' }}</div></div></div>
+          <div class="col-md-4"><div class="summary-cell h-100"><div class="summary-label">Último pagamento</div><div class="summary-value">{{ $latestBillingEvent ? $latestBillingEvent->status : 'Sem evento ainda' }}</div></div></div>
+        </div>
+        <div class="summary-cell mt-2">
+          <div class="summary-label">Referência Mercado Pago</div>
+          <div class="summary-value" style="font-size:14px;word-break:break-all">{{ $subscriptionProviderReference }}</div>
+        </div>
+      </div>
+
+      <aside class="cardx">
+        <div class="kicker">Atalhos importantes</div>
+        <div class="quick-actions mt-2">
+          <a class="quick-action" href="{{ route('dashboard', ['section' => 'github']) }}"><span>Configurar endpoint GitHub</span><span>></span></a>
+          <a class="quick-action" href="{{ route('dashboard', ['section' => 'events']) }}"><span>Ver eventos recebidos</span><span>></span></a>
+          <a class="quick-action" href="{{ route('support') }}"><span>Falar com suporte</span><span>></span></a>
+        </div>
+      </aside>
+    </section>
+
     <section class="cardx mb-3" id="billing">
       <div class="d-flex justify-content-between gap-3 flex-wrap align-items-start">
         <div>
@@ -403,6 +442,55 @@
           @endif
         </div>
       </div>
+    </section>
+    @endif
+
+    @if ($visiblePage === 'billing')
+    <section class="cardx mb-3">
+      <div class="d-flex justify-content-between gap-3 flex-wrap align-items-start">
+        <div>
+          <div class="kicker">Registros de pagamento</div>
+          <h2 class="h4 mt-2 mb-1">Histórico Mercado Pago e faturas</h2>
+          <p class="muted mb-0">Aqui aparecem confirmações recebidas por webhook e faturas internas de excedente, sem precisar abrir o admin.</p>
+        </div>
+        <span class="pill">{{ $billingEvents->count() }} evento(s)</span>
+      </div>
+      <div class="billing-records mt-3">
+        @forelse ($billingEvents as $event)
+          <div class="billing-record">
+            <div>
+              <div class="summary-label">{{ $event->event_type }} · {{ $event->created_at?->format('d/m/Y H:i') }}</div>
+              <strong>{{ $event->resource_id ?: $event->provider_event_id }}</strong>
+              <div class="muted">Assinatura {{ $event->signature_valid ? 'validada' : 'pendente' }} · {{ $event->error_message ?: 'sem erro registrado' }}</div>
+            </div>
+            <span class="status-pill {{ $event->status }}">{{ $event->status }}</span>
+          </div>
+        @empty
+          <div class="billing-record">
+            <div>
+              <strong>Nenhum pagamento recebido ainda</strong>
+              <div class="muted">Assim que o Mercado Pago enviar webhook, o registro aparece aqui.</div>
+            </div>
+            <span class="status-pill">vazio</span>
+          </div>
+        @endforelse
+      </div>
+
+      @if ($usageInvoices->isNotEmpty())
+        <div class="kicker mt-4">Faturas de uso</div>
+        <div class="billing-records mt-2">
+          @foreach ($usageInvoices as $invoice)
+            <div class="billing-record">
+              <div>
+                <div class="summary-label">{{ $invoice->period }} · {{ $invoice->issued_at?->format('d/m/Y') ?? $invoice->created_at?->format('d/m/Y') }}</div>
+                <strong>R$ {{ number_format($invoice->amount_cents / 100, 2, ',', '.') }}</strong>
+                <div class="muted">{{ $invoice->overage_count }} evento(s) excedente(s)</div>
+              </div>
+              <span class="status-pill {{ $invoice->status }}">{{ $invoice->status }}</span>
+            </div>
+          @endforeach
+        </div>
+      @endif
     </section>
     @endif
 

@@ -81,6 +81,21 @@
       color: var(--ink);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
     }
+    body.theme-light {
+      --bg:#f4f7fb;
+      --panel:#ffffff;
+      --panel-2:#eef4f8;
+      --ink:#111827;
+      --muted:#5f6f7f;
+      --line:#d6e1ea;
+      --blue:#147fd1;
+      --green:#16855d;
+      --yellow:#9a6a00;
+      --orange:#b55313;
+      --red:#c83e3e;
+      background:linear-gradient(180deg,#f5f8fb 0%,#eaf1f7 100%);
+      color:var(--ink);
+    }
     a { color: inherit; text-decoration: none; }
     .wrap { max-width: 1200px; margin: 0 auto; padding: 20px; }
     .topbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 10px 0 38px; }
@@ -329,6 +344,74 @@
     .app-menu .hint { color:inherit; opacity:.72; font-size:12px; font-weight:900; }
     .app-sidebar form { margin:0; }
     .app-content { min-width:0; }
+    .app-topbar {
+      position:sticky;
+      top:0;
+      z-index:5;
+      min-height:76px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      padding:14px 24px;
+      border-bottom:1px solid rgba(39,53,68,.88);
+      background:rgba(8,16,25,.82);
+      backdrop-filter:blur(16px);
+    }
+    body.theme-light .app-topbar { background:rgba(255,255,255,.88); border-bottom-color:var(--line); }
+    .app-topbar-title strong { display:block; font-size:18px; line-height:1.15; }
+    .app-topbar-title span { color:var(--muted); font-size:13px; }
+    .app-topbar-actions { display:flex; align-items:center; justify-content:flex-end; gap:10px; flex-wrap:wrap; }
+    .icon-btn {
+      width:42px;
+      height:42px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:rgba(11,17,24,.72);
+      color:var(--ink);
+      display:grid;
+      place-items:center;
+      position:relative;
+      font-weight:950;
+    }
+    body.theme-light .icon-btn { background:#fff; }
+    .notification-dot {
+      position:absolute;
+      right:7px;
+      top:6px;
+      min-width:18px;
+      height:18px;
+      border-radius:999px;
+      background:var(--red);
+      color:#fff;
+      display:grid;
+      place-items:center;
+      font-size:10px;
+      padding:0 4px;
+      border:2px solid #081019;
+    }
+    body.theme-light .notification-dot { border-color:#fff; }
+    .top-dropdown { position:relative; }
+    .top-dropdown summary { list-style:none; cursor:pointer; }
+    .top-dropdown summary::-webkit-details-marker { display:none; }
+    .top-dropdown-menu {
+      position:absolute;
+      right:0;
+      top:50px;
+      width:min(360px, calc(100vw - 32px));
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:linear-gradient(180deg, rgba(15,25,35,.98), rgba(7,14,21,.98));
+      box-shadow:0 28px 100px rgba(0,0,0,.42);
+      padding:12px;
+      display:grid;
+      gap:10px;
+    }
+    body.theme-light .top-dropdown-menu { background:#fff; box-shadow:0 24px 80px rgba(30,48,64,.18); }
+    .notification-item { border:1px solid var(--line); border-radius:12px; padding:10px; background:rgba(11,17,24,.62); }
+    body.theme-light .notification-item { background:#f7fafc; }
+    .notification-item.unread { border-color:rgba(80,184,255,.55); }
+    .account-menu-actions { display:grid; gap:8px; }
     .app-mobilebar { display:none; }
     body.app-dashboard main {
       width: min(100% - 36px, 1420px);
@@ -357,6 +440,27 @@
       border: 1px solid rgba(56, 77, 96, .8);
     }
     body.app-dashboard .alert { width: min(100% - 36px, 1420px); margin: 18px auto 0; border-radius: 14px; }
+    body.app-dashboard .billing-hero { display:grid; grid-template-columns:minmax(0,1.25fr) minmax(320px,.75fr); gap:16px; margin-bottom:16px; }
+    body.app-dashboard .plan-status-card {
+      border:1px solid rgba(105,227,154,.34);
+      background:linear-gradient(135deg, rgba(105,227,154,.1), rgba(80,184,255,.08)), rgba(8,15,22,.92);
+    }
+    body.theme-light.app-dashboard .plan-status-card { background:linear-gradient(135deg, rgba(22,133,93,.08), rgba(20,127,209,.08)), #fff; }
+    .billing-records { display:grid; gap:10px; }
+    .billing-record {
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:12px;
+      align-items:center;
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:12px;
+      background:#0b1118;
+    }
+    body.theme-light .billing-record { background:#f7fafc; }
+    .status-pill { border-radius:999px; padding:6px 10px; font-size:12px; font-weight:950; border:1px solid var(--line); color:var(--muted); white-space:nowrap; }
+    .status-pill.active,.status-pill.processed_active,.status-pill.paid { background:var(--green); border-color:var(--green); color:#061018; }
+    .status-pill.pending,.status-pill.processed_pending,.status-pill.received { background:var(--yellow); border-color:var(--yellow); color:#061018; }
     body.app-dashboard .event-detail-shell { display:grid; gap:16px; }
     body.app-dashboard .event-detail-hero {
       position:relative;
@@ -509,6 +613,7 @@
     @media (max-width: 1100px) {
       .app-shell { display:block; }
       .app-sidebar { display:none; }
+      .app-topbar { display:none; }
       .app-mobilebar {
         position:sticky;
         top:0;
@@ -525,7 +630,7 @@
       body.app-dashboard main { padding:20px 14px 42px; width:100%; }
       body.app-dashboard .event-detail-hero { align-items:flex-start; flex-direction:column; min-height:auto; }
       body.app-dashboard .event-detail-actions, body.app-dashboard .event-detail-actions .btnx { width:100%; }
-      body.app-dashboard .event-command-strip { grid-template-columns:1fr; }
+      body.app-dashboard .event-command-strip, body.app-dashboard .billing-hero { grid-template-columns:1fr; }
       body.app-dashboard .event-card-full .ai-diagnostic ul { columns:1; }
       body.app-dashboard .event-card-full .insight { align-items:flex-start; }
     }
@@ -544,6 +649,24 @@
         $dashboardUser = auth()->user();
         $dashboardWorkspace = $dashboardUser?->workspaces()->first();
         $dashboardRole = $dashboardWorkspace ? \App\Support\WorkspaceAccess::currentRole($dashboardUser, $dashboardWorkspace) : null;
+        $dashboardSubscription = $dashboardWorkspace?->subscription()->with('plan')->first();
+        $dashboardPlanName = $dashboardSubscription?->plan?->name ?? 'Free';
+        $dashboardSubscriptionStatus = $dashboardSubscription?->status ?? 'trialing';
+        $dashboardNotifications = $dashboardWorkspace
+          ? \App\Models\Notification::where('workspace_id', $dashboardWorkspace->id)->latest()->limit(5)->get()
+          : collect();
+        $dashboardUnreadNotifications = $dashboardNotifications->whereNull('read_at')->count();
+        $currentSection = request()->routeIs('dashboard.event')
+          ? 'Evento'
+          : [
+            null => 'Visao geral',
+            'overview' => 'Visao geral',
+            'events' => 'Eventos',
+            'github' => 'GitHub App e endpoint',
+            'ai' => 'AI do workspace',
+            'team' => 'Equipe e permissoes',
+            'billing' => 'Uso, plano e pagamentos',
+          ][request()->route('section')] ?? 'Painel';
         $initials = collect(explode(' ', trim((string) ($dashboardUser?->name ?: $dashboardUser?->email))))
           ->filter()
           ->take(2)
@@ -593,12 +716,68 @@
         </aside>
 
         <div class="app-content">
+          <div class="app-topbar">
+            <div class="app-topbar-title">
+              <strong>{{ $currentSection }}</strong>
+              <span>{{ $dashboardWorkspace?->name ?? 'Workspace' }} · plano {{ $dashboardPlanName }} · {{ $dashboardSubscriptionStatus }}</span>
+            </div>
+            <div class="app-topbar-actions">
+              <a class="btnx primary" href="{{ route('dashboard', ['section' => 'billing']) }}">Plano {{ $dashboardPlanName }}</a>
+              <a class="btnx quiet" href="{{ route('dashboard', ['section' => 'github']) }}">Configurar GitHub</a>
+              <details class="top-dropdown">
+                <summary class="icon-btn" title="Notificacoes">
+                  <span>!</span>
+                  @if ($dashboardUnreadNotifications > 0)
+                    <span class="notification-dot">{{ $dashboardUnreadNotifications }}</span>
+                  @endif
+                </summary>
+                <div class="top-dropdown-menu">
+                  <div class="d-flex justify-content-between align-items-center gap-2">
+                    <strong>Notificacoes</strong>
+                    <a class="pill" href="{{ route('dashboard', ['section' => 'billing']) }}">Ver billing</a>
+                  </div>
+                  @forelse ($dashboardNotifications as $notification)
+                    <div class="notification-item {{ $notification->read_at ? '' : 'unread' }}">
+                      <div class="summary-label">{{ $notification->type }} · {{ $notification->created_at?->format('d/m H:i') }}</div>
+                      <strong>{{ $notification->title }}</strong>
+                      @if ($notification->body)
+                        <div class="muted mt-1">{{ $notification->body }}</div>
+                      @endif
+                    </div>
+                  @empty
+                    <div class="notification-item"><div class="muted">Nenhuma notificacao recente.</div></div>
+                  @endforelse
+                </div>
+              </details>
+              <button class="icon-btn" type="button" data-theme-toggle title="Alternar tema">◐</button>
+              <details class="top-dropdown">
+                <summary class="app-avatar" title="Conta">{{ $initials ?: 'DV' }}</summary>
+                <div class="top-dropdown-menu">
+                  <div>
+                    <strong>{{ $dashboardUser?->name }}</strong>
+                    <div class="muted">{{ $dashboardUser?->email }}</div>
+                  </div>
+                  <div class="account-menu-actions">
+                    <a class="btnx" href="{{ route('dashboard', ['section' => 'team']) }}">Equipe e acesso</a>
+                    <a class="btnx" href="{{ route('support') }}">Suporte</a>
+                    <form method="POST" action="{{ route('logout') }}">
+                      @csrf
+                      <button class="btnx w-100" type="submit">Sair</button>
+                    </form>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </div>
           <div class="app-mobilebar">
             <a class="brand" href="{{ route('dashboard') }}">
               <img src="/logo-mark.png" alt="GitHub DevLog AI">
               <span><strong>GitHub DevLog AI</strong><span>{{ $dashboardUser?->email }}</span></span>
             </a>
-            <form method="POST" action="{{ route('logout') }}">@csrf<button class="btnx" type="submit">Sair</button></form>
+            <div class="d-flex gap-2">
+              <a class="btnx primary" href="{{ route('dashboard', ['section' => 'billing']) }}">{{ $dashboardUnreadNotifications > 0 ? $dashboardUnreadNotifications : 'Plano' }}</a>
+              <form method="POST" action="{{ route('logout') }}">@csrf<button class="btnx" type="submit">Sair</button></form>
+            </div>
           </div>
     @else
       <header class="topbar">
@@ -659,6 +838,16 @@
     document.querySelectorAll('dialog.devlog-modal').forEach((modal) => {
       modal.addEventListener('click', (event) => {
         if (event.target === modal) modal.close();
+      });
+    });
+    const applyTheme = (theme) => {
+      document.body.classList.toggle('theme-light', theme === 'light');
+      localStorage.setItem('devlog-theme', theme);
+    };
+    applyTheme(localStorage.getItem('devlog-theme') || 'dark');
+    document.querySelectorAll('[data-theme-toggle]').forEach((button) => {
+      button.addEventListener('click', () => {
+        applyTheme(document.body.classList.contains('theme-light') ? 'dark' : 'light');
       });
     });
   </script>
