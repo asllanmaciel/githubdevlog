@@ -24,9 +24,11 @@
           $price = ((int) $plan->price_cents) / 100;
           $overage = ((int) ($plan->overage_price_cents ?? 0)) / 100;
           $features = is_array($plan->features) ? $plan->features : [];
+          $isFree = $price <= 0;
+          $isTestPlan = $plan->slug === 'teste-mp';
         @endphp
         <div class="col-lg-4">
-          <div class="cardx h-100">
+          <div class="cardx h-100" style="{{ $isFree || $isTestPlan ? 'opacity:.78' : '' }}">
             <div class="kicker">{{ $plan->slug }}</div>
             <h3>{{ $plan->name }}</h3>
             <div style="font-size:38px;font-weight:950;letter-spacing:-.05em;margin:12px 0;">
@@ -46,7 +48,7 @@
               </div>
             @endif
             <div class="mt-4">
-              <a class="btnx primary w-100" href="{{ route('register') }}">Comecar com este perfil</a>
+              <a class="btnx {{ $isFree || $isTestPlan ? '' : 'primary' }} w-100" href="{{ route('register') }}">{{ $isFree ? 'Comecar gratis' : ($isTestPlan ? 'Usar para teste' : 'Comecar com este plano') }}</a>
             </div>
           </div>
         </div>

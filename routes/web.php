@@ -59,6 +59,7 @@ Route::get('/changelog', fn () => view('changelog', [
 ]))->name('changelog');
 Route::get('/pricing', function () {
     $plans = BillingPlan::where('active', true)
+        ->orderByRaw("CASE WHEN slug = 'teste-mp' THEN 2 WHEN price_cents = 0 THEN 3 ELSE 1 END")
         ->orderBy('price_cents')
         ->orderBy('monthly_event_limit')
         ->get();
@@ -146,7 +147,9 @@ Route::middleware('guest')->group(function () {
 
         Auth::login($user);
 
-        return redirect()->route('dashboard');
+        return redirect()
+            ->route('dashboard', ['section' => 'billing'])
+            ->with('status', 'Workspace criado. Escolha um plano para ativar o uso ideal; o gratuito continua disponivel para testar com calma.');
     })->name('register.store');
 
     Route::post('/login', function (Request $request) {

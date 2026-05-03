@@ -1,7 +1,10 @@
 <x-layout title="Dashboard | GitHub DevLog AI">
 @php
     $endpoint = $workspace ? url('/webhooks/github/'.$workspace->uuid) : null;
-    $availablePlans = \App\Models\BillingPlan::where('active', true)->orderBy('price_cents')->get();
+    $availablePlans = \App\Models\BillingPlan::where('active', true)
+        ->orderByRaw("CASE WHEN slug = 'teste-mp' THEN 2 WHEN price_cents = 0 THEN 3 ELSE 1 END")
+        ->orderBy('price_cents')
+        ->get();
     $mercadoPagoStatus = app(\App\Services\MercadoPagoBillingService::class)->checkoutStatus();
     $visiblePage = $dashboardPage ?? 'overview';
     $totalEvents = $events->count();
@@ -424,24 +427,24 @@
         <div>
           <div class="kicker">Upgrade interno</div>
           <h2 class="h4 mt-2 mb-1">Aumente limite quando o uso justificar</h2>
-          <p class="muted mb-0">Este bloco fica dentro do workspace para o usuário decidir upgrade com base no consumo real. Ambiente Mercado Pago: {{ $mercadoPagoStatus['environment'] }} - SDK: {{ $mercadoPagoStatus['sdk'] }} - Configurado: {{ $mercadoPagoStatus['configured'] ? 'sim' : 'não' }}</p>
+          <p class="muted mb-0">Escolha um plano pago para usar o workspace com limites confortáveis. O gratuito continua disponível para teste inicial, mas fica como opção secundária. Ambiente Mercado Pago: {{ $mercadoPagoStatus['environment'] }} - SDK: {{ $mercadoPagoStatus['sdk'] }} - Configurado: {{ $mercadoPagoStatus['configured'] ? 'sim' : 'não' }}</p>
         </div>
         <span class="pill">Plano atual: {{ $planName }}</span>
       </div>
       <div class="row g-2 mt-2">
         @foreach ($availablePlans as $availablePlan)
           <div class="col-md-4">
-            <div class="summary-cell h-100">
+            <div class="summary-cell h-100" style="{{ $availablePlan->price_cents <= 0 ? 'opacity:.72' : '' }}">
               <div class="summary-label">{{ $availablePlan->name }}</div>
               <div class="summary-value">R$ {{ number_format($availablePlan->price_cents / 100, 2, ',', '.') }}/mês</div>
               <div class="muted mt-1">{{ number_format($availablePlan->monthly_event_limit, 0, ',', '.') }} eventos/mês - retenção {{ $availablePlan->event_retention_days }} dias</div>
               @if ($availablePlan->price_cents > 0)
                 <form method="POST" action="{{ route('billing.checkout', $availablePlan) }}" class="mt-2">
                   @csrf
-                  <button class="btnx primary w-100" type="submit">Assinar plano</button>
+                  <button class="btnx primary w-100" type="submit">{{ $availablePlan->slug === 'teste-mp' ? 'Testar checkout' : 'Assinar plano' }}</button>
                 </form>
               @else
-                <span class="pill mt-2">Plano gratuito</span>
+                <span class="pill mt-2">Continuar gratuito</span>
               @endif
             </div>
           </div>
