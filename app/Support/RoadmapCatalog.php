@@ -53,7 +53,7 @@ class RoadmapCatalog
             self::item('Roadmap visual e governanca de prioridades', 'Governanca', 'done', 'media', 'Criar cadencia de revisao, criterios de entrada e saida e dashboard unico de progresso por iniciativa.', 40),
             self::item('Metricas de produto com decisoes acionaveis', 'Observabilidade e operacao', 'done', 'alta', 'Centralizar funil, ativacao, receita, webhooks, billing e riscos operacionais em um painel acionavel.', 50),
             self::item('MVP administrativo com acessibilidade e clareza', 'Produto e UX', 'pending', 'alta', 'Reforcar linguagem, contraste, estados vazios e mensagens de erro para reduzir atrito operacional.', 60),
-            self::item('Fluxo de autenticacao robusto e protecao antifraude', 'Seguranca', 'pending', 'alta', 'Harden de sessoes, protecao contra abuso e trilha de eventos suspeitos com resposta guiada.', 70),
+            self::item('Fluxo de autenticacao robusto e protecao antifraude', 'Seguranca', 'done', 'alta', 'Aplicar rate limit em login/cadastro, registrar auditoria de sucesso/falha e expor sinais suspeitos no admin.', 70),
             self::item('Hardening de webhooks e tolerancia a falhas', 'Confiabilidade', 'done', 'alta', 'Registrar rejeicoes com payload minimo, aplicar idempotencia por entrega e expor diagnostico operacional para webhooks criticos.', 80),
             self::item('Catalogo de qualidade de codigo e revisao continua', 'Confiabilidade', 'pending', 'media', 'Implantar linters, criterios minimos de PR e automacao de seguranca estatica no pipeline.', 90),
             self::item('Camada de eventos AI de baixa latencia', 'IA e inteligencia', 'pending', 'alta', 'Entregar insights de risco e acao em tempo real sem impacto nas rotas criticas do produto.', 100),

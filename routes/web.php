@@ -30,8 +30,10 @@ use App\Support\WorkspaceInviteDelivery;
 use App\Support\WorkspaceUsage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 $workspacePlan = fn (Workspace $workspace): ?BillingPlan => WorkspaceUsage::plan($workspace);
 $workspaceUsage = fn (Workspace $workspace): int => WorkspaceUsage::usageThisMonth($workspace);
@@ -110,6 +112,21 @@ Route::middleware('guest')->group(function () {
     Route::get('/register', fn () => view('auth', ['mode' => 'register']))->name('register');
 
     Route::post('/register', function (Request $request) {
+        $rateLimitKey = 'register|'.$request->ip();
+
+        if (RateLimiter::tooManyAttempts($rateLimitKey, 3)) {
+            AuditTrail::record('auth.register_rate_limited', null, null, [
+                'email' => strtolower((string) $request->input('email')),
+                'available_in' => RateLimiter::availableIn($rateLimitKey),
+            ], null, $request, 'system');
+
+            throw ValidationException::withMessages([
+                'email' => 'Muitas tentativas de cadastro. Aguarde alguns minutos e tente novamente.',
+            ]);
+        }
+
+        RateLimiter::hit($rateLimitKey, 300);
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:120'],
             'email' => ['required', 'email', 'max:180', 'unique:users,email'],
@@ -147,6 +164,10 @@ Route::middleware('guest')->group(function () {
             });
 
         Auth::login($user);
+        AuditTrail::record('auth.registered', $user, $workspace, [
+            'email' => $user->email,
+            'workspace_id' => $workspace->id,
+        ], $user, $request);
 
         return redirect()
             ->route('dashboard', ['section' => 'billing'])
@@ -155,12 +176,35 @@ Route::middleware('guest')->group(function () {
 
     Route::post('/login', function (Request $request) {
         $credentials = $request->validate(['email' => ['required', 'email'], 'password' => ['required', 'string']]);
+        $email = strtolower($credentials['email']);
+        $rateLimitKey = 'login|'.$email.'|'.$request->ip();
 
-        if (! Auth::attempt(['email' => strtolower($credentials['email']), 'password' => $credentials['password']], true)) {
+        if (RateLimiter::tooManyAttempts($rateLimitKey, 5)) {
+            AuditTrail::record('auth.login_rate_limited', null, null, [
+                'email' => $email,
+                'available_in' => RateLimiter::availableIn($rateLimitKey),
+            ], null, $request, 'system');
+
+            throw ValidationException::withMessages([
+                'email' => 'Muitas tentativas de login. Aguarde alguns minutos e tente novamente.',
+            ]);
+        }
+
+        if (! Auth::attempt(['email' => $email, 'password' => $credentials['password']], true)) {
+            RateLimiter::hit($rateLimitKey, 300);
+            AuditTrail::record('auth.login_failed', null, null, [
+                'email' => $email,
+            ], null, $request, 'system');
+
             return back()->withErrors(['email' => 'Email ou senha invalidos.'])->onlyInput('email');
         }
 
+        RateLimiter::clear($rateLimitKey);
         $request->session()->regenerate();
+        AuditTrail::record('auth.login_success', Auth::user(), Auth::user()->workspaces()->first(), [
+            'email' => $email,
+            'is_super_admin' => Auth::user()->is_super_admin,
+        ], Auth::user(), $request);
 
         return Auth::user()->is_super_admin
             ? redirect('/admin')
