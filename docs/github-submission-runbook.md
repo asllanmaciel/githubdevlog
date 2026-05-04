@@ -22,6 +22,8 @@ Submeter o GitHub DevLog AI ao GitHub Developer Program usando evidencias reais 
 - Repositorio real: `AM-TIIX/TIIX-Global`.
 - Validacao: `github-app-x-hub-signature-256`.
 - Hardening: 35 eventos, 35 aceitos, 0 rejeitados, validade 100%.
+- Dashboard do workspace atual: 30 eventos visiveis, 30 assinaturas validas.
+- Conciliacao admin x dashboard: 35 eventos totais no admin; 30 aparecem no workspace atual; 5 pertencem a outro workspace ou sao demo/instalacao sem repositorio util para o feed.
 - Teste automatizado local: `php artisan test tests\Feature\WebhookHardeningTest.php`.
 
 ## Capturas obrigatorias
@@ -32,7 +34,7 @@ Submeter o GitHub DevLog AI ao GitHub Developer Program usando evidencias reais 
 
 2. `https://ghdevlog.com/dashboard/events`
    - Mostrar eventos reais `push` e `workflow_run`.
-   - Mostrar assinatura valida, delivery id e repositorio.
+   - Mostrar assinatura valida, delivery id, repositorio e contador de 30 eventos do workspace.
 
 3. `https://ghdevlog.com/dashboard/events/{id}`
    - Abrir um `workflow_run completed`.
@@ -40,6 +42,7 @@ Submeter o GitHub DevLog AI ao GitHub Developer Program usando evidencias reais 
 
 4. `https://ghdevlog.com/admin/webhook-events`
    - Mostrar source `github-app`, status `accepted`, assinatura valida, metodo de validacao e datas.
+   - Mostrar que o admin lista 35 registros totais, incluindo eventos de outros workspaces/testes.
 
 5. `https://ghdevlog.com/admin/webhook-hardening`
    - Mostrar totais: 35 aceitos, 0 rejeitados, 100% valido.
@@ -64,6 +67,10 @@ Gravar de 60 a 90 segundos:
 ## Resposta curta para formulario
 
 GitHub DevLog AI is a private webhook inbox for GitHub developers. It receives GitHub App and repository webhook events, validates `X-Hub-Signature-256`, stores sanitized payloads in isolated workspaces, and gives teams a readable delivery history with repository context, delivery IDs, notes, tasks and admin hardening metrics for debugging GitHub integrations.
+
+## Resposta de evidencia operacional
+
+The admin webhook table currently contains 35 received events. The active workspace dashboard intentionally shows 30 events, all with valid signatures. The 5 records not shown in the workspace inbox belong to another workspace or are demo/installation events without repository linkage, so the user-facing inbox remains scoped to useful events for the current workspace.
 
 ## Resposta de seguranca
 

@@ -49,11 +49,27 @@ Data de referencia: 2026-05-04.
 - Webhook GitHub App oficial recebendo por `https://ghdevlog.com/webhooks/github-app`.
 - Validacao registrada como `github-app-x-hub-signature-256`.
 - Hardening com 35 eventos no banco, 35 aceitos, 0 rejeitados e 100% de assinaturas validas.
+- Dashboard do workspace atual com 30 eventos visiveis e 30 assinaturas validas.
+- Diferenca explicada: os 5 eventos fora do inbox atual pertencem a outro workspace ou sao eventos demo/instalacao sem vinculo util com repositorio para o feed do workspace.
 - Eventos reais observados: `push`, `workflow_run`, `installation`.
 - Repositorio real observado: `AM-TIIX/TIIX-Global`.
 - Workflow real observado: `changelog-automation`.
 - Entregas recentes para usar como evidencia de auditoria: `748cd20c-47b8-11f1-8edb-37f3ef415db9`, `7604d9e0-47b8-11f1-8f44-1f032ed253fc`, `86a1004e-47b8-11f1-9870-af3be485e4ae`, `878c00d0-47b8-11f1-86e7-e2ec2588e77b`.
 - Nao anexar nem transcrever secrets em prints, videos, issues ou formularios de submissao.
+
+## Conciliacao dashboard x admin
+
+Em 2026-05-04, o admin `/admin/webhook-events` exibiu 35 registros totais e a dashboard `/dashboard/events` exibiu 30 eventos validos para o workspace logado. A diferenca de 5 registros e esperada porque o admin lista toda a tabela, incluindo historico de testes, eventos de outro workspace e eventos de instalacao sem repositorio associado ao feed util do workspace.
+
+Registros fora do inbox do workspace atual:
+
+- `#1`: `workspace_id=1`, `source=github`, `event_name=push`, `delivery_id=demo-delivery-push-001`.
+- `#2`: `workspace_id=1`, `source=github`, `event_name=pull_request`, `delivery_id=demo-delivery-pr-001`.
+- `#3`: `workspace_id=1`, `source=github`, `event_name=workflow_run`, `delivery_id=demo-delivery-ci-001`.
+- `#4`: `workspace_id=1`, `source=github-app`, `event_name=installation`, sem `repository_id`.
+- `#9`: `workspace_id=1`, `source=github-app`, `event_name=installation`, `action=new_permissions_accepted`, sem `repository_id`.
+
+Resumo para submissao: 35 eventos recebidos no banco; 30 eventos validos aparecem no inbox do workspace atual. Os 5 restantes pertencem a outro workspace ou sao eventos demo/instalacao sem vinculo util com repositorio.
 
 ## Checklist de captura com evidencias reais
 
@@ -82,6 +98,10 @@ Users configure a repository webhook or install the GitHub App. The platform rec
 ### How do you handle security and privacy?
 
 Workspaces are isolated, secrets are unique per workspace, webhook signatures are validated, sensitive payload fields are sanitized, secrets can be rotated and the admin panel includes production, security and launch readiness checks.
+
+### Evidence summary
+
+The admin webhook table currently contains 35 received events. The workspace dashboard intentionally shows 30 events for the active workspace, all with valid signatures. The 5 records not shown in the workspace inbox belong to another workspace or are demo/installation events without the expected repository linkage.
 
 ## GitHub App URLs
 
