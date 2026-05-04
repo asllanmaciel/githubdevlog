@@ -69,6 +69,18 @@
       ['label' => 'Termos', 'href' => url('/terms')],
     ],
   ];
+
+  $icons = [
+    'rocket' => '<svg viewBox="0 0 24 24"><path d="M4.5 16.5c-1 1.2-1.5 2.6-1.5 4.5 1.9 0 3.3-.5 4.5-1.5"></path><path d="M9 15 4 20"></path><path d="m14.5 4.5 5 5"></path><path d="M15 3c2.3.2 4.2 1.1 6 3-1.9 4.8-4.8 8.5-9 11l-5-5c2.5-4.2 6.2-7.1 11-9Z"></path><path d="M9 12H5l-2 4 5 1"></path><path d="M12 15v4l4 2 1-5"></path></svg>',
+    'github' => '<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-3.2 19.5c.5.1.7-.2.7-.5v-1.8c-2.9.6-3.5-1.2-3.5-1.2-.5-1.2-1.2-1.5-1.2-1.5-1-.7.1-.7.1-.7 1.1.1 1.7 1.1 1.7 1.1 1 .1.6 2.4 1.7 3 .8-.6.1-.4.4-1.1-2.3-.3-4.7-1.1-4.7-5A3.9 3.9 0 0 1 5 8.2c-.1-.3-.5-1.4.1-2.8 0 0 .9-.3 2.9 1.1a9.8 9.8 0 0 1 5.3 0c2-1.4 2.9-1.1 2.9-1.1.6 1.4.2 2.5.1 2.8a3.9 3.9 0 0 1 1.1 2.7c0 3.9-2.4 4.8-4.7 5 .4.3.8 1 .8 2v3c0 .3.2.6.8.5A10 10 0 0 0 12 2Z"></path></svg>',
+    'shield' => '<svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.6 2.8 8.7 7 10 4.2-1.3 7-5.4 7-10V6l-7-3Z"></path><path d="m9 12 2 2 4-5"></path></svg>',
+    'pulse' => '<svg viewBox="0 0 24 24"><path d="M3 12h4l2-7 4 14 2-7h6"></path></svg>',
+    'spark' => '<svg viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Z"></path><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z"></path></svg>',
+    'key' => '<svg viewBox="0 0 24 24"><path d="M14 7a5 5 0 1 0 3 9l4-4-2-2 2-2-2-2-3 3"></path><path d="M7 14h.01"></path></svg>',
+    'check' => '<svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"></path></svg>',
+    'activity' => '<svg viewBox="0 0 24 24"><path d="M4 19V5"></path><path d="M4 19h16"></path><path d="M8 16v-5"></path><path d="M12 16V8"></path><path d="M16 16v-3"></path></svg>',
+    'market' => '<svg viewBox="0 0 24 24"><path d="M6 7h12l1 14H5L6 7Z"></path><path d="M9 7a3 3 0 0 1 6 0"></path><path d="M9 11h.01"></path><path d="M15 11h.01"></path></svg>',
+  ];
 @endphp
 
 <x-filament-panels::page>
@@ -81,6 +93,7 @@
     .title{font-size:clamp(34px,4.7vw,64px);line-height:.94;letter-spacing:-.055em;font-weight:950;margin:0;color:var(--ink)}
     .lead{color:var(--muted);font-size:16px;line-height:1.65;margin:14px 0 0;max-width:920px}
     .decision{display:grid;gap:12px}.decision-main{font-size:30px;line-height:1;font-weight:950;letter-spacing:-.04em}.decision-label{color:var(--green);font-weight:950}.decision-copy{color:var(--muted);line-height:1.6}
+    .icon{width:38px;height:38px;border-radius:14px;display:grid;place-items:center;border:1px solid rgba(80,184,255,.34);background:rgba(80,184,255,.1);color:#b7e4ff;margin-bottom:12px}.icon svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.icon.green{border-color:rgba(105,227,154,.38);background:rgba(105,227,154,.1);color:var(--green)}.icon.yellow{border-color:rgba(255,207,102,.38);background:rgba(255,207,102,.1);color:var(--yellow)}.icon.red{border-color:rgba(255,107,107,.38);background:rgba(255,107,107,.1);color:var(--danger)}
     .pill-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.pill{border:1px solid var(--line);border-radius:999px;padding:7px 10px;color:var(--muted);font-size:12px;font-weight:850}.pill.ok{color:var(--green);border-color:rgba(105,227,154,.4);background:rgba(105,227,154,.08)}.pill.warn{color:var(--yellow);border-color:rgba(255,207,102,.42);background:rgba(255,207,102,.08)}
     .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}.metric-value{font-size:34px;font-weight:950;letter-spacing:-.05em;color:var(--ink)}.metric-label{color:var(--muted);font-size:13px;line-height:1.45}.ok{color:var(--green)}.risk{color:var(--yellow)}.bad{color:var(--danger)}
     .layout{display:grid;grid-template-columns:1fr 390px;gap:16px;margin-bottom:16px}.wide{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}.stack{display:grid;gap:10px}
@@ -95,6 +108,7 @@
   <div class="admin-cockpit">
     <section class="hero">
       <div>
+        <div class="icon green" aria-hidden="true">{!! $icons['rocket'] !!}</div>
         <div class="kicker">Admin / Cockpit de produto</div>
         <h1 class="title">DevLog AI saiu de setup. Agora e operacao de go-live.</h1>
         <p class="lead">Acompanhe em uma tela se o produto pode ser divulgado, quais sinais provam maturidade e quais acoes ainda reduzem risco antes de abrir para mais devs.</p>
@@ -107,6 +121,7 @@
         </div>
       </div>
       <aside class="card decision">
+        <div class="icon green" aria-hidden="true">{!! $icons['check'] !!}</div>
         <div class="kicker">Decisao de divulgacao</div>
         <div>
           <div class="decision-label">{{ $releaseLabel }}</div>
@@ -118,21 +133,22 @@
     </section>
 
     <section class="metrics">
-      <div class="metric"><div class="kicker">Launch</div><div class="metric-value ok">{{ $launch['percent'] }}%</div><div class="metric-label">{{ $launch['done'] }} de {{ $launch['total'] }} checks prontos</div></div>
-      <div class="metric"><div class="kicker">GitHub</div><div class="metric-value ok">{{ $githubProgram['percent'] }}%</div><div class="metric-label">Developer Program, App e evidencias</div></div>
-      <div class="metric"><div class="kicker">Webhooks</div><div class="metric-value ok">{{ $hardening['accepted'] }}/{{ $hardening['total'] }}</div><div class="metric-label">{{ $hardening['rejected'] }} rejeitado(s), {{ $hardening['valid_rate'] }}% validos</div></div>
-      <div class="metric"><div class="kicker">Seguranca</div><div class="metric-value {{ $security['percent'] >= 90 ? 'ok' : 'risk' }}">{{ $security['percent'] }}%</div><div class="metric-label">{{ $security['done'] }} de {{ $security['total'] }} checks prontos</div></div>
+      <div class="metric"><div class="icon green" aria-hidden="true">{!! $icons['rocket'] !!}</div><div class="kicker">Launch</div><div class="metric-value ok">{{ $launch['percent'] }}%</div><div class="metric-label">{{ $launch['done'] }} de {{ $launch['total'] }} checks prontos</div></div>
+      <div class="metric"><div class="icon green" aria-hidden="true">{!! $icons['github'] !!}</div><div class="kicker">GitHub</div><div class="metric-value ok">{{ $githubProgram['percent'] }}%</div><div class="metric-label">Developer Program, App e evidencias</div></div>
+      <div class="metric"><div class="icon green" aria-hidden="true">{!! $icons['pulse'] !!}</div><div class="kicker">Webhooks</div><div class="metric-value ok">{{ $hardening['accepted'] }}/{{ $hardening['total'] }}</div><div class="metric-label">{{ $hardening['rejected'] }} rejeitado(s), {{ $hardening['valid_rate'] }}% validos</div></div>
+      <div class="metric"><div class="icon {{ $security['percent'] >= 90 ? 'green' : 'yellow' }}" aria-hidden="true">{!! $icons['shield'] !!}</div><div class="kicker">Seguranca</div><div class="metric-value {{ $security['percent'] >= 90 ? 'ok' : 'risk' }}">{{ $security['percent'] }}%</div><div class="metric-label">{{ $security['done'] }} de {{ $security['total'] }} checks prontos</div></div>
     </section>
 
     <section class="metrics">
-      <div class="metric"><div class="metric-value">{{ $eventsCount }}</div><div class="metric-label">webhooks recebidos, {{ $validEvents }} validos</div></div>
-      <div class="metric"><div class="metric-value">{{ $installationsCount }}</div><div class="metric-label">instalacoes GitHub App vinculadas</div></div>
-      <div class="metric"><div class="metric-value">{{ $workspacesCount }}</div><div class="metric-label">workspaces, {{ $usersCount }} usuario(s)</div></div>
-      <div class="metric"><div class="metric-value">{{ $roadmapPercent }}%</div><div class="metric-label">{{ $roadmapDone }} de {{ $roadmap->count() }} itens do roadmap</div></div>
+      <div class="metric"><div class="icon" aria-hidden="true">{!! $icons['activity'] !!}</div><div class="metric-value">{{ $eventsCount }}</div><div class="metric-label">webhooks recebidos, {{ $validEvents }} validos</div></div>
+      <div class="metric"><div class="icon" aria-hidden="true">{!! $icons['github'] !!}</div><div class="metric-value">{{ $installationsCount }}</div><div class="metric-label">instalacoes GitHub App vinculadas</div></div>
+      <div class="metric"><div class="icon" aria-hidden="true">{!! $icons['spark'] !!}</div><div class="metric-value">{{ $workspacesCount }}</div><div class="metric-label">workspaces, {{ $usersCount }} usuario(s)</div></div>
+      <div class="metric"><div class="icon" aria-hidden="true">{!! $icons['rocket'] !!}</div><div class="metric-value">{{ $roadmapPercent }}%</div><div class="metric-label">{{ $roadmapDone }} de {{ $roadmap->count() }} itens do roadmap</div></div>
     </section>
 
     <section class="layout">
       <div class="card">
+        <div class="icon yellow" aria-hidden="true">{!! $icons['spark'] !!}</div>
         <div class="kicker">Proximas acoes de maior impacto</div>
         <div class="stack">
           @foreach ($nextActions as $action)
@@ -145,6 +161,7 @@
       </div>
 
       <aside class="card">
+        <div class="icon" aria-hidden="true">{!! $icons['activity'] !!}</div>
         <div class="kicker">Sinais SaaS</div>
         <div class="stack">
           <div class="rowx"><strong>{{ $mrr }}</strong><br>MRR estimado em assinaturas ativas</div>
@@ -157,6 +174,7 @@
 
     <section class="wide">
       <div class="card">
+        <div class="icon" aria-hidden="true">{!! $icons['activity'] !!}</div>
         <div class="kicker">Eventos por tipo</div>
         <div class="stack">
           @forelse($eventTypes as $type)
@@ -171,6 +189,7 @@
       </div>
 
       <div class="card">
+        <div class="icon" aria-hidden="true">{!! $icons['market'] !!}</div>
         <div class="kicker">Atalhos por area</div>
         <div class="quick-groups">
           @foreach ($quickGroups as $group => $links)
