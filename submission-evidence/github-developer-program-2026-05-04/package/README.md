@@ -10,5 +10,6 @@ Salve os prints originais na pasta `raw`. Depois o Codex pode copiar/renomear pa
 6. admin-overview-35-webhooks.png
 7. public-privacy.png
 8. public-terms.png
+9. github-app-public-page.png
 
 Observacao: nao incluir prints com secrets/tokens visiveis.
