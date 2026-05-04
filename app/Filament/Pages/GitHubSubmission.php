@@ -9,6 +9,8 @@ use UnitEnum;
 
 class GitHubSubmission extends Page
 {
+    protected static ?string $slug = 'github-submission';
+
     protected static string $routePath = '/github-submission';
 
     protected static ?string $title = 'Submissao GitHub';

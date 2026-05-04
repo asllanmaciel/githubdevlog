@@ -86,7 +86,7 @@ class GitHubAppSetup
             'GITHUB_APP_ID=',
             'GITHUB_APP_CLIENT_ID=',
             'GITHUB_APP_CLIENT_SECRET=',
-            'GITHUB_APP_WEBHOOK_SECRET='.Str::random(48),
+            'GITHUB_APP_WEBHOOK_SECRET=<defina-o-mesmo-secret-configurado-no-github-app>',
             'GITHUB_APP_PRIVATE_KEY_PATH=/home/ghdevlog/app/storage/app/private/github-app.pem',
             'GITHUB_APP_WEBHOOK_URL="'.$webhookUrl.'"',
             'GITHUB_APP_CALLBACK_URL="'.$callbackUrl.'"',
