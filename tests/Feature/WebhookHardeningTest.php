@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\GithubInstallation;
+use App\Models\Repository;
 use App\Models\User;
 use App\Models\WebhookEvent;
 use App\Models\Workspace;
@@ -68,6 +70,132 @@ class WebhookHardeningTest extends TestCase
 
         $this->assertSame(1, WebhookEvent::where('signature_valid', true)->count());
         $this->assertSame('accepted', WebhookEvent::first()->status);
+    }
+
+    public function test_valid_github_app_delivery_links_repository(): void
+    {
+        config(['services.github_app.webhook_secret' => 'app-secret']);
+
+        $workspace = Workspace::create([
+            'uuid' => (string) Str::uuid(),
+            'name' => 'GitHub App Workspace',
+            'slug' => 'github-app-workspace',
+            'webhook_secret' => 'manual-secret',
+        ]);
+
+        GithubInstallation::create([
+            'workspace_id' => $workspace->id,
+            'installation_id' => '128516060',
+            'account_login' => 'AM-TIIX',
+            'account_type' => 'Organization',
+            'permissions' => ['contents' => 'read'],
+            'events' => ['push'],
+            'installed_at' => now(),
+        ]);
+
+        $rawBody = json_encode([
+            'installation' => [
+                'id' => 128516060,
+                'account' => ['login' => 'AM-TIIX', 'type' => 'Organization'],
+            ],
+            'repository' => [
+                'id' => 987654321,
+                'full_name' => 'AM-TIIX/TIIX-Global',
+                'private' => true,
+                'default_branch' => 'main',
+            ],
+            'sender' => ['login' => 'asllanmaciel'],
+        ]);
+
+        $headers = [
+            'X-Hub-Signature-256' => 'sha256='.hash_hmac('sha256', $rawBody, 'app-secret'),
+            'X-GitHub-Delivery' => 'github-app-delivery-1',
+            'X-GitHub-Event' => 'push',
+            'Content-Type' => 'application/json',
+        ];
+
+        $this->call('POST', '/webhooks/github-app', [], [], [], $this->transformHeadersToServerVars($headers), $rawBody)
+            ->assertOk()
+            ->assertJson(['ok' => true]);
+
+        $event = WebhookEvent::firstOrFail();
+        $repository = Repository::firstOrFail();
+
+        $this->assertSame($repository->id, $event->repository_id);
+        $this->assertSame('AM-TIIX/TIIX-Global', $repository->full_name);
+        $this->assertSame('987654321', $repository->github_id);
+        $this->assertTrue($repository->private);
+        $this->assertSame('main', $repository->default_branch);
+    }
+
+    public function test_github_app_delivery_appears_in_workspace_events_dashboard(): void
+    {
+        config(['services.github_app.webhook_secret' => 'app-secret']);
+
+        $user = User::create([
+            'name' => 'Workspace User',
+            'email' => 'workspace-user@example.com',
+            'password' => 'password',
+        ]);
+
+        $workspace = Workspace::create([
+            'uuid' => (string) Str::uuid(),
+            'name' => 'Dashboard Workspace',
+            'slug' => 'dashboard-workspace',
+            'webhook_secret' => 'manual-secret',
+        ]);
+
+        $workspace->users()->attach($user->id, ['role' => 'owner']);
+
+        GithubInstallation::create([
+            'workspace_id' => $workspace->id,
+            'installation_id' => '128516060',
+            'account_login' => 'AM-TIIX',
+            'account_type' => 'Organization',
+            'permissions' => ['contents' => 'read'],
+            'events' => [],
+            'installed_at' => now(),
+        ]);
+
+        $rawBody = json_encode([
+            'installation' => [
+                'id' => 128516060,
+                'account' => ['login' => 'AM-TIIX', 'type' => 'Organization'],
+            ],
+            'repository' => [
+                'id' => 987654321,
+                'full_name' => 'AM-TIIX/TIIX-Global',
+                'private' => true,
+                'default_branch' => 'main',
+            ],
+            'workflow_run' => [
+                'event' => 'push',
+                'status' => 'completed',
+                'conclusion' => 'success',
+                'head_branch' => 'main',
+                'head_sha' => '85af199',
+                'name' => 'changelog-automation',
+            ],
+            'sender' => ['login' => 'asllanmaciel'],
+        ]);
+
+        $headers = [
+            'X-Hub-Signature-256' => 'sha256='.hash_hmac('sha256', $rawBody, 'app-secret'),
+            'X-GitHub-Delivery' => 'github-app-delivery-dashboard',
+            'X-GitHub-Event' => 'workflow_run',
+            'Content-Type' => 'application/json',
+        ];
+
+        $this->call('POST', '/webhooks/github-app', [], [], [], $this->transformHeadersToServerVars($headers), $rawBody)
+            ->assertOk();
+
+        $this->actingAs($user)
+            ->get('/dashboard/events')
+            ->assertOk()
+            ->assertSee('1 evento(s)', false)
+            ->assertSee('workflow_run', false)
+            ->assertSee('github-app-delivery-dashboard', false)
+            ->assertSee('AM-TIIX/TIIX-Global', false);
     }
 
     public function test_super_admin_can_open_webhook_hardening_page(): void

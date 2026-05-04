@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use App\Models\Repository;
 use App\Models\WebhookEvent;
 use App\Models\Workspace;
 use Illuminate\Http\Request;
@@ -43,6 +44,7 @@ class WebhookDeliveryHardening
     {
         return self::withHardeningColumns([
             'source' => $source,
+            'repository_id' => self::repositoryId($workspace, $payload),
             'event_name' => (string) $request->header('X-GitHub-Event', $source),
             'action' => $payload['action'] ?? null,
             'delivery_id' => $request->header('X-GitHub-Delivery'),
@@ -82,6 +84,29 @@ class WebhookDeliveryHardening
             'retry_count' => 0,
             'dedupe_key' => self::dedupeKey($workspace, $source, $request->header('X-GitHub-Delivery'), $rawBody),
         ]));
+    }
+
+    private static function repositoryId(Workspace $workspace, array $payload): ?int
+    {
+        $fullName = data_get($payload, 'repository.full_name');
+
+        if (! is_string($fullName) || trim($fullName) === '') {
+            return null;
+        }
+
+        $repository = Repository::updateOrCreate(
+            [
+                'workspace_id' => $workspace->id,
+                'full_name' => $fullName,
+            ],
+            [
+                'github_id' => data_get($payload, 'repository.id'),
+                'private' => (bool) data_get($payload, 'repository.private', false),
+                'default_branch' => data_get($payload, 'repository.default_branch'),
+            ],
+        );
+
+        return $repository->id;
     }
 
     public static function report(): array

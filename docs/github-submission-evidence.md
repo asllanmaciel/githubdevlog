@@ -36,6 +36,35 @@ GitHub DevLog AI e um inbox privado para webhooks do GitHub. Ele ajuda devs a va
    - Mostrar modelo SaaS por uso.
    - Objetivo: provar sustentabilidade do produto.
 
+## Evidencias reais coletadas
+
+Data de referencia: 2026-05-04.
+
+- Dominio de producao: `https://ghdevlog.com`.
+- Dashboard de eventos: `https://ghdevlog.com/dashboard/events`.
+- Configuracao GitHub do workspace: `https://ghdevlog.com/dashboard/github`.
+- Admin de eventos: `https://ghdevlog.com/admin/webhook-events`.
+- Admin de hardening: `https://ghdevlog.com/admin/webhook-hardening`.
+- GitHub App instalado e vinculado ao workspace pela instalacao `128516060`.
+- Webhook GitHub App oficial recebendo por `https://ghdevlog.com/webhooks/github-app`.
+- Validacao registrada como `github-app-x-hub-signature-256`.
+- Hardening com 35 eventos no banco, 35 aceitos, 0 rejeitados e 100% de assinaturas validas.
+- Eventos reais observados: `push`, `workflow_run`, `installation`.
+- Repositorio real observado: `AM-TIIX/TIIX-Global`.
+- Workflow real observado: `changelog-automation`.
+- Entregas recentes para usar como evidencia de auditoria: `748cd20c-47b8-11f1-8edb-37f3ef415db9`, `7604d9e0-47b8-11f1-8f44-1f032ed253fc`, `86a1004e-47b8-11f1-9870-af3be485e4ae`, `878c00d0-47b8-11f1-86e7-e2ec2588e77b`.
+- Nao anexar nem transcrever secrets em prints, videos, issues ou formularios de submissao.
+
+## Checklist de captura com evidencias reais
+
+- Print da tela `dashboard/github` mostrando o GitHub App vinculado e o webhook oficial.
+- Print da tela `dashboard/events` mostrando eventos `push` e `workflow_run` com assinatura valida.
+- Print de um detalhe de evento, preferencialmente `workflow_run completed`, mostrando delivery id, repositorio, branch, sha e payload sanitizado.
+- Print do admin `webhook-events` mostrando registros aceitos, metodo de validacao e datas de recebimento/processamento.
+- Print do admin `webhook-hardening` mostrando 35 aceitos, 0 rejeitados e validade 100%.
+- Video curto do fluxo: instalar GitHub App, gerar push em repositorio real, abrir evento no inbox e conferir assinatura valida.
+- Evidencia tecnica local: teste automatizado `WebhookHardeningTest` cobrindo GitHub App, vinculacao de repositorio e exibicao na dashboard.
+
 ## Respostas para formulario
 
 ### What does your application do?
