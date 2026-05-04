@@ -72,6 +72,10 @@ GitHub DevLog AI is a private webhook inbox for GitHub developers. It receives G
 
 The admin webhook table currently contains 35 received events. The active workspace dashboard intentionally shows 30 events, all with valid signatures. The 5 records not shown in the workspace inbox belong to another workspace or are demo/installation events without repository linkage, so the user-facing inbox remains scoped to useful events for the current workspace.
 
+## Pacote final
+
+Ver tambem: `docs/github-final-submission-packet.md`.
+
 ## Resposta de seguranca
 
 The app validates GitHub webhook signatures with HMAC-SHA256 before accepting deliveries, uses workspace isolation, stores secrets outside source code, sanitizes headers and payloads before storage, records accepted/rejected delivery state, deduplicates deliveries by delivery id/dedupe key, and exposes audit/hardening views without displaying raw secrets.
