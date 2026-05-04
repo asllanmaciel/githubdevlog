@@ -1,15 +1,16 @@
-# Pacote de submissao - GitHub Developer Program
+# Pacote GitHub - Developer Program, App e Marketplace
 
-Este documento centraliza a narrativa e os materiais para apresentar o GitHub DevLog AI ao GitHub Developer Program.
+Este documento centraliza a narrativa e os materiais para apresentar o GitHub DevLog AI em contextos do ecossistema GitHub.
 
-## Escopo da submissao
+## Escopo correto
 
-Ha duas trilhas possiveis, com criterios diferentes:
+Ha tres trilhas diferentes:
 
-- GitHub Developer Program: adequado para demonstrar que o produto integra com GitHub em producao ou desenvolvimento e possui canal de suporte para usuarios GitHub.
+- GitHub Developer Program: adesao da conta/dev ao programa. Requer uma integracao GitHub em producao ou desenvolvimento e um email de suporte para usuarios GitHub. Status atual: concluido.
+- GitHub App publico: pagina publica de instalacao/configuracao do app em `https://github.com/apps/gh-devlog`. Status atual: existente.
 - GitHub Marketplace: adequado para publicar uma listagem publica do app. Exige descricao, contato, politica de privacidade, suporte, plano de preco, imagens e integracao alem de autenticacao. Apps pagos tambem exigem publisher verificado, billing via Marketplace e maturidade adicional.
 
-Recomendacao atual: submeter primeiro o Developer Program com evidencias reais do GitHub App em `ghdevlog.com`; preparar a listagem Marketplace como proximo marco, inicialmente gratuita, ate haver volume suficiente para uma oferta paga.
+Recomendacao atual: manter evidencias reais do GitHub App em `ghdevlog.com`, fortalecer a pagina publica `/github` e preparar a listagem Marketplace como proximo marco separado, inicialmente gratuita, ate haver volume suficiente para uma oferta paga.
 
 ## Nome do produto
 
@@ -120,6 +121,8 @@ Exemplo:
 ## URLs importantes
 
 - Landing: `https://ghdevlog.com`
+- Pagina publica da integracao GitHub: `https://ghdevlog.com/github`
+- GitHub App publico: `https://github.com/apps/gh-devlog`
 - Docs usuarios: `https://ghdevlog.com/docs/usuarios`
 - Privacidade: `https://ghdevlog.com/privacy`
 - Termos: `https://ghdevlog.com/terms`
@@ -140,9 +143,10 @@ Exemplo:
 8. Criar nota e tarefa.
 9. Abrir admin: launch center, status, seguranca e billing.
 
-## Checklist antes de submeter
+## Checklist de maturidade
 
 - Dominio final com HTTPS em `ghdevlog.com`.
+- Conta inscrita no GitHub Developer Program.
 - GitHub App real criado e instalado em uma conta/repositorio real.
 - App ID, Client ID, Client Secret e Webhook Secret configurados.
 - Private key configurada fora da pasta publica.
@@ -161,6 +165,6 @@ Exemplo:
 
 Ver tambem: docs/github-submission-evidence.md.
 
-## Resumo executivo para envio
+## Resumo executivo
 
 O GitHub DevLog AI e uma ferramenta de debugging e auditoria de webhooks GitHub. O produto ja possui GitHub App instalado em ambiente real, endpoint assinado em `https://ghdevlog.com/webhooks/github-app`, validacao por `X-Hub-Signature-256`, isolamento por workspace, payload sanitizado, historico de delivery ids, notas, tarefas e painel admin de hardening. Em 2026-05-04, o ambiente demonstrou 35 eventos aceitos, 0 rejeitados e 100% de assinaturas validas no painel de hardening. A dashboard do workspace atual exibiu 30 eventos validos; os 5 registros restantes no admin pertencem a outro workspace ou sao eventos demo/instalacao sem vinculo util com repositorio para o feed do workspace.

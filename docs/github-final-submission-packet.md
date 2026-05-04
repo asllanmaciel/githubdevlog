@@ -1,8 +1,14 @@
-# Pacote final de envio - GitHub Developer Program
+# Pacote final - GitHub Developer Program e evidencias
 
 Data de referencia: 2026-05-04.
 
-## Resumo para envio
+## Status do programa
+
+A adesao ao GitHub Developer Program foi concluida na conta do mantenedor. O programa valida a conta/dev como membro do ecossistema, desde que exista uma integracao GitHub em producao ou desenvolvimento e um email de suporte para usuarios.
+
+Nao ha, neste fluxo, uma submissao obrigatoria do projeto equivalente a uma revisao de Marketplace. A submissao/listagem do produto acontece separadamente caso o GitHub App seja publicado no Marketplace ou caso o suporte do GitHub solicite detalhes adicionais.
+
+## Resumo do produto
 
 GitHub DevLog AI is a private webhook inbox for GitHub developers. It receives GitHub App and repository webhook events, validates `X-Hub-Signature-256`, stores sanitized payloads in isolated workspaces, and gives teams a readable delivery history with repository context, delivery IDs, notes, tasks and admin hardening metrics for debugging GitHub integrations.
 
@@ -45,8 +51,22 @@ Production domain:
 https://ghdevlog.com
 ```
 
+Public GitHub App:
+
+```text
+https://github.com/apps/gh-devlog
+```
+
+Public integration page:
+
+```text
+https://ghdevlog.com/github
+```
+
 Evidence captured on 2026-05-04:
 
+- GitHub Developer Program settings show support email `contato@asllanmaciel.com.br` and website `https://ghdevlog.com`.
+- The public GitHub App page is available at `https://github.com/apps/gh-devlog`.
 - Workspace dashboard `/dashboard/events` shows 30 workspace events and 30 valid signatures.
 - Event detail `/dashboard/events/35` shows a real `workflow_run` event with valid signature, `github-app` source, repository `AM-TIIX/TIIX-Global`, branch `main`, workflow `changelog-automation` and delivery `878c00d0-47b8-11f1-86e7-e2ec2588e77b`.
 - Admin `/admin/webhook-events` shows 35 total webhook records.
@@ -68,6 +88,9 @@ This means the evidence is consistent:
 
 ## Screenshot checklist
 
+- `github-developer-program-settings`: Developer Program membership settings with support email and product website.
+- `github-app-public-page`: public GitHub App page.
+- `public-github-integration-page`: `/github` product integration page.
 - `dashboard-events-30-validos`: workspace inbox showing 30 events and 30 valid signatures.
 - `dashboard-event-35-workflow-run`: event detail showing `workflow_run#35`, valid HMAC result and delivery ID.
 - `admin-webhook-events-35-total`: admin table showing 35 total records.
@@ -91,4 +114,3 @@ This means the evidence is consistent:
 ## Final one-paragraph submission note
 
 GitHub DevLog AI is already running on `https://ghdevlog.com` with a real GitHub App webhook endpoint at `https://ghdevlog.com/webhooks/github-app`. On 2026-05-04, the app received and validated real GitHub App deliveries from `AM-TIIX/TIIX-Global`, including `push` and `workflow_run` events. The active workspace inbox shows 30 valid events, while the admin hardening panel shows 35 total received records, 35 accepted, 0 rejected and 100% valid signatures. The 5 records outside the workspace inbox are expected admin/test/other-workspace records, so the user-facing inbox remains scoped to the current workspace.
-
