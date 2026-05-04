@@ -138,7 +138,7 @@
           <a class="action" href="{{ url('/github') }}" target="_blank">Revisar pagina publica GitHub</a>
           <a class="action" href="{{ url('/admin/roadmap') }}">Abrir roadmap visual</a>
         </div>
-        <div class="label" style="margin-top:16px;line-height:1.6">Para a submissao oficial, ainda precisamos criar o GitHub App real no GitHub, preencher as credenciais no .env, publicar em dominio HTTPS e executar testes ponta a ponta com instalacao em conta/organizacao.</div>
+        <div class="label" style="margin-top:16px;line-height:1.6">Developer Program concluido. O proximo marco e manter a demo ponta a ponta saudavel e preparar a listagem opcional do GitHub App no Marketplace, sem expor secrets em prints ou videos.</div>
       </aside>
     </section>
   </div>
