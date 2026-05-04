@@ -9,6 +9,7 @@ use App\Console\Commands\DevlogSeedSubmissionAssets;
 use App\Console\Commands\DevlogSnapshotUsage;
 use App\Console\Commands\DevlogSyncKnowledgeBase;
 use App\Http\Middleware\SecurityHeaders;
+use App\Http\Middleware\SetLocale;
 use App\Support\BugMonitor;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -31,6 +32,9 @@ return Application::configure(basePath: dirname(__DIR__))
         DevlogSyncKnowledgeBase::class,
     ])
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->web(append: [
+            SetLocale::class,
+        ]);
         $middleware->append(SecurityHeaders::class);
         $middleware->validateCsrfTokens(except: ['webhooks/*']);
     })

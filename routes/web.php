@@ -41,6 +41,14 @@ $workspacePlan = fn (Workspace $workspace): ?BillingPlan => WorkspaceUsage::plan
 $workspaceUsage = fn (Workspace $workspace): int => WorkspaceUsage::usageThisMonth($workspace);
 $workspaceLimitReached = fn (Workspace $workspace): bool => WorkspaceUsage::limitReached($workspace);
 
+Route::get('/locale/{locale}', function (string $locale) {
+    abort_unless(in_array($locale, ['pt-BR', 'en'], true), 404);
+
+    session(['locale' => $locale === 'pt-BR' ? 'pt_BR' : 'en']);
+
+    return back();
+})->name('locale.switch');
+
 Route::get('/', fn () => view('landing'))->name('home');
 Route::get('/deploy-check', fn () => response()->json([
     'ok' => true,

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +7,7 @@
   @php
     $isDashboardShell = request()->routeIs('dashboard') || request()->routeIs('dashboard.event');
   @endphp
-  <meta name="description" content="Capture, valide e acompanhe webhooks do GitHub em workspaces privados, com segredo por conta e painel para debugging.">
+  <meta name="description" content="{{ __('Capture, valide e acompanhe webhooks do GitHub em workspaces privados, com segredo por conta e painel para debugging.') }}">
   @php
     $analytics = config('devlog.analytics', []);
     $gtmId = $analytics['google_tag_manager_id'] ?? null;
@@ -104,6 +104,9 @@
     .brand strong { display: block; font-size: 18px; letter-spacing: -.02em; }
     .brand span { color: var(--muted); font-size: 13px; }
     .nav { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+    .locale-switch { display:flex; gap:4px; align-items:center; border:1px solid var(--line); border-radius:8px; padding:4px; background:rgba(16,23,32,.62); }
+    .locale-switch a { min-width:38px; padding:6px 8px; border-radius:6px; color:var(--muted); font-size:12px; font-weight:950; text-align:center; text-transform:uppercase; }
+    .locale-switch a.active { background:var(--blue); color:#071018; }
     .btnx { border: 1px solid var(--line); border-radius: 8px; background: rgba(16, 23, 32, .82); color: var(--ink); padding: 10px 14px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
     .btnx.primary { background: var(--blue); border-color: var(--blue); color: #071018; }
     .btnx.success { background: var(--green); border-color: var(--green); color: #071018; }
@@ -828,24 +831,28 @@
       <header class="topbar">
         <a class="brand" href="{{ route('home') }}">
           <img src="/logo-mark.png" alt="GitHub DevLog AI">
-          <span><strong>GitHub DevLog AI</strong><span>Webhook inbox privado para GitHub</span></span>
+          <span><strong>GitHub DevLog AI</strong><span>{{ __('Webhook inbox privado para GitHub') }}</span></span>
         </a>
-        <nav class="nav" aria-label="Menu principal">
-          <a class="btnx" href="{{ route('home') }}#produto">Produto</a>
+        <nav class="nav" aria-label="{{ __('Menu principal') }}">
+          <div class="locale-switch" aria-label="{{ __('Idioma') }}">
+            <a class="{{ app()->getLocale() === 'pt_BR' ? 'active' : '' }}" href="{{ route('locale.switch', ['locale' => 'pt-BR']) }}">PT</a>
+            <a class="{{ app()->getLocale() === 'en' ? 'active' : '' }}" href="{{ route('locale.switch', ['locale' => 'en']) }}">EN</a>
+          </div>
+          <a class="btnx" href="{{ route('home') }}#produto">{{ __('Produto') }}</a>
           <a class="btnx" href="{{ route('docs.api') }}">API</a>
-          <a class="btnx" href="{{ route('trust') }}">Confiança</a>
+          <a class="btnx" href="{{ route('trust') }}">{{ __('Confiança') }}</a>
           <a class="btnx" href="{{ route('faq') }}">FAQ</a>
           @auth
             @if(Auth::user()->is_super_admin)
               <a class="btnx primary" href="{{ url('/admin') }}">Admin</a>
               <a class="btnx" href="{{ route('admin.roadmap.dashboard') }}">Roadmap</a>
             @else
-              <a class="btnx primary" href="{{ route('dashboard') }}">Painel</a>
+              <a class="btnx primary" href="{{ route('dashboard') }}">{{ __('Painel') }}</a>
             @endif
-            <form method="POST" action="{{ route('logout') }}">@csrf<button class="btnx" type="submit">Sair</button></form>
+            <form method="POST" action="{{ route('logout') }}">@csrf<button class="btnx" type="submit">{{ __('Sair') }}</button></form>
           @else
-            <a class="btnx" href="{{ route('login') }}">Entrar</a>
-            <a class="btnx primary" href="{{ route('register') }}">Criar workspace</a>
+            <a class="btnx" href="{{ route('login') }}">{{ __('Entrar') }}</a>
+            <a class="btnx primary" href="{{ route('register') }}">{{ __('Criar workspace') }}</a>
           @endauth
         </nav>
       </header>
