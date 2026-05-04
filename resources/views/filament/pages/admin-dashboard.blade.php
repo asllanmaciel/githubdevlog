@@ -37,36 +37,36 @@
     : 'Segurar divulgacao ampla';
 
   $nextActions = collect([
-    ['title' => 'Deployar painel Marketplace', 'detail' => 'Levar /admin/github-marketplace para producao e revisar a listagem do App.', 'href' => url('/admin/github-marketplace'), 'level' => 'primary'],
-    ['title' => 'Rotacionar secrets expostos em prints', 'detail' => 'Trocar secret do GitHub App se algum valor apareceu em evidencia, chat ou video.', 'href' => url('/admin/security-center'), 'level' => 'danger'],
-    ['title' => 'Rodar teste real pos-deploy', 'detail' => 'Gerar um push e confirmar evento novo no inbox, detalhe e hardening.', 'href' => url('/dashboard/events'), 'level' => 'normal'],
-    ['title' => 'Preparar mensagem de beta', 'detail' => 'Divulgar como beta para devs que auditam e depuram webhooks GitHub.', 'href' => url('/admin/github-submission'), 'level' => 'normal'],
+    ['title' => 'Deployar painel Marketplace', 'detail' => 'Levar /admin/github-marketplace para producao e revisar a listagem do App.', 'href' => url('/admin/github-marketplace'), 'level' => 'primary', 'icon' => 'market'],
+    ['title' => 'Rotacionar secrets expostos em prints', 'detail' => 'Trocar secret do GitHub App se algum valor apareceu em evidencia, chat ou video.', 'href' => url('/admin/security-center'), 'level' => 'danger', 'icon' => 'key'],
+    ['title' => 'Rodar teste real pos-deploy', 'detail' => 'Gerar um push e confirmar evento novo no inbox, detalhe e hardening.', 'href' => url('/dashboard/events'), 'level' => 'normal', 'icon' => 'pulse'],
+    ['title' => 'Preparar mensagem de beta', 'detail' => 'Divulgar como beta para devs que auditam e depuram webhooks GitHub.', 'href' => url('/admin/github-submission'), 'level' => 'normal', 'icon' => 'spark'],
   ]);
 
   $quickGroups = [
     'Go-live' => [
-      ['label' => 'Launch gate', 'href' => url('/admin/launch-gate')],
-      ['label' => 'Prontidao GitHub', 'href' => url('/admin/github-readiness')],
-      ['label' => 'Marketplace', 'href' => url('/admin/github-marketplace')],
-      ['label' => 'Submissao GitHub', 'href' => url('/admin/github-submission')],
+      ['label' => 'Launch gate', 'href' => url('/admin/launch-gate'), 'icon' => 'rocket'],
+      ['label' => 'Prontidao GitHub', 'href' => url('/admin/github-readiness'), 'icon' => 'github'],
+      ['label' => 'Marketplace', 'href' => url('/admin/github-marketplace'), 'icon' => 'market'],
+      ['label' => 'Submissao GitHub', 'href' => url('/admin/github-submission'), 'icon' => 'check'],
     ],
     'Operacao' => [
-      ['label' => 'Status sistema', 'href' => url('/admin/system-status')],
-      ['label' => 'Seguranca', 'href' => url('/admin/security-center')],
-      ['label' => 'Hardening webhooks', 'href' => url('/admin/webhook-hardening')],
-      ['label' => 'Eventos webhook', 'href' => url('/admin/webhook-events')],
+      ['label' => 'Status sistema', 'href' => url('/admin/system-status'), 'icon' => 'pulse'],
+      ['label' => 'Seguranca', 'href' => url('/admin/security-center'), 'icon' => 'shield'],
+      ['label' => 'Hardening webhooks', 'href' => url('/admin/webhook-hardening'), 'icon' => 'check'],
+      ['label' => 'Eventos webhook', 'href' => url('/admin/webhook-events'), 'icon' => 'activity'],
     ],
     'SaaS' => [
-      ['label' => 'Assinaturas', 'href' => url('/admin/workspace-subscriptions')],
-      ['label' => 'Eventos cobranca', 'href' => url('/admin/billing-events')],
-      ['label' => 'Suporte', 'href' => url('/admin/support-tickets')],
-      ['label' => 'Roadmap', 'href' => url('/admin/roadmap')],
+      ['label' => 'Assinaturas', 'href' => url('/admin/workspace-subscriptions'), 'icon' => 'market'],
+      ['label' => 'Eventos cobranca', 'href' => url('/admin/billing-events'), 'icon' => 'activity'],
+      ['label' => 'Suporte', 'href' => url('/admin/support-tickets'), 'icon' => 'spark'],
+      ['label' => 'Roadmap', 'href' => url('/admin/roadmap'), 'icon' => 'rocket'],
     ],
     'Publico' => [
-      ['label' => 'Pagina GitHub', 'href' => url('/github')],
-      ['label' => 'Contato', 'href' => url('/contact')],
-      ['label' => 'Privacidade', 'href' => url('/privacy')],
-      ['label' => 'Termos', 'href' => url('/terms')],
+      ['label' => 'Pagina GitHub', 'href' => url('/github'), 'icon' => 'github'],
+      ['label' => 'Contato', 'href' => url('/contact'), 'icon' => 'spark'],
+      ['label' => 'Privacidade', 'href' => url('/privacy'), 'icon' => 'shield'],
+      ['label' => 'Termos', 'href' => url('/terms'), 'icon' => 'check'],
     ],
   ];
 
@@ -93,14 +93,15 @@
     .title{font-size:clamp(34px,4.7vw,64px);line-height:.94;letter-spacing:-.055em;font-weight:950;margin:0;color:var(--ink)}
     .lead{color:var(--muted);font-size:16px;line-height:1.65;margin:14px 0 0;max-width:920px}
     .decision{display:grid;gap:12px}.decision-main{font-size:30px;line-height:1;font-weight:950;letter-spacing:-.04em}.decision-label{color:var(--green);font-weight:950}.decision-copy{color:var(--muted);line-height:1.6}
-    .icon{width:38px;height:38px;border-radius:14px;display:grid;place-items:center;border:1px solid rgba(80,184,255,.34);background:rgba(80,184,255,.1);color:#b7e4ff;margin-bottom:12px}.icon svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.icon.green{border-color:rgba(105,227,154,.38);background:rgba(105,227,154,.1);color:var(--green)}.icon.yellow{border-color:rgba(255,207,102,.38);background:rgba(255,207,102,.1);color:var(--yellow)}.icon.red{border-color:rgba(255,107,107,.38);background:rgba(255,107,107,.1);color:var(--danger)}
+    .icon{width:38px;height:38px;border-radius:14px;display:grid;place-items:center;border:1px solid rgba(80,184,255,.34);background:rgba(80,184,255,.1);color:#b7e4ff;margin-bottom:12px;flex:none}.icon svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.icon.green{border-color:rgba(105,227,154,.38);background:rgba(105,227,154,.1);color:var(--green)}.icon.yellow{border-color:rgba(255,207,102,.38);background:rgba(255,207,102,.1);color:var(--yellow)}.icon.red{border-color:rgba(255,107,107,.38);background:rgba(255,107,107,.1);color:var(--danger)}
+    .mini-icon{width:30px;height:30px;border-radius:11px;display:grid;place-items:center;border:1px solid rgba(80,184,255,.28);background:rgba(80,184,255,.08);color:#b7e4ff;flex:none}.mini-icon svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}.mini-icon.green{color:var(--green);border-color:rgba(105,227,154,.35);background:rgba(105,227,154,.08)}.mini-icon.yellow{color:var(--yellow);border-color:rgba(255,207,102,.35);background:rgba(255,207,102,.08)}.mini-icon.red{color:var(--danger);border-color:rgba(255,107,107,.35);background:rgba(255,107,107,.08)}
     .pill-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.pill{border:1px solid var(--line);border-radius:999px;padding:7px 10px;color:var(--muted);font-size:12px;font-weight:850}.pill.ok{color:var(--green);border-color:rgba(105,227,154,.4);background:rgba(105,227,154,.08)}.pill.warn{color:var(--yellow);border-color:rgba(255,207,102,.42);background:rgba(255,207,102,.08)}
     .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}.metric-value{font-size:34px;font-weight:950;letter-spacing:-.05em;color:var(--ink)}.metric-label{color:var(--muted);font-size:13px;line-height:1.45}.ok{color:var(--green)}.risk{color:var(--yellow)}.bad{color:var(--danger)}
     .layout{display:grid;grid-template-columns:1fr 390px;gap:16px;margin-bottom:16px}.wide{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}.stack{display:grid;gap:10px}
-    .action{border:1px solid var(--line);border-radius:14px;background:#0b1118;padding:13px;text-decoration:none;color:var(--ink);display:block}.action strong{display:block;margin-bottom:5px}.action span{color:var(--muted);font-size:13px;line-height:1.5}.action.primary{border-color:rgba(80,184,255,.48);background:rgba(80,184,255,.09)}.action.danger{border-color:rgba(255,107,107,.45);background:rgba(255,107,107,.08)}
+    .action{border:1px solid var(--line);border-radius:14px;background:#0b1118;padding:13px;text-decoration:none;color:var(--ink);display:flex;align-items:flex-start;gap:12px}.action strong{display:block;margin-bottom:5px}.action span{color:var(--muted);font-size:13px;line-height:1.5}.action.primary{border-color:rgba(80,184,255,.48);background:rgba(80,184,255,.09)}.action.danger{border-color:rgba(255,107,107,.45);background:rgba(255,107,107,.08)}
     .bar{height:10px;border-radius:999px;background:#0b1118;border:1px solid var(--line);overflow:hidden}.bar span{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--green));border-radius:999px}
-    .rowx{border:1px solid var(--line);border-radius:12px;background:#0b1118;padding:12px;color:var(--muted);font-size:13px}.rowx strong{color:var(--ink)}
-    .quick-groups{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.quick-title{color:var(--green);font-size:12px;text-transform:uppercase;letter-spacing:.12em;font-weight:950;margin-bottom:8px}.quick-links{display:grid;gap:8px}.quick-links a{border:1px solid var(--line);border-radius:12px;padding:10px;background:#0b1118;color:var(--ink);text-decoration:none;font-weight:850;font-size:13px}
+    .rowx{border:1px solid var(--line);border-radius:12px;background:#0b1118;padding:12px;color:var(--muted);font-size:13px;display:flex;align-items:flex-start;gap:10px}.rowx strong{color:var(--ink)}
+    .quick-groups{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.quick-title{color:var(--green);font-size:12px;text-transform:uppercase;letter-spacing:.12em;font-weight:950;margin-bottom:8px}.quick-links{display:grid;gap:8px}.quick-links a{border:1px solid var(--line);border-radius:12px;padding:10px;background:#0b1118;color:var(--ink);text-decoration:none;font-weight:850;font-size:13px;display:flex;align-items:center;gap:9px}
     @media(max-width:1200px){.hero,.layout,.wide{grid-template-columns:1fr}.metrics,.quick-groups{grid-template-columns:repeat(2,1fr)}}
     @media(max-width:720px){.metrics,.quick-groups{grid-template-columns:1fr}}
   </style>
@@ -153,8 +154,8 @@
         <div class="stack">
           @foreach ($nextActions as $action)
             <a class="action {{ $action['level'] }}" href="{{ $action['href'] }}">
-              <strong>{{ $action['title'] }}</strong>
-              <span>{{ $action['detail'] }}</span>
+              <span class="mini-icon {{ $action['level'] === 'danger' ? 'red' : ($action['level'] === 'primary' ? 'green' : '') }}" aria-hidden="true">{!! $icons[$action['icon']] !!}</span>
+              <span><strong>{{ $action['title'] }}</strong><span>{{ $action['detail'] }}</span></span>
             </a>
           @endforeach
         </div>
@@ -164,10 +165,10 @@
         <div class="icon" aria-hidden="true">{!! $icons['activity'] !!}</div>
         <div class="kicker">Sinais SaaS</div>
         <div class="stack">
-          <div class="rowx"><strong>{{ $mrr }}</strong><br>MRR estimado em assinaturas ativas</div>
-          <div class="rowx"><strong>{{ $activeSubscriptions->count() }}</strong><br>assinaturas ativas; {{ $pendingSubscriptions }} pendente(s)</div>
-          <div class="rowx"><strong class="{{ $billingRisk > 0 ? 'risk' : 'ok' }}">{{ $billingRisk }}</strong><br>eventos de cobranca com atencao</div>
-          <div class="rowx"><strong>{{ $ticketsOpen }}</strong><br>chamados abertos; {{ $canceledSubscriptions }} assinatura(s) cancelada(s)</div>
+          <div class="rowx"><span class="mini-icon green" aria-hidden="true">{!! $icons['market'] !!}</span><span><strong>{{ $mrr }}</strong><br>MRR estimado em assinaturas ativas</span></div>
+          <div class="rowx"><span class="mini-icon" aria-hidden="true">{!! $icons['check'] !!}</span><span><strong>{{ $activeSubscriptions->count() }}</strong><br>assinaturas ativas; {{ $pendingSubscriptions }} pendente(s)</span></div>
+          <div class="rowx"><span class="mini-icon {{ $billingRisk > 0 ? 'yellow' : 'green' }}" aria-hidden="true">{!! $icons['pulse'] !!}</span><span><strong class="{{ $billingRisk > 0 ? 'risk' : 'ok' }}">{{ $billingRisk }}</strong><br>eventos de cobranca com atencao</span></div>
+          <div class="rowx"><span class="mini-icon" aria-hidden="true">{!! $icons['spark'] !!}</span><span><strong>{{ $ticketsOpen }}</strong><br>chamados abertos; {{ $canceledSubscriptions }} assinatura(s) cancelada(s)</span></div>
         </div>
       </aside>
     </section>
@@ -197,7 +198,7 @@
               <div class="quick-title">{{ $group }}</div>
               <div class="quick-links">
                 @foreach ($links as $link)
-                  <a href="{{ $link['href'] }}">{{ $link['label'] }}</a>
+                  <a href="{{ $link['href'] }}"><span class="mini-icon" aria-hidden="true">{!! $icons[$link['icon']] !!}</span><span>{{ $link['label'] }}</span></a>
                 @endforeach
               </div>
             </div>
@@ -211,7 +212,7 @@
         <div class="kicker">Eventos de cobranca recentes</div>
         <div class="stack">
           @forelse($recentBillingEvents as $billingEvent)
-            <div class="rowx"><strong>{{ $billingEvent->event_type }} / {{ $billingEvent->status }}</strong><br>recurso {{ $billingEvent->resource_id ?: 'sem recurso' }} - workspace {{ $billingEvent->workspace_id ?: 'nao vinculado' }}</div>
+            <div class="rowx"><span class="mini-icon" aria-hidden="true">{!! $icons['activity'] !!}</span><span><strong>{{ $billingEvent->event_type }} / {{ $billingEvent->status }}</strong><br>recurso {{ $billingEvent->resource_id ?: 'sem recurso' }} - workspace {{ $billingEvent->workspace_id ?: 'nao vinculado' }}</span></div>
           @empty
             <div class="rowx">Nenhum evento de cobranca recebido ainda.</div>
           @endforelse
@@ -221,7 +222,7 @@
         <div class="kicker">Suporte recente</div>
         <div class="stack">
           @forelse($recentTickets as $ticket)
-            <div class="rowx"><strong>{{ $ticket->subject }}</strong><br>{{ $ticket->status }} - {{ $ticket->priority }}</div>
+            <div class="rowx"><span class="mini-icon" aria-hidden="true">{!! $icons['spark'] !!}</span><span><strong>{{ $ticket->subject }}</strong><br>{{ $ticket->status }} - {{ $ticket->priority }}</span></div>
           @empty
             <div class="rowx">Nenhum ticket recente.</div>
           @endforelse
