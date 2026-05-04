@@ -7,9 +7,9 @@
         ->get();
     $mercadoPagoStatus = app(\App\Services\MercadoPagoBillingService::class)->checkoutStatus();
     $visiblePage = $dashboardPage ?? 'overview';
-    $totalEvents = $events->count();
-    $validEvents = $events->where('signature_valid', true)->count();
-    $invalidEvents = $events->where('signature_valid', false)->count();
+    $totalEvents = $eventTotals['total'] ?? $events->count();
+    $validEvents = $eventTotals['valid'] ?? $events->where('signature_valid', true)->count();
+    $invalidEvents = $eventTotals['invalid'] ?? $events->where('signature_valid', false)->count();
     $validationRate = $totalEvents > 0 ? round(($validEvents / $totalEvents) * 100) : 0;
     $repos = $events->map(fn ($event) => data_get($event->payload, 'repository.full_name'))->filter()->unique()->count();
     $pushes = $events

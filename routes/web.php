@@ -229,7 +229,15 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
         abort_unless(in_array($dashboardPage, ['overview', 'events', 'github', 'ai', 'team', 'billing'], true), 404);
 
         $workspace = Auth::user()->workspaces()->first();
-        $events = $workspace ? $workspace->webhookEvents()->latest()->limit(50)->get() : collect();
+        $eventsQuery = $workspace?->webhookEvents();
+        $eventTotals = $eventsQuery
+            ? [
+                'total' => (clone $eventsQuery)->count(),
+                'valid' => (clone $eventsQuery)->where('signature_valid', true)->count(),
+                'invalid' => (clone $eventsQuery)->where('signature_valid', false)->count(),
+            ]
+            : ['total' => 0, 'valid' => 0, 'invalid' => 0];
+        $events = $eventsQuery ? $eventsQuery->latest('received_at')->limit(50)->get() : collect();
         $notifications = $workspace ? Notification::where('workspace_id', $workspace->id)->latest()->limit(5)->get() : collect();
         $githubInstallation = $workspace ? $workspace->githubInstallations()->latest()->first() : null;
         $members = $workspace ? $workspace->members()->with('user')->get() : collect();
@@ -244,7 +252,7 @@ Route::middleware('auth')->group(function () use ($workspaceLimitReached) {
         $permissionMatrix = WorkspaceAccess::roleMatrix();
         $permissionLabels = WorkspaceAccess::labels();
 
-        return view('dashboard', compact('dashboardPage', 'workspace', 'events', 'notifications', 'githubInstallation', 'members', 'invites', 'canManageWorkspace', 'canManageBilling', 'canManageSecrets', 'canManageGitHub', 'canCreateTestEvents', 'canAnnotateEvents', 'workspaceRole', 'permissionMatrix', 'permissionLabels'));
+        return view('dashboard', compact('dashboardPage', 'workspace', 'events', 'eventTotals', 'notifications', 'githubInstallation', 'members', 'invites', 'canManageWorkspace', 'canManageBilling', 'canManageSecrets', 'canManageGitHub', 'canCreateTestEvents', 'canAnnotateEvents', 'workspaceRole', 'permissionMatrix', 'permissionLabels'));
     })->where('section', 'overview|events|github|ai|team|billing')->name('dashboard');
 
     Route::get('/dashboard/events/{event}', function (WebhookEvent $event) {

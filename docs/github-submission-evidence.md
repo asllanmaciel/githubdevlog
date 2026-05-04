@@ -85,15 +85,13 @@ Workspaces are isolated, secrets are unique per workspace, webhook signatures ar
 
 ## GitHub App URLs
 
-Substituir pelo dominio final:
-
 ```text
-Homepage URL: https://seudominio.com
-Callback URL: https://seudominio.com/github/callback
-Webhook URL: https://seudominio.com/webhooks/github-app
+Homepage URL: https://ghdevlog.com
+Callback URL: https://ghdevlog.com/github/callback
+Webhook URL: https://ghdevlog.com/webhooks/github-app
 Setup URL: https://github.com/apps/seu-app/installations/new
-Privacy policy: https://seudominio.com/privacy
-Terms: https://seudominio.com/terms
+Privacy policy: https://ghdevlog.com/privacy
+Terms: https://ghdevlog.com/terms
 ```
 
 ## Permissoes sugeridas
