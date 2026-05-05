@@ -41,12 +41,19 @@ $workspacePlan = fn (Workspace $workspace): ?BillingPlan => WorkspaceUsage::plan
 $workspaceUsage = fn (Workspace $workspace): int => WorkspaceUsage::usageThisMonth($workspace);
 $workspaceLimitReached = fn (Workspace $workspace): bool => WorkspaceUsage::limitReached($workspace);
 
-Route::get('/locale/{locale}', function (string $locale) {
+Route::get('/locale/{locale}', function (string $locale, Request $request) {
     abort_unless(in_array($locale, ['pt-BR', 'en'], true), 404);
 
     session(['locale' => $locale === 'pt-BR' ? 'pt_BR' : 'en']);
 
-    return back();
+    $previous = url()->previous();
+    $previousHost = parse_url($previous, PHP_URL_HOST);
+
+    if ($previousHost && $previousHost !== $request->getHost()) {
+        return redirect()->route('home');
+    }
+
+    return redirect()->to($previous);
 })->name('locale.switch');
 
 Route::get('/', fn () => view('landing'))->name('home');
