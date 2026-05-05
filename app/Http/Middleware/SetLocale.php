@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Session;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -26,13 +27,23 @@ class SetLocale
     {
         $requestedLocale = $request->query('lang');
 
-        if (is_string($requestedLocale) && isset(self::SUPPORTED_LOCALES[$requestedLocale])) {
-            Session::put('locale', self::SUPPORTED_LOCALES[$requestedLocale]);
+        if (is_string($requestedLocale) && ($normalizedLocale = $this->normalizeLocale($requestedLocale))) {
+            Session::put('locale', $normalizedLocale);
+            Cookie::queue('locale', $normalizedLocale, 60 * 24 * 365);
         }
 
-        $locale = Session::get('locale', config('app.locale'));
-        App::setLocale(in_array($locale, self::SUPPORTED_LOCALES, true) ? $locale : 'pt_BR');
+        $locale = $this->normalizeLocale((string) Session::get('locale'))
+            ?? $this->normalizeLocale((string) $request->cookie('locale'))
+            ?? $this->normalizeLocale((string) config('app.locale'))
+            ?? 'pt_BR';
+
+        App::setLocale($locale);
 
         return $next($request);
+    }
+
+    private function normalizeLocale(string $locale): ?string
+    {
+        return self::SUPPORTED_LOCALES[$locale] ?? null;
     }
 }

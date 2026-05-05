@@ -44,16 +44,18 @@ $workspaceLimitReached = fn (Workspace $workspace): bool => WorkspaceUsage::limi
 Route::get('/locale/{locale}', function (string $locale, Request $request) {
     abort_unless(in_array($locale, ['pt-BR', 'en'], true), 404);
 
-    session(['locale' => $locale === 'pt-BR' ? 'pt_BR' : 'en']);
+    $normalizedLocale = $locale === 'pt-BR' ? 'pt_BR' : 'en';
+
+    session(['locale' => $normalizedLocale]);
 
     $previous = url()->previous();
     $previousHost = parse_url($previous, PHP_URL_HOST);
 
     if ($previousHost && $previousHost !== $request->getHost()) {
-        return redirect()->route('home');
+        return redirect()->route('home')->withCookie(cookie('locale', $normalizedLocale, 60 * 24 * 365));
     }
 
-    return redirect()->to($previous);
+    return redirect()->to($previous)->withCookie(cookie('locale', $normalizedLocale, 60 * 24 * 365));
 })->name('locale.switch');
 
 Route::get('/', fn () => view('landing'))->name('home');
